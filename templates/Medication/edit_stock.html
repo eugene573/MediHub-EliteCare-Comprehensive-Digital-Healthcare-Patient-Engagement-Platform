@@ -1,0 +1,161 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+       
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+h1 {
+    text-align: center;
+    color:  #000000;
+    margin-top: 20px;
+}
+
+/* Form Styles */
+form {
+    width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="file"],
+textarea {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #0000FF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #003f8a;
+}
+
+/* Table Styles */
+table {
+    width: 90%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+table th,
+table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+table th {
+    background-color: #0056b3;
+    color: #fff;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #f4f4f4;
+}
+
+table tbody tr:hover {
+    background-color: #e9f1fb;
+}
+
+table img {
+    width: 100px;
+    border-radius: 8px;
+}
+
+/* Action Links */
+a {
+    color: #0056b3;
+    text-decoration: none;
+    margin-right: 10px;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    form {
+        width: 90%;
+    }
+
+    table {
+        width: 100%;
+    }
+}
+    </style>
+</head>
+{% extends 'navbar.html' %}
+
+{% block title %}Edit Medication Stock{% endblock %}
+
+{% block content %}
+<br>
+<body>
+    <h1>Edit Medication</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <label for="medication_name">Medication Name:</label>
+        <input type="text" id="medication_name" name="medication_name" value="{{ medication.medication_name }}" required><br>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required>{{ medication.description }}</textarea><br>
+
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity" value="{{ medication.quantity }}" required><br>
+
+        <label for="price">Price Per Unit:</label>
+        <input type="number" id="price" name="price" step="0.01" value="{{ medication.price }}" required><br>
+
+        <label for="expiry_date">Expiry Date:</label>
+        <input type="date" id="expiry_date" name="expiry_date" value="{{ medication.expiry_date }}" required><br>
+
+        <label for="supplier">Supplier:</label>
+        <input type="text" id="supplier" name="supplier" value="{{ medication.supplier }}" required><br>
+
+        <label for="image">Medication Image:</label>
+        <input type="file" id="image" name="image" accept="image/*"><br><br>
+
+        <button type="submit">Update</button>
+    </form>
+
+    {% if medication.image %}
+    <h2>Current Image:</h2>
+    <img src="{{ url_for('static', filename='uploads/' + medication.image) }}" alt="{{ medication.medication_name }}">
+    {% endif %}
+</body>
+{% endblock %}

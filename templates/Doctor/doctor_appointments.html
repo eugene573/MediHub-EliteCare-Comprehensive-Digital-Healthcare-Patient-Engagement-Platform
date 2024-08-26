@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Appointment</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding-top: 20px;
+            flex: 1;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: flex-start;
+            border-bottom: 2px solid #ccc;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            font-size: 16px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .tab:not(:last-child) {
+            margin-right: 10px;
+        }
+
+        .tab.active {
+            border-bottom: 2px solid rgb(4, 94, 135);
+            color: rgb(4, 94, 135);
+        }
+
+        .date {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 20px;
+        }
+
+        .date h2 {
+            margin: 0;
+            margin-right: 10px;
+        }
+
+        .date span {
+            color: grey;
+        }
+
+        .task-card {
+            display: flex;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgb(249, 249, 249);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-right: 20px;
+        }
+
+        .task-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .task-details h3 {
+            margin: 0;
+            margin-bottom: 5px;
+            font-size: 18px;
+        }
+
+        .task-details p {
+            margin: 2px 0;
+            color: grey;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 1rem 0;
+            margin-top: auto;
+        }
+        .open-btn {
+    margin-left: auto; /* Push the button to the far right */
+    padding: 10px 15px;
+    background-color: #1d65c3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.open-btn:hover {
+    background-color: #144a8b;
+}
+    </style>
+</head>
+<body>
+    {% extends "layout.html" %}
+
+    {% block content %}
+    <br><br>
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('upcoming')">Upcoming</button>
+            <button class="tab" onclick="showTab('completed')">Completed</button>
+        </div>
+        <div id="upcoming" class="task-list">
+            <div class="date">
+                <h2>Aug 26th</h2>
+                <span>Monday</span>
+            </div>
+            <div class="task-card">
+                <div class="icon"> <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24"><path fill="#ff0000" d="m12 3l11 8.25l-1.2 1.6L20 11.5V21H4v-9.5l-1.8 1.35l-1.2-1.6zm-4.65 9.05q0 1.325 1.425 2.825T12 18q1.8-1.625 3.225-3.125t1.425-2.825q0-1.1-.75-1.825T14.1 9.5q-.65 0-1.188.263T12 10.45q-.375-.425-.937-.687T9.9 9.5q-1.05 0-1.8.725t-.75 1.825M18 19v-9l-6-4.5L6 10v9zm0 0H6z"/></svg></div>
+                <div class="task-details">
+                    <h3>Home Visit</h3>
+                    <p>Lee Ming Jie</p>
+                    <p>scheduled at 1:30 PM</p>
+                </div>
+            </div>
+            <div class="task-card">
+                <div class="icon"> 
+                    <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 48 48">
+                        <g fill="#1d65c3">
+                            <path fill-rule="evenodd" d="M8 6a2 2 0 0 0-2 2v26a2 2 0 0 0 2 2h15v4h-7v2h16v-2h-7v-4h15a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zm31 28V10H9v24h3v-2.62c0-2.022 2.407-4.622 5.22-5.726c.008.414.047 1.558.104 2.012c.061.49.145.978.236 1.379q.03.13.062.25A1.999 1.999 0 0 0 18.667 33a2 2 0 0 0 .26-3.983a6 6 0 0 1-.067-.27c-.08-.349-.156-.791-.213-1.246c-.094-.754-.141-1.543-.084-2.303q.386-.11.77-.198c.259-.059.434.39.562.718c.04.1.074.189.105.248c1.305 0 2.653.008 4 .017c1.347.008 2.695.017 4 .017c.038-.073.078-.177.122-.291c.13-.34.294-.766.545-.709q.537.122 1.072.289q0 .387.009.788c.017.968.034 1.977-.204 2.923h-.877a.67.67 0 0 0-.597.369l-.666 1.333a.7.7 0 0 0-.07.298v1.333c0 .369.298.667.666.667h1.333v-1.333h-.666v-.51l.412-.824h1.842l.412.824v.51h-.666V33H32a.667.667 0 0 0 .667-.667V31a.7.7 0 0 0-.07-.298l-.667-1.334a.67.67 0 0 0-.597-.368h-.423c.212-1.06.226-2.126.225-3.202C33.793 26.922 36 29.444 36 31.38V34zm-20.333-2.323a.67.67 0 0 0 .666-.677a.67.67 0 0 0-.666-.677A.67.67 0 0 0 18 31c0 .383.308.677.667.677M24 9a1 1 0 1 0 0-2a1 1 0 0 0 0 2" clip-rule="evenodd"/>
+                            <path d="M30 18a6 6 0 1 1-12 0a6 6 0 0 1 12 0"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="task-details">
+                    <h3>Telemedicine</h3>
+                    <p>Loh Jia Ming</p>
+                    <p>scheduled at 3:00 PM</p>
+                </div>
+                <button class="open-btn">Open</button>
+            </div>
+            
+        </div>
+        
+        <div id="completed" class="task-list" style="display: none;">
+            <div class="date">
+                <h2>Aug 24th</h2>
+                <span>Saturday</span>
+            </div>
+            <div class="task-card">
+                <div class="icon"> <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 48 48"><g fill="#1d65c3"><path fill-rule="evenodd" d="M8 6a2 2 0 0 0-2 2v26a2 2 0 0 0 2 2h15v4h-7v2h16v-2h-7v-4h15a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zm31 28V10H9v24h3v-2.62c0-2.022 2.407-4.622 5.22-5.726c.008.414.047 1.558.104 2.012c.061.49.145.978.236 1.379q.03.13.062.25A1.999 1.999 0 0 0 18.667 33a2 2 0 0 0 .26-3.983a6 6 0 0 1-.067-.27c-.08-.349-.156-.791-.213-1.246c-.094-.754-.141-1.543-.084-2.303q.386-.11.77-.198c.259-.059.434.39.562.718c.04.1.074.189.105.248c1.305 0 2.653.008 4 .017c1.347.008 2.695.017 4 .017c.038-.073.078-.177.122-.291c.13-.34.294-.766.545-.709q.537.122 1.072.289q0 .387.009.788c.017.968.034 1.977-.204 2.923h-.877a.67.67 0 0 0-.597.369l-.666 1.333a.7.7 0 0 0-.07.298v1.333c0 .369.298.667.666.667h1.333v-1.333h-.666v-.51l.412-.824h1.842l.412.824v.51h-.666V33H32a.667.667 0 0 0 .667-.667V31a.7.7 0 0 0-.07-.298l-.667-1.334a.67.67 0 0 0-.597-.368h-.423c.212-1.06.226-2.126.225-3.202C33.793 26.922 36 29.444 36 31.38V34zm-20.333-2.323a.67.67 0 0 0 .666-.677a.67.67 0 0 0-.666-.677A.67.67 0 0 0 18 31c0 .383.308.677.667.677M24 9a1 1 0 1 0 0-2a1 1 0 0 0 0 2" clip-rule="evenodd"/><path d="M30 18a6 6 0 1 1-12 0a6 6 0 0 1 12 0"/></g></svg></div>
+                <div class="task-details">
+                    <h3>Telemedicine</h3>
+                    <p>Herry Ng</p>
+                    <p>scheduled at 1:00 PM</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all task lists
+            document.querySelectorAll('.task-list').forEach(list => list.style.display = 'none');
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+
+            // Show the selected task list
+            document.getElementById(tabName).style.display = 'block';
+
+            // Add active class to the selected tab
+            event.target.classList.add('active');
+        }
+    </script>
+    {% endblock %}
+</body>
+</html>

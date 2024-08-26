@@ -1,0 +1,188 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Admin - View Nurses</title>
+    <style>
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #fff;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color:#f2c100;            ;
+            color: white;
+        }
+
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #2980b9;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        a:hover {
+            background-color: #1f6399;
+        }
+
+        /* Style for the search bar container */
+        form {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        /* Style for the search input field */
+        form input[type="text"] {
+            padding: 10px;
+            width: 300px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px 0 0 4px;
+            outline: none;
+        }
+
+        /* Style for the search button */
+        form button {
+            padding: 10px 20px;
+            background-color: #ffcc00;            ;
+            color: white;
+            font-size: 16px;
+            border: 1px solid #ffcc00;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #b3adad;
+        }
+
+        /* Ensure the search bar and table are responsive */
+        @media (max-width: 768px) {
+            form input[type="text"] {
+                width: 60%;
+            }
+            
+            form button {
+                padding: 10px;
+            }
+        }
+
+        .btn-danger {
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            background-color: #c82333;
+        }
+
+        .btn-danger:hover {
+            background-color: #bd2130;
+        }
+
+        .navbar {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-size: 18px;
+        }
+
+        .card-text {
+            font-size: 14px;
+        }
+
+        .btn {
+            border-radius: 50px;
+        }
+
+        .btn-light {
+            background-color: #ffffff;
+            border-color: transparent;
+            color: #333;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-light:hover {
+            background-color: #f1f1f1;
+        }
+
+        @media (max-width: 768px) {
+            .card-header {
+                text-align: center;
+            }
+
+            .btn {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+{% extends 'navbar.html' %}
+
+{% block title %}Admin - View Nurses{% endblock %}
+
+{% block content %}
+    <h1>Nurse List</h1>
+    
+    <!-- Search Form -->
+    <form method="GET" action="{{ url_for('admin_view_nurses') }}">
+        <input type="text" name="search" placeholder="Search by nurse username" value="{{ request.args.get('search', '') }}">
+        <button type="submit"><i class="fa fa-search"></i></button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Contact Number</th>
+                <th>Specialization</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for nurse in nurses %}
+            <tr>
+                <td>{{ nurse.id }}</td>
+                <td>{{ nurse.username }}</td>
+                <td>{{ nurse.email }}</td>
+                <td>{{ nurse.contactNumber }}</td>
+                <td>{{ nurse.specialization }}</td>
+                <td>
+                    <form action="{{ url_for('admin_delete_nurse', nurse_id=nurse.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm" onClick="return confirm('Are you sure you want to delete this nurse?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endblock %}

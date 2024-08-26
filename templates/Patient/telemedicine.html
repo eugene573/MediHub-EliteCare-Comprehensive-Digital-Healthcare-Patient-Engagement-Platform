@@ -1,0 +1,171 @@
+{% extends "layout.html" %}
+
+{% block title %}Telemedicine{% endblock %}
+
+{% block extra_css %}
+<style>
+       .telemedicine-container {
+        display: flex;
+        max-width: 1200px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .telemedicine-image-container {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .telemedicine-image-container img {
+        max-width: 100%;
+        border-radius: 8px;
+    }
+
+    .telemedicine-form-container {
+        flex: 1;
+        padding: 20px;
+    }
+
+    .telemedicine-title {
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .telemedicine-label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .telemedicine-input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 16px;
+    }
+
+    .telemedicine-submit {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;
+        transition: background-color 0.3s ease;
+    }
+
+    .telemedicine-submit:hover {
+        background-color: #0056b3;
+    }
+
+    .telemedicine-intro {
+        margin-top: 20px;
+        padding: 20px;
+        background-color: #ebe9e9;
+        border-radius: 8px;
+        color: #333;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 1s ease-out forwards;
+        transition: transform 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
+    }
+
+    .telemedicine-intro:hover {
+        transform: translateY(-10px);
+        z-index: 10;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .telemedicine-intro:nth-child(1) {
+        animation-delay: 0.2s;
+    }
+
+    .telemedicine-intro:nth-child(2) {
+        animation-delay: 0.4s;
+    }
+
+    .telemedicine-intro:nth-child(3) {
+        animation-delay: 0.6s;
+    }
+
+    @media (max-width: 768px) {
+        .telemedicine-container {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .telemedicine-image-container {
+            margin-bottom: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="telemedicine-container">
+        <div class="telemedicine-image-container">
+            <img src="https://www.usatoday.com/gcdn/-mm-/2ff52fd1f1bca34d3a65256a2334f7d378406e30/c=0-324-6218-3822/local/-/media/2021/05/03/USATODAY/usatsports/happy-doctor-telehealth-getty.jpg?width=3200&height=1801&fit=crop&format=pjpg&auto=webp" alt="Doctor Telehealth">
+        </div>
+        <div class="telemedicine-form-container">
+            <h1 class="telemedicine-title">Telemedicine</h1>
+            <h4  class="telemedicine-title">Let's schedule the telemedicine service now!</h4>
+            <form action="/patient/telemedicine" method="post">
+            <label class="telemedicine-label" for="doctor">Doctor:</label>
+            <select class="telemedicine-input" id="doctor" name="doctor" required aria-label="Select Doctor">
+                    {% for doctor in doctors %}
+                    <option value="{{ doctor.id }}">{{ doctor.username }} ({{ doctor.specialization }})</option>
+                    {% endfor %}
+            </select>
+            <label class="telemedicine-label" for="date">Date:</label>
+            <input class="telemedicine-input" type="date" id="date" name="date" required aria-label="Select Date">
+            <label class="telemedicine-label" for="time">Time:</label>
+            <input class="telemedicine-input" type="time" id="time" name="time" required aria-label="Select Time">
+            <button class="telemedicine-submit" type="submit" onClick="return confirm('Are you sure you want to book the appointment?')">Confirm</button>
+            </form>
+        </div> 
+    </div>
+
+    <div class="telemedicine-intro">
+        <h2>What is Telemedicine?</h2>
+        <p>Telemedicine allows you to consult with your healthcare provider remotely from the comfort of your home using digital technology. This means you can have a doctor's appointment using your smartphone, tablet, or computer without needing to visit the clinic in person.</p>
+    </div>
+    
+    <div class="telemedicine-intro">
+        <h2>How Telemedicine Works?</h2>
+        <p>1.<b>Scheduling an Appointment:</b> Choose a time that fits your schedule.</p>
+        <p>2.<b>Preparing for the Visit:</b> Make sure you have a good internet connection and a device with a camera and microphone. Find a quiet and private place for your appointment.</p>
+        <p>3. <b>During the Appointment:</b> Connect with your doctor via video call. Discuss your symptoms, ask questions, and get medical advice.</p>
+        <p>4. <b>Follow-Up:</b> Receive prescriptions electronically, get referrals to specialists, and schedule follow-up appointments if needed.</p>
+    </div>
+    
+    <div class="telemedicine-intro">
+        <h2>Common Uses of Telemedicine</h2>
+        <p>1.<b>General Consultations:</b> For common illnesses like colds, flu, and minor infections.</p>
+        <p>2.<b>Chronic Disease Management:</b> Ongoing care for conditions like diabetes.</p>
+        <p>3. <b>Post-Surgery Follow-Ups:</b> Quick and convenient follow-up visits to monitor recovery after surgery.</p>
+    </div>
+    <br>
+{% endblock %}

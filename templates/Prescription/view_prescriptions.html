@@ -1,0 +1,124 @@
+{% extends "layout.html" %}
+
+{% block title %}View Prescriptions{% endblock %}
+
+{% block extra_css %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Prescriptions</title>
+    <style>
+   /* Improved CSS for prescriptions table */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle;
+}
+
+th {
+    background-color: #949594;
+    color: white;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+caption {
+    caption-side: top;
+    font-size: 1.5em;
+    margin: 10px 0;
+}
+
+@media (max-width: 768px) {
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    tr {
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    td {
+        border: none;
+        position: relative;
+        padding-left: 50%;
+        white-space: nowrap;
+    }
+
+    td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 45%;
+        padding-left: 10px;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+}
+
+</style>
+
+</head>
+{% endblock %}
+
+{% block content %}
+<br><br>
+<body>
+    <div class="container">
+       <center><h1>Prescriptions List</h1></center> 
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Patient ID</th>
+                    <th>Patient Name</th>
+                    <th>Medication</th>
+                    <th>Dosage</th>
+                    <th>Instructions</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pres in prescriptions %}
+                    <tr>
+                        <td>{{ pres.id }}</td>
+                        <td>{{ pres.patient_id }}</td>
+                        <td>{{ pres.patient_name }}</td>
+                        <td>{{ pres.medication }}</td>
+                        <td>{{ pres.dosage }}</td>
+                        <td>{{ pres.instructions }}</td>
+                        <td>{{ pres.date }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+{% endblock %}
+

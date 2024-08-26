@@ -1,0 +1,82 @@
+{% extends 'navbar.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<style>
+.dashboard-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 150px); /* Adjust based on your header and footer height */
+}
+
+.card {
+    margin: 10px; /* Spacing between cards */
+}
+
+</style>
+
+<div class="dashboard-container">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-3">
+                <div class="card text-white bg-success mb-3">
+                    <div class="card-header">Patients</div>
+                    <div class="card-body">
+                        <h5 class="card-title">Manage Patients</h5>
+                        <a href="{{ url_for('admin_view_patients') }}" class="btn btn-light">Open</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-info mb-3">
+                    <div class="card-header">Doctors</div>
+                    <div class="card-body">
+                        <h5 class="card-title">Manage Doctors</h5>
+                        <a href="{{ url_for('admin_view_doctors') }}" class="btn btn-light">Open</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-warning mb-3">
+                    <div class="card-header">Nurses</div>
+                    <div class="card-body">
+                        <h5 class="card-title">Manage Nurses</h5>
+                        <a href="{{ url_for('admin_view_nurses') }}" class="btn btn-light">Open</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-danger mb-3">
+                    <div class="card-header">Pending Approval</div>
+                    <div class="card-body">
+                        <h5 class="card-title">Manage Registration</h5>
+                        <h5 class="card-title">(Doctors & Nurses)</h5>
+                        <a href="{{ url_for('admin_pending_approvals') }}" class="btn btn-light">Open</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white mb-3" style="background-color: #a7289a;">
+                    <div class="card-header">Appointment</div>
+                    <div class="card-body">
+                        <h5 class="card-title">Manage Appointment</h5>
+                        <a href="/admin/appointments" class="btn btn-light">Open</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white mb-3" style="background-color: #a3a728;">
+                    <div class="card-header">Medication Stock</div>
+                    <div class="card-body">
+                        <h5 class="card-title">Manage Medication Stock</h5>
+                        <a href="/admin/medication" class="btn btn-light">Open</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,210 @@
+{% extends "layout.html" %}
+
+{% block title %}Home Visit{% endblock %}
+
+{% block extra_css %}
+<style>
+    .home-visit-container {
+        display: flex;
+        max-width: 1200px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .home-visit-image-container {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .home-visit-image-container img {
+        max-width: 100%;
+        border-radius: 8px;
+    }
+
+    .home-visit-form-container {
+        flex: 1;
+        padding: 20px;
+    }
+
+    .home-visit-title {
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .home-visit-label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .home-visit-input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 16px;
+    }
+
+    .home-visit-submit {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;
+        transition: background-color 0.3s ease;
+    }
+
+    .home-visit-submit:hover {
+        background-color: #0056b3;
+    }
+
+    .home-visit-intro {
+        margin-top: 20px;
+        padding: 20px;
+        background-color: #ebe9e9;
+        border-radius: 8px;
+        color: #333;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 1s ease-out forwards;
+        transition: transform 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
+    }
+
+    .home-visit-intro:hover {
+        transform: translateY(-10px);
+        z-index: 10;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .home-visit-intro:nth-child(1) {
+        animation-delay: 0.2s;
+    }
+
+    .home-visit-intro:nth-child(2) {
+        animation-delay: 0.4s;
+    }
+
+    .home-visit-intro:nth-child(3) {
+        animation-delay: 0.6s;
+    }
+
+    @media (max-width: 768px) {
+        .home-visit-container {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .home-visit-image-container {
+            margin-bottom: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="home-visit-container">
+    <div class="home-visit-image-container">
+        <img src="https://s3.envato.com/files/330374396/_8544914.jpg" alt="Doctor Telehealth">
+    </div>
+    <div class="home-visit-form-container">
+        <h1 class="home-visit-title">Home Visit</h1> 
+        <h4 class="home-visit-title">Let's schedule the home visit service now!</h4>
+        <form action="/patient/home_visit" method="post">
+            <label class="home-visit-label" for="role">Role:</label>
+            <select class="home-visit-input" id="role" name="role" required aria-label="Select Role">
+                <option value="" disabled selected>Select Role</option>
+                <option value="doctor">Doctor</option>
+                <option value="nurse">Nurse</option>
+            </select>
+
+            <div id="person-container">
+                <!-- Person options will be populated here based on selected role -->
+            </div>
+
+            <label class="home-visit-label" for="date">Date:</label>
+            <input class="home-visit-input" type="date" id="date" name="date" required aria-label="Select Date">
+
+            <label class="home-visit-label" for="time">Time:</label>
+            <input class="home-visit-input" type="time" id="time" name="time" required aria-label="Select Time">
+
+            <button class="home-visit-submit" type="submit" onClick="return confirm('Are you sure you want to book the appointment?')">Confirm</button>
+        </form>
+    </div> 
+</div>
+
+<div class="home-visit-intro">
+    <h2>What is Home Visit?</h2>
+    <p>Home visit means that a healthcare professional, like a nurse or doctor, comes to your home to provide medical care. Instead of traveling to a clinic or hospital, you can receive the care you need right where you live.</p>
+</div>
+
+<div class="home-visit-intro">
+    <h2>How Home Visit Works?</h2>
+    <p>1. <b>Scheduling an Appointment:</b> Choose a time that fits your schedule.</p>
+    <p>2. <b>Preparing for the Visit:</b> Make sure you are at home at the scheduled time.</p>
+    <p>3. <b>During the Appointment:</b> The healthcare provider will come to your home at the scheduled time with necessary equipment and perform medical tasks.</p>
+    <p>4. <b>Follow-Up:</b> After the visit, they may schedule more visits, provide instructions for care, or communicate with other healthcare providers involved in your treatment.</p>
+</div>
+
+<div class="home-visit-intro">
+    <h2>Common Uses of Home Visit</h2>
+    <p>1. <b>Acute Illnesses:</b> Initial care for illnesses or injuries that do not require an emergency room visit.</p>
+    <p>2. <b>Chronic Conditions:</b> Regular check-ups and management for long-term health conditions like diabetes or heart disease.</p>
+    <p>3. <b>Post-Surgery:</b> Care after you have been discharged from the hospital, including wound care and recovery monitoring.</p>      
+</div>
+<br>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('role').addEventListener('change', function() {
+        const role = this.value;
+        const personContainer = document.getElementById('person-container');
+
+        if (role === 'doctor') {
+            personContainer.innerHTML = `
+                <label class="home-visit-label" for="person">Doctor:</label>
+                <select class="home-visit-input" id="person" name="person" required aria-label="Select Doctor">
+                    {% for doctor in doctors %}
+                    <option value="{{ doctor.id }}">{{ doctor.username }} ({{ doctor.specialization }})</option>
+                    {% endfor %}
+                </select>
+            `;
+        } else if (role === 'nurse') {
+            personContainer.innerHTML = `
+                <label class="home-visit-label" for="person">Nurse:</label>
+                <select class="home-visit-input" id="person" name="person" required aria-label="Select Nurse">
+                    {% for nurse in nurses %}
+                    <option value="{{ nurse.id }}">{{ nurse.username }} ({{ nurse.specialization }})</option>
+                    {% endfor %}
+                </select>
+            `;
+        } else {
+            personContainer.innerHTML = '';
+        }
+    });
+</script>
+{% endblock %}

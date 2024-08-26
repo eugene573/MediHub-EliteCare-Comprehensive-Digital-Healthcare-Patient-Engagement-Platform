@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+
+{% block title %}Write Prescription{% endblock %}
+
+{% block content %}
+<br><br><br>
+<div class="container">
+    <center><h1>Write a Prescription</h1></center>
+    <form action="{{ url_for('write_prescription') }}" method="post">
+       
+        <center><select name="patient_id" id="patient_id" placeholder="Patient Name" style="color:grey;">
+            {% for patient in patients %}
+                <option value="{{ patient.id }}">{{ patient.name }}</option>
+            {% endfor %}
+        </select></center><br>
+
+        <center><input type="text" id="medication" name="medication" placeholder="Medication" style="color:grey;" required></center><br>
+ 
+        <center><input type="text" id="dosage" name="dosage" placeholder="Dosage" style="color:grey;" required></center><br>
+
+        <center><textarea id="instructions" name="instructions" rows="4" cols="50" placeholder="Instructions" style="color:grey;" required></textarea></center><br>
+
+        <center>
+            <a href="{{ url_for('prescription_options') }}" class="action-btn cancel-btn">Cancel</a>
+            &nbsp;&nbsp;&nbsp;
+            <input type="submit" value="Confirm" class="action-btn">
+        </center>
+    </form>
+</div>
+<br><br>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Additional CSS specific to the Write Prescription page */
+    .container {
+        margin: auto; /* Centers the container horizontally */
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 3px solid #ccc;
+        border-radius: 8px;
+        width: 100%;
+        max-width: 800px; /* Limits the width of inputs */
+    }
+
+    textarea {
+        resize: vertical;
+    }
+
+    .action-btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        text-align: center;
+        display: inline-block;
+        width: 120px; /* Same width for both buttons */
+        box-sizing: border-box; /* Includes padding and border in the element's total width and height */
+    }
+
+    input[type="submit"].action-btn {
+        background-color: #4CAF50; /* Green background for Confirm button */
+        color: white;
+        cursor: pointer;
+    }
+
+    input[type="submit"].action-btn:hover {
+        background-color: #45a049; /* Darker green on hover */
+    }
+
+    .cancel-btn {
+        background-color: #e24337; /* Red background for Cancel button */
+        color: white;
+        text-decoration: none; /* Remove underline from link */
+    }
+
+    .cancel-btn:hover {
+        background-color: #af2626; /* Darker red on hover */
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediHub</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+     #hero {
+    background: url('https://iprospectcheck.com/wp-content/uploads/2020/01/healthcare-background-checks-1.jpg') no-repeat center center/cover;
+    color: #fff;
+    text-align: center;
+    padding: 13rem 0;
+    transition: padding 0.5s ease, opacity 0.5s ease;
+    opacity: 1;
+}
+
+#hero.shrink {
+    padding: 5rem 0; /* Adjust this value as needed */
+    opacity: 0.5; /* Adjust this value as needed */
+}
+
+
+        #hero .container {
+            max-width: 900px;
+            width: 100%;
+            margin: 20px;
+            padding: 50px;
+            background-color: rgba(255, 247, 247, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+            text-align: center; 
+        }
+
+        #hero h2 {
+            font-size: 2.5rem;
+            margin: 0;
+        }
+
+        #hero p {
+            font-size: 1.25rem;
+            margin: 1rem 0;
+        }
+
+        #hero .btn {
+            background: #0073e6;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0.5rem;
+        }
+
+        .counter {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .services-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .service {
+            flex: 1;
+            background: #f4f4f4;
+            padding: 1rem;
+            border-radius: 5px;
+            text-align: center;
+            opacity: 0; /* Start hidden */
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1); /* Optional: Add shadow for depth */
+            transition: transform 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
+        }
+
+
+.service:hover {
+    transform: translateY(-10px); /* Move the box upwards */
+    z-index: 10; /* Bring the box to the front */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhance shadow on hover */
+}
+
+        .service:nth-child(1) {
+            transition-delay: 0.2s;
+        }
+
+        .service:nth-child(2) {
+            transition-delay: 0.4s;
+        }
+
+        .service:nth-child(3) {
+            transition-delay: 0.6s;
+        }
+
+        .service:hover {
+            transform: scale(1.05);
+            background-color: #e0e0e0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .service.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+            animation: fadeIn 1s ease-in-out forwards;
+        }
+        
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        form input, form textarea {
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        form button {
+            background: #0073e6;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .services-grid {
+                flex-direction: column;
+            }
+
+            header .container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            header nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            header nav ul li {
+                margin: 0;
+            }
+
+            #hero {
+                padding: 10rem 0;
+            }
+
+            #hero h2 {
+                font-size: 2rem;
+            }
+
+            #hero p {
+                font-size: 1rem;
+            }
+
+            #hero .btn {
+                padding: 0.5rem;
+            }
+
+            #hero.small-bg {
+        background-size: 80%; /* Adjust the percentage as needed */
+    }
+
+    /* Ensure smooth transition */
+    #hero {
+        transition: background-size 0.3s ease-in-out;
+    }
+
+    /* The Overlay (background) */
+.overlay {
+  height: 100%;
+  width: 0;
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  background-color: rgb(0,0,0); /* Black fallback color */
+  background-color: rgba(0,0,0, 0.9); /* Black w/opacity */
+  overflow-x: hidden; /* Disable horizontal scroll */
+  transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
+}
+
+/* Position the content inside the overlay */
+.overlay-content {
+  position: relative;
+  top: 25%; /* 25% from the top */
+  width: 100%; /* 100% width */
+  text-align: center; /* Centered text/links */
+  margin-top: 30px; /* 30px top margin to avoid conflict with the close button on smaller screens */
+}
+
+/* The navigation links inside the overlay */
+.overlay a {
+  padding: 8px;
+  text-decoration: none;
+  font-size: 36px;
+  color: #818181;
+  display: block; /* Display block instead of inline */
+  transition: 0.3s; /* Transition effects on hover (color) */
+}
+
+/* When you mouse over the navigation links, change their color */
+.overlay a:hover, .overlay a:focus {
+  color: #f1f1f1;
+}
+
+/* Position the close button (top right corner) */
+.overlay .closebtn {
+  position: absolute;
+  top: 20px;
+  right: 45px;
+  font-size: 60px;
+}
+
+/* When the height of the screen is less than 450 pixels, change the font-size of the links and position the close button again, so they don't overlap */
+@media screen and (max-height: 450px) {
+  .overlay a {font-size: 20px}
+  .overlay .closebtn {
+    font-size: 40px;
+    top: 15px;
+    right: 35px;
+  }
+}
+        }
+    </style>
+</head>
+<body>
+    {% extends "layout.html" %}
+    
+    {% block content %}    
+    <section id="hero">
+        <div class="container">
+            <h2 style="color:black">Welcome to MediHub</h2>
+            <p style="color:black">MediHub is a healthcare services system where providing the best healthcare for you.</p>
+            <a href="#services" class="btn">Our Services</a>
+        </div>
+    </section>
+    <br><br>
+    <section id="services" class="container services-section">
+       <center><h2>OUR SERVICES</h2></center> 
+        <div class="services-grid">
+            <div class="service">
+                <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 48 48"><g fill="#1d65c3"><path fill-rule="evenodd" d="M8 6a2 2 0 0 0-2 2v26a2 2 0 0 0 2 2h15v4h-7v2h16v-2h-7v-4h15a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zm31 28V10H9v24h3v-2.62c0-2.022 2.407-4.622 5.22-5.726c.008.414.047 1.558.104 2.012c.061.49.145.978.236 1.379q.03.13.062.25A1.999 1.999 0 0 0 18.667 33a2 2 0 0 0 .26-3.983a6 6 0 0 1-.067-.27c-.08-.349-.156-.791-.213-1.246c-.094-.754-.141-1.543-.084-2.303q.386-.11.77-.198c.259-.059.434.39.562.718c.04.1.074.189.105.248c1.305 0 2.653.008 4 .017c1.347.008 2.695.017 4 .017c.038-.073.078-.177.122-.291c.13-.34.294-.766.545-.709q.537.122 1.072.289q0 .387.009.788c.017.968.034 1.977-.204 2.923h-.877a.67.67 0 0 0-.597.369l-.666 1.333a.7.7 0 0 0-.07.298v1.333c0 .369.298.667.666.667h1.333v-1.333h-.666v-.51l.412-.824h1.842l.412.824v.51h-.666V33H32a.667.667 0 0 0 .667-.667V31a.7.7 0 0 0-.07-.298l-.667-1.334a.67.67 0 0 0-.597-.368h-.423c.212-1.06.226-2.126.225-3.202C33.793 26.922 36 29.444 36 31.38V34zm-20.333-2.323a.67.67 0 0 0 .666-.677a.67.67 0 0 0-.666-.677A.67.67 0 0 0 18 31c0 .383.308.677.667.677M24 9a1 1 0 1 0 0-2a1 1 0 0 0 0 2" clip-rule="evenodd"/><path d="M30 18a6 6 0 1 1-12 0a6 6 0 0 1 12 0"/></g></svg>
+                <h3>Telemedicine</h3>
+                <p>where you can receive healthcare services remotely</p>
+            </div>
+            <div class="service">
+                <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24"><path fill="#ff0000" d="m12 3l11 8.25l-1.2 1.6L20 11.5V21H4v-9.5l-1.8 1.35l-1.2-1.6zm-4.65 9.05q0 1.325 1.425 2.825T12 18q1.8-1.625 3.225-3.125t1.425-2.825q0-1.1-.75-1.825T14.1 9.5q-.65 0-1.188.263T12 10.45q-.375-.425-.937-.687T9.9 9.5q-1.05 0-1.8.725t-.75 1.825M18 19v-9l-6-4.5L6 10v9zm0 0H6z"/></svg>
+                <h3>Home Visit</h3>
+                <p>Where you can receive healthcare services in your own home</p>
+            </div>
+            <div class="service">
+                <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24"><g fill="none" stroke="#f09d28" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M8.6 16.4a4.6 4.6 0 0 1-6.5-6.5l7.8-7.8a4.6 4.6 0 0 1 6.5 6.5M5.999 5.999l4.25 4.25"/><path d="M23.25 15.75a7.67 7.67 0 0 1-6 7.5a7.67 7.67 0 0 1-6-7.5V13.5a1.5 1.5 0 0 1 1.5-1.5h9a1.5 1.5 0 0 1 1.5 1.5zm-6-.75v4.5M15 17.25h4.5"/></g></svg>
+                <h3>Presciption</h3>
+                <p>Where you can receive appropriate & effective medication</p>
+            </div>
+        </div>
+    </section>
+    
+    <br>
+    <hr style="border: none; height: 1px; width: 80%; background: linear-gradient(to right, #ccc, #999, #ccc); border-radius: 5px; margin: 40px auto;">
+
+        <center><h2>OUR MEDICAL TEAM</h2></center> 
+   <br><br>
+
+    <center>
+        <div style="display: flex; align-items: center; justify-content: center;">
+          <img class="img1" src="https://www.shutterstock.com/image-photo/healthcare-medical-staff-concept-portrait-600nw-2281024823.jpg" alt="Doctor" width="450" height="300">
+          <div style="margin-left: 20px;">
+            <h2>Certified and Experienced Doctors</h2>
+            <p style="color: #484848;  line-height: 1.6; font-size: 16px;">
+              Our licensed team of doctors are ready to help you with a wide array of needs.
+            </p>
+          </div>
+        </div>
+      </center>
+      <br><br>
+      <center>
+        <div style="display: flex; align-items: center; justify-content: center;">
+          <div style="margin-right: 20px;">
+            <h2>Licensed and Qualified Nurses</h2>
+            <p style="color: #484848;  line-height: 1.6; font-size: 16px;">
+                Our team of nurses have extensive experience in both hospital and home care.
+            </p>
+          </div>
+          <img class="img2" src="https://img.freepik.com/premium-photo/portrait-smiling-young-woman-using-digital-tablet-against-white-background_1048944-27112221.jpg" alt="Pineapple" width="450" height="300">
+        </div>
+      </center>
+      
+    <br>
+    <hr style="border: none; height: 1px; width: 80%; background: linear-gradient(to right, #ccc, #999, #ccc); border-radius: 5px; margin: 40px auto;">
+    <center><h2>Feedback</h2></center>
+    <center><p>Please include any details that might help us understand your feedback better, such as specific issues you encountered or suggestions for improvement.</p></center>
+    <section id="contact" class="container">
+        <form action="/" method="post">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <label for="message">Message:</label>
+            <textarea id="message" name="message" required></textarea>
+            <button type="submit" class="btn">Send</button>
+        </form>
+    </section>    
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const heroSection = document.getElementById('hero');
+    
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) { // Adjust the scroll value as needed
+                    heroSection.classList.add('small-bg');
+                } else {
+                    heroSection.classList.remove('small-bg');
+                }
+            });
+    
+            const services = document.querySelectorAll(".service");
+    
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("fade-in");
+                    }
+                });
+            }, { threshold: 0.1 });
+    
+            services.forEach(service => {
+                observer.observe(service);
+            });
+        });
+        
+        document.addEventListener("DOMContentLoaded", function() {
+    const counters = document.querySelectorAll('.counter');
+
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const counter = entry.target;
+                const target = parseInt(counter.getAttribute('data-target'));
+
+                let start = 0;
+                const duration = 3000; // duration of the animation in milliseconds
+                const increment = target / (duration / 50);
+
+                function updateCounter() {
+                    start += increment;
+                    if (start < target) {
+                        counter.textContent = Math.ceil(start);
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.textContent = target;
+                    }
+                }
+
+                // Reset the counter and start the animation
+                start = 0;
+                updateCounter();
+
+                // Optional: To avoid multiple animations in the same scroll, you may want to unobserve or throttle
+                observer.unobserve(counter);
+                // Optionally, you can re-observe after a delay or based on some condition
+                setTimeout(() => observer.observe(counter), duration);
+            }
+        });
+    });
+
+    counters.forEach(counter => {
+        observer.observe(counter);
+    });
+});
+
+/* Open */
+function openNav() {
+  document.getElementById("myNav").style.height = "100%";
+}
+
+/* Close */
+function closeNav() {
+  document.getElementById("myNav").style.height = "0%";
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var dropdown = document.querySelectorAll('.dropdown');
+
+    dropdown.forEach(function(element) {
+        var button = element.querySelector('.dropdown-toggle');
+        var menu = element.querySelector('.dropdown-menu');
+
+        button.addEventListener('click', function(event) {
+            event.stopPropagation(); // Prevent click from closing the menu immediately
+
+            // Toggle the dropdown menu
+            if (menu.classList.contains('show')) {
+                menu.classList.remove('show');
+            } else {
+                // Hide all dropdown menus
+                document.querySelectorAll('.dropdown-menu').forEach(function(menu) {
+                    menu.classList.remove('show');
+                });
+
+                menu.classList.add('show');
+            }
+        });
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.dropdown-menu').forEach(function(menu) {
+            menu.classList.remove('show');
+        });
+    });
+});
+
+    document.addEventListener('scroll', function() {
+        const heroSection = document.getElementById('hero');
+        const scrollPosition = window.scrollY || window.pageYOffset;
+
+        if (scrollPosition > 100) { // Adjust the scroll position threshold as needed
+            heroSection.classList.add('shrink');
+        } else {
+            heroSection.classList.remove('shrink');
+        }
+    });
+
+    </script>
+    <br><br>
+     {% endblock %}
+</body>
+</html>
