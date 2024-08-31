@@ -1,16 +1,6 @@
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
         /* General Styles */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-    color: #333;
-}
-
 h1 {
     text-align: center;
     margin-top: 20px;
@@ -44,20 +34,25 @@ textarea {
     border-radius: 4px;
 }
 
-button {
-    width: 100%;
-    padding: 10px;
-    background-color: #0056b3;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #006edc;
+    color: white;
     font-size: 16px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    border: 1px solid #006edc;
+    cursor: pointer;
 }
 
-button:hover {
-    background-color: #003f8a;
+.button:hover {
+    background-color: #4f84a7;
+    transform: translateY(-2px);
 }
+
 
 /* Table Styles */
 table {
@@ -126,16 +121,16 @@ table img {
     }
 }
     </style>
-</head>
-{% extends 'navbar.html' %}
+
+{% extends 'Admin/base.html' %}
 
 {% block title %}View Medication Stock{% endblock %}
 
 {% block content %}
 <br>
-<body>
+
     <h1>Medications Stock List</h1>
-    <a href="{{ url_for('add_medication') }}">Add New Medication</a>
+    <a href="{{ url_for('add_medication') }}" class="button">Add New Medication</a>
     <table>
         <thead>
             <tr>
@@ -170,5 +165,5 @@ table img {
             {% endfor %}
         </tbody>
     </table>
-</body>
+    <br>
 {% endblock %}

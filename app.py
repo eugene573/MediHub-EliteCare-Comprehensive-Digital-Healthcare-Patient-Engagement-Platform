@@ -243,7 +243,7 @@ def login():
                 session['role'] = 'admin'
                 if remember_me:
                     session.permanent = True
-                return redirect(url_for('index'))
+                return redirect(url_for('admin_dashboard'))
 
             # Check if the user is a doctor or nurse
             for user in doctors + nurses:
@@ -486,6 +486,7 @@ def book_home_visit_appointment():
             }
             appointments.append(new_appointment)
                     
+                    
             # Flash success message
             flash("Appointment has been made successfully!", "success")
             return redirect(url_for('patient_appointments'))
@@ -535,6 +536,18 @@ def patient_appointments():
         doctors=doctors,
         nurses=nurses
     )
+
+# Patient View Prescription
+@app.route('/patient_view_prescription')
+def patient_view_prescription():
+    username = session.get('username')
+    role = session.get('role')
+
+    if role not in ['patient']:
+        return redirect(url_for('index'))  # Redirect if not a doctor or nurse
+
+    user_prescriptions = [pres for pres in prescriptions]
+    return render_template('Patient/patient_prescription.html', prescriptions=user_prescriptions,role=role)
 # -------------------------------------------------------------------------------------------------------------
 
 # ----------------------------------- Get Doctors & Nurses Information ----------------------------------------

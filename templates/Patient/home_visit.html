@@ -3,7 +3,18 @@
 {% block title %}Home Visit{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://code.jquery.com/ui/1.14.0/jquery-ui.js"></script>
+<script>
+$(document).ready(function() {
+    $('#datepicker').datepicker({
+        dateFormat: 'yy-mm-dd'
+    });
+});
+</script>
 <style>
+    
     .home-visit-container {
         display: flex;
         max-width: 1200px;
@@ -121,6 +132,70 @@
             margin-bottom: 20px;
         }
     }
+
+    /* Container for the time picker */
+.timepicker-container {
+    position: relative;
+    display: inline-block;
+    font-family: Arial, sans-serif;
+}
+
+/* Label styles */
+.timepicker-label {
+    font-size: 16px;
+    color: #333;
+    margin-right: 10px;
+}
+
+/* Input field styles */
+.home-visit-input {
+    width: 600px;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 16px;
+}
+
+.timepicker-input:focus {
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+}
+
+/* Dropdown container styles */
+.timepicker-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+/* Time option styles */
+.timepicker-option {
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.timepicker-option:hover {
+    background-color: #007BFF;
+    color: #fff;
+}
+
+.timepicker-option.selected {
+    background-color: #007BFF;
+    color: #fff;
+}
+
 </style>
 {% endblock %}
 
@@ -146,11 +221,18 @@
             </div>
 
             <label class="home-visit-label" for="date">Date:</label>
-            <input class="home-visit-input" type="date" id="date" name="date" required aria-label="Select Date">
+            <input class="home-visit-input" id="datepicker" name="date" required aria-label="Select Date" type="text">
 
-            <label class="home-visit-label" for="time">Time:</label>
-            <input class="home-visit-input" type="time" id="time" name="time" required aria-label="Select Time">
 
+            <div class="timepicker-container">
+               <b><label for="time" class="timepicker-label">Time:</label></b> 
+               <br>
+               <input class="home-visit-input" id="time" type="text" name="time" readonly required aria-label="Select Time">
+                <div id="timepicker-dropdown" class="timepicker-dropdown">
+                    <!-- Time options will be inserted here dynamically -->
+                </div>
+            </div>
+<br><br>
             <button class="home-visit-submit" type="submit" onClick="return confirm('Are you sure you want to book the appointment?')">Confirm</button>
         </form>
     </div> 
@@ -206,5 +288,46 @@
             personContainer.innerHTML = '';
         }
     });
+    
+    document.addEventListener('DOMContentLoaded', function () {
+    const timeInput = document.getElementById('time');
+    const dropdown = document.getElementById('timepicker-dropdown');
+
+    const times = generateTimeOptions();
+
+    times.forEach(time => {
+        const option = document.createElement('div');
+        option.className = 'timepicker-option';
+        option.innerText = time;
+        dropdown.appendChild(option);
+
+        option.addEventListener('click', function () {
+            timeInput.value = time;
+            dropdown.style.display = 'none';
+        });
+    });
+
+    timeInput.addEventListener('focus', function () {
+        dropdown.style.display = 'block';
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!timeInput.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+});
+
+function generateTimeOptions() {
+    const times = [];
+    const periods = ['AM', 'PM'];
+    periods.forEach(period => {
+        for (let hour = 1; hour <= 12; hour++) {
+            times.push(`${hour}:00 ${period}`);
+            times.push(`${hour}:30 ${period}`);
+        }
+    });
+    return times;
+}
 </script>
 {% endblock %}

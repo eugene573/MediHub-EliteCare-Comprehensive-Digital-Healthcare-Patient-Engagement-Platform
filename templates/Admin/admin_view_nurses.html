@@ -25,7 +25,7 @@
         }
 
         table th {
-            background-color:#f2c100;            ;
+            background-color:#006edc;            ;
             color: white;
         }
 
@@ -36,7 +36,7 @@
         a {
             display: inline-block;
             padding: 10px 20px;
-            background-color: #2980b9;
+            background-color: #006edc;
             color: white;
             text-decoration: none;
             border-radius: 5px;
@@ -66,16 +66,16 @@
         /* Style for the search button */
         form button {
             padding: 10px 20px;
-            background-color: #ffcc00;            ;
+            background-color: #006edc;            ;
             color: white;
             font-size: 16px;
-            border: 1px solid #ffcc00;
+            border: 1px solid #006edc;
             border-radius: 0 4px 4px 0;
             cursor: pointer;
         }
 
         form button:hover {
-            background-color: #b3adad;
+            background-color: #4f84a7;
         }
 
         /* Ensure the search bar and table are responsive */
@@ -144,7 +144,7 @@
         }
     </style>
 </head>
-{% extends 'navbar.html' %}
+{% extends 'Admin/base.html' %}
 
 {% block title %}Admin - View Nurses{% endblock %}
 
@@ -185,4 +185,5 @@
             {% endfor %}
         </tbody>
     </table>
+    <br>
     {% endblock %}

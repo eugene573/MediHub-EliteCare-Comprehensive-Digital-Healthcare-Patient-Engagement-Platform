@@ -46,7 +46,7 @@ textarea {
     border-radius: 4px;
 }
 
-button {
+.edit-btn {
     width: 100%;
     padding: 10px;
     background-color: #0000FF;
@@ -57,7 +57,7 @@ button {
     font-size: 16px;
 }
 
-button:hover {
+.edit-btn:hover {
     background-color: #003f8a;
 }
 
@@ -120,7 +120,7 @@ a:hover {
 }
     </style>
 </head>
-{% extends 'navbar.html' %}
+{% extends 'Admin/base.html' %}
 
 {% block title %}Edit Medication Stock{% endblock %}
 
@@ -150,7 +150,7 @@ a:hover {
         <label for="image">Medication Image:</label>
         <input type="file" id="image" name="image" accept="image/*"><br><br>
 
-        <button type="submit">Update</button>
+        <button type="submit" class="edit-btn">Update</button>
     </form>
 
     {% if medication.image %}
@@ -158,4 +158,5 @@ a:hover {
     <img src="{{ url_for('static', filename='uploads/' + medication.image) }}" alt="{{ medication.medication_name }}">
     {% endif %}
 </body>
+<br>
 {% endblock %}

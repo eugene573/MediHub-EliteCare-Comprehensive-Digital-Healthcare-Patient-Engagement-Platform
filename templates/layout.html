@@ -7,117 +7,119 @@
     <link rel="stylesheet" href="/static/styles.css">
     {% block extra_css %}{% endblock %}
     <style>
-        /* General Styles */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
+    /* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
 
-        header {
-            background-color: #007bff;
-            color: #fff;
-            padding: 0.2rem 0;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
+header {
+    background-color: #007bff;
+    color: #fff;
+    padding: 0.2rem 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
 
-        header .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
 
-        main {
-            flex: 1;
-            padding-top: 60px; /* Adjust based on header height */
-        }
+main {
+    flex: 1;
+    padding-top: 60px; /* Adjust based on header height */
+}
 
-        header h1 {
-            margin: 0;
-        }
+header h1 {
+    margin: 0;
+}
 
-        .btn, .dropdown-toggle {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 16px;
-            margin: 5px;
-            text-decoration: none;
-            display: inline-block;
-        }
+.btn, .dropdown-toggle {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 5px;
+    text-decoration: none;
+    display: inline-block;
+}
 
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
 
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 160px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            z-index: 1;
-        }
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
 
-        .dropdown-menu a {
-            color: black;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-        }
+.dropdown-menu a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
 
-        .dropdown-menu a:hover {
-            background-color: #f1f1f1;
-        }
+.dropdown-menu a:hover {
+    background-color: #f1f1f1;
+}
 
-        .dropdown:hover .dropdown-menu {
-            display: block;
-        }
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
 
-        .logout-btn, .login-btn, .register-btn {
-            background-color: #eaeaea;
-            color: #000000;
-            border: none;
-            border-radius: 4px;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 16px;
-            margin: 5px;
-        }
+.logout-btn, .login-btn, .register-btn {
+    background-color: #eaeaea;
+    color: #000000;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 5px;
+}
 
-        @media (max-width: 768px) {
-            header .container {
-                flex-direction: column;
-                align-items: center;
-            }
+@media (max-width: 768px) {
+    header .container {
+        flex-direction: column;
+        align-items: center;
+    }
 
-            .btn, .dropdown-toggle, .logout-btn, .login-btn, .register-btn {
-                width: 100%;
-                margin-bottom: 10px;
-            }
-        }
+    .btn, .dropdown-toggle, .logout-btn, .login-btn, .register-btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
 
-        footer {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-            width: 100%;
-        }
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    width: 100%;
+    margin-top: auto; /* Ensures footer stays at the bottom */
+}
+
     </style>
 </head>
 <body>
@@ -157,7 +159,7 @@
                 </div>
             </div>
             <a class="btn" href="/patient/appointments">My Appointment</a>
-            <a class="btn" href="/">My Prescription</a>
+            <a class="btn" href="/patient_view_prescription">My Prescription</a>
             <a class="btn" href="{{ url_for('view_profile') }}">View Profile</a>
             <form action="/logout" method="post" style="display:inline;">
                 <button type="submit" class="logout-btn" onClick="return confirm('Are you sure you want to logout?')">Logout</button>

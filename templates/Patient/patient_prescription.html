@@ -1,0 +1,124 @@
+{% extends "layout.html" %}
+
+{% block title %}My Prescriptions{% endblock %}
+
+{% block extra_css %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+table {
+    width: 90%;
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle;
+}
+
+th {
+    background-color: #3489c2;
+    color: white;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+caption {
+    caption-side: top;
+    font-size: 1.5em;
+    margin: 10px 0;
+}
+
+@media (max-width: 768px) {
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    tr {
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    td {
+        border: none;
+        position: relative;
+        padding-left: 50%;
+        white-space: nowrap;
+    }
+
+    td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 45%;
+        padding-left: 10px;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+}
+
+</style>
+
+</head>
+{% endblock %}
+
+{% block content %}
+<br><br>
+<body>
+    <div class="container">
+       <center><h1>My Prescriptions</h1></center> 
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Role</th>
+                    <th>Name</th>
+                    <th>Medication</th>
+                    <th>Dosage</th>
+                    <th>Instructions</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+               
+                    <tr>
+                        <td>1</td>
+                        <td>Doctor</td>
+                        <td>John</td>
+                        <td>Aplharism</td>
+                        <td>one day three times</td>
+                        <td>Rest Well and Drink Plenty of Water</td>
+                        <td>9/3/2024</td>
+                    </tr>
+              
+            </tbody>
+        </table>
+    </div>
+</body>
+<br>
+{% endblock %}
+
