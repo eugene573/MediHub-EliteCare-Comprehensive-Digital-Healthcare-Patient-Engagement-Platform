@@ -3,6 +3,6 @@
 
 
 
-MediHub is a healthcare services system that provides online appointment booking for consultations with experienced doctors, home visits from qualified medical teams such as doctors or nurses who come to the patient's home, and prescription services tailored to the patient's situation following treatment.
+MediHub EliteCare: Comprehensive Digital Healthcare & Patient Engagement Platform is a healthcare services system that provides online appointment booking for consultations with experienced doctors, home visits from qualified medical teams such as doctors or nurses who come to the patient's home, and prescription services tailored to the patient's situation following treatment.
 
 
