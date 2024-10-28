@@ -80,11 +80,33 @@
             object-fit: cover;
             margin-bottom: 15px;
         }
+
+         /* Style for the specialization select dropdown */
+         .form-select {
+            padding: 10px;
+            width: 300px; /* Adjust width as needed */
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-select:focus {
+            border-color: #006edc; /* Change border color on focus */
+            box-shadow: 0 0 5px rgba(0, 110, 220, 0.5); /* Optional: Add a subtle shadow effect */
+        }
+
+        /* Style for the specialization select options */
+        .form-select option {
+            padding: 10px; /* Space around option text */
+        }
     </style>
 {% endblock %}
 
 {% block content %}
-    <br><br>
+    <br><br><br>
     <center><h1>Meet Our Nurse</h1></center>
     
     <!-- Search Form -->

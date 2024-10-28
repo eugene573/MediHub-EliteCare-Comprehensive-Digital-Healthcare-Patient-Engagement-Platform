@@ -101,8 +101,8 @@
 <body>
     
     <div class="container">
-        <h1>MediHub</h1>
-        <h2>Login</h2>
+        <img src="{{ url_for('static', filename='uploads/MediHubq.png') }}" alt="MediHub" width="180" height="150">
+        
         <form method="post" action="{{ url_for('login') }}">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>

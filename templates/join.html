@@ -55,20 +55,34 @@
         box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
     }
 
-    .btn {
+    .join-btn {
         padding: 12px 25px;
         font-size: 1.1rem;
         border-radius: 4px;
     }
 
     .btn-primary {
-        background-color: #007bff;
-        border-color: #007bff;
+        background-color: #1b73e6;
+        border-color: #2081ff;
+        color: #fff;
+        transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .btn-primary:hover {
+        background-color: #2081ff;
+        transform: translateY(-2px);
     }
 
     .btn-secondary {
-        background-color: #007bff;
-        border-color: #007bff;
+        background-color: #1b73e6;
+        border-color: #2081ff;
+        color: #fff;
+        transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .btn-secondary:hover {
+        background-color: #2081ff;
+        transform: translateY(-2px);
     }
 
     .button-container {
@@ -86,6 +100,5 @@
         }
     }
 </style>
-
 
 {% endblock %}

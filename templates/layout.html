@@ -18,9 +18,10 @@ body {
     min-height: 100vh;
 }
 
+/* NAVBAR */
 header {
-    background-color: #007bff;
-    color: #fff;
+     background-color: #e7e5e5; /* Medium Grey */
+     color: #333; /* Dark text for contrast */
     padding: 0.2rem 0;
     position: fixed;
     top: 0;
@@ -47,8 +48,8 @@ header h1 {
 }
 
 .btn, .dropdown-toggle {
-    background-color: #007bff;
-    color: #fff;
+    background-color: #e7e5e5;
+    color: #000000;
     border: none;
     border-radius: 4px;
     padding: 10px 20px;
@@ -58,6 +59,10 @@ header h1 {
     text-decoration: none;
     display: inline-block;
 }
+
+.btn:hover {
+            background-color: #ffffff; /* Darker red on hover */
+        }
 
 .dropdown {
     position: relative;
@@ -89,8 +94,8 @@ header h1 {
 }
 
 .login-btn {
-    background-color: #007bff;
-    color: #ffffff;
+    background-color: #ffffff;
+    color: #000000;
     border: none;
     border-radius: 4px;
     padding: 10px 20px;
@@ -140,7 +145,7 @@ footer {
 <body>
     <header>
         <div class="container">
-            <a class="btn" href="/"><h1>MediHub</h1></a>
+            <img src="{{ url_for('static', filename='uploads/MEDIHUB2.png') }}" alt="MediHub" width="150" height="100">
 
             {% if role == 'admin' %}
             <a class="btn" href="/">Home</a>
