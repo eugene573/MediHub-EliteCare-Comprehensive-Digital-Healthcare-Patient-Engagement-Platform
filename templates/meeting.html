@@ -2,9 +2,14 @@
 
 {% block title %}Meeting{% endblock %}
 
-{% block content %}
-
-<head>
+{% block extra_css %}  
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://code.jquery.com/ui/1.14.0/jquery-ui.js"></script>
+<!-- Bootstrap core CSS -->
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+<!-- Add the font-awesome for the copy icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         #root {
             width: 100vw;
@@ -12,16 +17,20 @@
             border: 1px solid #ccc;
             border-radius: 8px;
         }        
-    </style>
-    <!-- Add the font-awesome for the copy icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-</head>
 
-<body>
+        .content-spacing {
+    margin-top: 20px; /* Adjust the value as needed */
+}
+
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="content-spacing">
     <div id="meetingIDContainer">
         <div id="meetingID"></div> <!-- Div for displaying Meeting ID -->
     </div>
-</body>
+</div>
 
 <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
 <script>
@@ -71,7 +80,6 @@ zp.joinRoom({
     layout: "Auto",
     showLayoutButton: false,
 });
-
 
         // Copy Meeting ID functionality
         const copyButton = document.getElementById('copyButton');

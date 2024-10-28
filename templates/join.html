@@ -2,22 +2,9 @@
 
 {% block title %}Meeting{% endblock %}
 
-{% block content %}
-<div class="meeting-container text-center">  
-    <h1 class="mt-5">Join Meeting</h1>  
-    <form method="POST" action="{{ url_for('join') }}" class="mt-4 d-flex flex-column align-items-center border p-4 rounded shadow-sm custom-form">
-        <div class="form-group mb-3">
-            <input type="text" placeholder="Room ID:" class="form-control w-50 custom-input" id="roomID" name="roomID" required>
-            <button type="submit" class="btn btn-primary btn-lg me-2">Join</button>     
-        </div>
-        <center>
-        <div class="button-container d-flex justify-content-center mt-3">
-            <a class="btn btn-secondary btn-lg" href="{{ url_for('meeting') }}">Create Meeting</a>
-        </div>
-    </center>
-    </form>
-</div>
-
+{% block extra_css %}
+ <!-- Bootstrap core CSS -->
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
 <style>
     .meeting-container {
         display: flex;
@@ -61,29 +48,29 @@
         border-radius: 4px;
     }
 
-    .btn-primary {
+    .join-btn-primary {
         background-color: #1b73e6;
         border-color: #2081ff;
         color: #fff;
         transition: transform 0.3s, border-color 0.3s;
     }
 
-    .btn-primary:hover {
+    .join-btn-primary:hover {
         background-color: #2081ff;
         transform: translateY(-2px);
     }
 
-    .btn-secondary {
-        background-color: #1b73e6;
-        border-color: #2081ff;
-        color: #fff;
-        transition: transform 0.3s, border-color 0.3s;
-    }
+    .create-btn {
+    background-color: #28a745; /* Green color */
+    border-color: #218838; /* Darker green for border */
+    color: #fff;
+    transition: transform 0.3s, border-color 0.3s;
+}
 
-    .btn-secondary:hover {
-        background-color: #2081ff;
-        transform: translateY(-2px);
-    }
+.create-btn:hover {
+    background-color: #218838; /* Darker green on hover */
+    transform: translateY(-2px);
+}
 
     .button-container {
         margin-top: 25px;
@@ -100,5 +87,23 @@
         }
     }
 </style>
+{% endblock %}
 
+{% block content %}
+<div class="meeting-container text-center">  
+    <h1 class="mt-5">Join Meeting</h1>  
+    <form method="POST" action="{{ url_for('join') }}" class="mt-4 d-flex flex-column align-items-center border p-4 rounded shadow-sm custom-form">
+        <div class="d-flex mb-3">
+            <input type="text" placeholder="Room ID" class="form-control w-50 custom-input me-2" id="roomID" name="roomID" required>  
+            &nbsp;
+            <button type="submit" class="join-btn btn-primary btn-lg">Join</button>  
+        </div>
+        
+        <center>
+        <div class="button-container d-flex justify-content-center mt-3">
+            <a class="create-btn btn-lg" href="{{ url_for('meeting') }}">Create Meeting</a>
+        </div>
+    </center>
+    </form>
+</div>
 {% endblock %}

@@ -1,10 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+{% extends "layout.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block extra_css %}
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <!-- Bootstrap core CSS -->
+     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
     <title>MediHub</title>
-    <link rel="stylesheet" href="styles.css">
+    
     <style>
      #hero {
     background: url('https://iprospectcheck.com/wp-content/uploads/2020/01/healthcare-background-checks-1.jpg') no-repeat center center/cover;
@@ -248,11 +253,9 @@
 }
         }
     </style>
-</head>
-<body>
-    {% extends "layout.html" %}
-    
-    {% block content %}    
+    {% endblock %}
+
+    {% block content %}
     <section id="hero">
         <div class="container">
             <h2 style="color:black">Welcome to MediHub</h2>
@@ -451,5 +454,4 @@ document.addEventListener('DOMContentLoaded', function() {
     </script>
     <br><br>
      {% endblock %}
-</body>
-</html>
+

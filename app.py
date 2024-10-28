@@ -272,14 +272,14 @@ def index():
 @app.route('/meeting')
 def meeting():
     username = session.get('username')
-    role = session.get('role')  # Ensure role is stored in session or retrieved from the database
+    role = session.get('role')  
     return render_template('meeting.html', username=username, role=role)
 
 # MEETING
 @app.route("/join", methods=["GET", "POST"])
 def join():
     username = session.get('username')
-    role = session.get('role')  # Ensure role is stored in session or retrieved from the database
+    role = session.get('role')  
     if request.method == "POST":
         room_id = request.form.get("roomID")
         return redirect(f"/meeting?roomID={room_id}")

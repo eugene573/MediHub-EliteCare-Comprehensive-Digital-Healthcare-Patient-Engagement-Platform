@@ -3,16 +3,13 @@
 {% block title %}Telemedicine{% endblock %}
 
 {% block extra_css %}
+<!-- Bootstrap core CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css">
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <script src="https://code.jquery.com/ui/1.14.0/jquery-ui.js"></script>
-<script>
-$(document).ready(function() {
-    $('#datepicker').datepicker({
-        dateFormat: 'yy-mm-dd'
-    });
-});
-</script>
+
+
 <style>
        .telemedicine-container {
         display: flex;
@@ -275,8 +272,7 @@ $(document).ready(function() {
                     </div>
                     <input type="hidden" id="doctor" name="doctor" required>
                 </div>
-                
-           
+                <br><br>
             <label class="telemedicine-label" for="date">Date:</label>
             <input class="telemedicine-input" id="datepicker" name="date" required aria-label="Select Date" type="text">
 
@@ -314,6 +310,9 @@ $(document).ready(function() {
         <p>3. <b>Post-Surgery Follow-Ups:</b> Quick and convenient follow-up visits to monitor recovery after surgery.</p>
     </div>
     <br>
+{% endblock %}
+
+{% block extra_js %}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
     const timeInput = document.getElementById('time');
@@ -396,6 +395,12 @@ document.querySelectorAll('#doctor-options .option').forEach(option => {
         document.getElementById('selected-doctor').textContent = doctorName;
         document.getElementById('doctor').value = doctorId;
         document.getElementById('doctor-options').style.display = 'none';
+    });
+});
+
+$(document).ready(function() {
+    $('#datepicker').datepicker({
+        dateFormat: 'yy-mm-dd'
     });
 });
 
