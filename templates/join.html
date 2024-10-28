@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+
+{% block title %}Meeting{% endblock %}
+
+{% block content %}
+<div class="meeting-container text-center">  
+    <h1 class="mt-5">Join Meeting</h1>  
+    <form method="POST" action="{{ url_for('join') }}" class="mt-4 d-flex flex-column align-items-center border p-4 rounded shadow-sm custom-form">
+        <div class="form-group mb-3">
+            <input type="text" placeholder="Room ID:" class="form-control w-50 custom-input" id="roomID" name="roomID" required>
+            <button type="submit" class="btn btn-primary btn-lg me-2">Join</button>     
+        </div>
+        <center>
+        <div class="button-container d-flex justify-content-center mt-3">
+            <a class="btn btn-secondary btn-lg" href="{{ url_for('meeting') }}">Create Meeting</a>
+        </div>
+    </center>
+    </form>
+</div>
+
+<style>
+    .meeting-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        padding: 20px;
+        background-color: #f0f2f5; /* Slightly lighter background */
+    }
+
+    .custom-form {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        background-color: #ffffff; /* Keep the form clean */
+        max-width: 500px; /* Limit the width for better UX */
+        width: 100%;
+        padding: 30px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .custom-input {
+        width: 76%; /* Make input longer */
+        height: 45px;
+        font-size: 1.1rem;
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #ced4da;
+        transition: border-color 0.3s ease;
+    }
+
+    .custom-input:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    .btn {
+        padding: 12px 25px;
+        font-size: 1.1rem;
+        border-radius: 4px;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-secondary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .button-container {
+        margin-top: 25px;
+    }
+
+    /* Adjust for smaller screens */
+    @media (max-width: 576px) {
+        .custom-form {
+            padding: 20px;
+        }
+
+        .custom-input {
+            width: 100%;
+        }
+    }
+</style>
+
+
+{% endblock %}

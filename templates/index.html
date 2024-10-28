@@ -17,7 +17,7 @@
 
 #hero.shrink {
     padding: 5rem 0; /* Adjust this value as needed */
-    opacity: 0.5; /* Adjust this value as needed */
+    opacity: 0.8; /* Adjust this value as needed */
 }
 
 
@@ -44,10 +44,17 @@
 
         #hero .btn {
             background: #0073e6;
-            color: #fff;
-            padding: 0.5rem 1rem;
-            text-decoration: none;
-            border-radius: 5px;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #2081ff;
         }
 
         .container {
@@ -75,7 +82,7 @@
             text-align: center;
             opacity: 0; /* Start hidden */
             box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1); /* Optional: Add shadow for depth */
-            transition: transform 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
+            transition: transform 0.4s ease-out, background-color 0.4s ease-out, opacity 0.4s ease-out;
         }
 
 
@@ -176,7 +183,7 @@
             }
 
             #hero.small-bg {
-        background-size: 80%; /* Adjust the percentage as needed */
+        background-size: 70%; /* Adjust the percentage as needed */
     }
 
     /* Ensure smooth transition */

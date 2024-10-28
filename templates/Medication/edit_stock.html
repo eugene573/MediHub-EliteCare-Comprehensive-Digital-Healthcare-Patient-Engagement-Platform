@@ -1,17 +1,21 @@
+{% if role == 'doctor' %}
+    {% extends 'Doctor/base.html' %}
+{% elif role == 'nurse' %}
+    {% extends 'Nurse/base.html' %}
+{% elif role == 'admin' %}
+    {% extends 'Admin/base.html' %}
+{% endif %}
+
+
+{% block title %}Edit Medication Stock{% endblock %}
+
+{% block content %}
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
-       
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-    color: #333;
-}
-
 h1 {
     text-align: center;
     color:  #000000;
@@ -97,15 +101,27 @@ table img {
     border-radius: 8px;
 }
 
+/* Style for the cancel button specifically */
+.cancel-button {
+           width: 100%;
+    padding: 10px;
+    background-color: #f44336;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+        }
+    
+        .cancel-button:hover {
+            background-color: #d32f2f; /* Darker red on hover */
+        }
+
 /* Action Links */
 a {
     color: #0056b3;
     text-decoration: none;
     margin-right: 10px;
-}
-
-a:hover {
-    text-decoration: underline;
 }
 
 /* Responsive Styles */
@@ -120,13 +136,7 @@ a:hover {
 }
     </style>
 </head>
-{% extends 'Admin/base.html' %}
 
-{% block title %}Edit Medication Stock{% endblock %}
-
-{% block content %}
-<br>
-<body>
     <h1>Edit Medication</h1>
     <form method="POST" enctype="multipart/form-data">
         <label for="medication_name">Medication Name:</label>
@@ -150,13 +160,20 @@ a:hover {
         <label for="image">Medication Image:</label>
         <input type="file" id="image" name="image" accept="image/*"><br><br>
 
-        <button type="submit" class="edit-btn">Update</button>
+        <button type="submit" class="edit-btn" onClick="return confirm('Are you confirm to update this medication?')">Update</button>
+        <br><br>
+        <button type="button" id="cancelButton" class="cancel-button d-none" onclick="goBackToMedication()">Cancel</button>
     </form>
 
     {% if medication.image %}
     <h2>Current Image:</h2>
     <img src="{{ url_for('static', filename='uploads/' + medication.image) }}" alt="{{ medication.medication_name }}">
     {% endif %}
-</body>
+
+<script>
+    function goBackToMedication() {
+        window.location.href = '/medication';
+    }
+</script>
 <br>
 {% endblock %}

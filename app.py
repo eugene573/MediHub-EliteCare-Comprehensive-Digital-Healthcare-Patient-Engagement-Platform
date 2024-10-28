@@ -3,17 +3,36 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 from werkzeug.exceptions import BadRequestKeyError
 from datetime import datetime
 from werkzeug.utils import secure_filename
+from flask_pymongo import PyMongo
+from pymongo import MongoClient
+from flask_cors import CORS
+
+# Connect to MongoDB (use your URI here)
+client = MongoClient("mongodb+srv://eugenefong2002:fong55668921@cluster0.5mjroyf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+
+# Select the database you want to work with
+db = client['test']
+
+# Collections
+admin_collection = db['admins']
+patients_collection = db['patients']
+nurses_collection = db['nurses']
+doctors_collection = db['doctors']
+appointments_collection = db['appointments']
+prescriptions_collection = db['prescriptions']
+medications_collection = db['medications']
 
 # Set up the upload folder and allowed extensions
-UPLOAD_FOLDER = 'static/uploads/certifications'  # Ensure this folder exists or create it
-ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx', 'jpg', 'png'}
+UPLOAD_FOLDER = 'static/uploads'  # Ensure this folder exists or create it
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}  # Allowed file types
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Change this to a random secret key for security
-
+app.config["MONGO_URI"] = "mongodb+srv://eugenefong2002:fong55668921@cluster0.5mjroyf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+mongo = PyMongo(app)
 # Configure upload folder
 UPLOAD_FOLDER = 'static/uploads/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -21,28 +40,54 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
+    
 # Dummy data for Admin
-admin = {'username': 'admin', 'password': '9999', 'email': 'admin@example.com', 'role': 'Admin', 'contactNumber': '012-2358761'}
+admin = {'username': 'Admin', 'password': '9999', 'email': 'admin@example.com', 'role': 'Admin', 'contactNumber': '012-2358761', 'pimage':'https://www.perfocal.com/blog/content/images/2021/01/Perfocal_17-11-2019_TYWFAQ_100_standard-3.jpg'}
 
 # Dummy data for patients
 patients = [
-    {'id': 1, 'username': 'alice', 'password': '1234', 'email': 'alice@example.com', 'contactNumber': '016-7165348', 'role': 'Patient', 'address': '13th Street. 47 W 13th St, New York, NY 10011, USA'},
-    {'id': 2, 'username': 'bob', 'password': '1234', 'email': 'bob@example.com', 'contactNumber': '012-2894590', 'role':'Patient', 'address': 'XXX'}
+    {'id': 1, 'username': 'Alice', 'password': '1234', 'email': 'alice@example.com', 'contactNumber': '016-7165348', 'role': 'Patient', 'address': '13th Street. 47 W 13th St, New York, NY 10011, USA', 'pimage':'https://www.perfocal.com/blog/content/images/2021/01/Perfocal_17-11-2019_TYWFAQ_100_standard-3.jpg'},
+    {'id': 2, 'username': 'Bob', 'password': '1234', 'email': 'bob@example.com', 'contactNumber': '012-2894590', 'role':'Patient', 'address': 'XXX', 'pimage':'https://plus.unsplash.com/premium_photo-1689977968861-9c91dbb16049?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZSUyMHBpY3R1cmV8ZW58MHx8MHx8fDA%3D'},
+    {'id': 3, 'username': 'Lily', 'password': '1234', 'email': 'lily@example.com', 'contactNumber': '012-2894569', 'role':'Patient', 'address': 'XXX', 'pimage':'https://www.profilebakery.com/wp-content/uploads/2023/04/AI-Profile-Picture.jpg'},
+    {'id': 4, 'username': 'Ray', 'password': '1234', 'email': 'ray@example.com', 'contactNumber': '012-1127338', 'role':'Patient', 'address': 'XXX', 'pimage':'https://i.pinimg.com/474x/98/51/1e/98511ee98a1930b8938e42caf0904d2d.jpg'},
+    {'id': 5, 'username': 'Cael', 'password': '1234', 'email': 'cael@example.com', 'contactNumber': '012-2891232', 'role':'Patient', 'address': 'XXX', 'pimage':'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSoQFvYAr4KD4S-iecBnmLmPf7zuyFyHkd8w&s'}
 ]
 
 # Dummy data for nurses
 nurses = [
-    {'id': 1, 'username': 'joy', 'password': '3456', 'role': 'Nurse', 'email': 'joy@example.com', 'contactNumber': '016-7234429', 'specialization': 'Pediatrics', 'approved': True},
-    {'id': 2, 'username': 'kate', 'password': '3456', 'role': 'Nurse', 'email': 'kate@example.com', 'contactNumber': '012-6234675', 'specialization': 'General', 'approved': True}
+    {'id': 1, 'username': 'Joy', 'password': '3456', 'role': 'Nurse', 'email': 'joy@example.com', 'contactNumber': '016-7234429', 'specialization': 'Pediatrics', 'intro': 'Miss Joy graduated with an MBBS from Manipal Academy of Higher Education (MAHE). She is a General Practitioner with experience in treating medical conditions of any age group.', 'pimage':'https://media.istockphoto.com/id/1329569957/photo/happy-young-female-doctor-looking-at-camera.jpg?s=612x612&w=0&k=20&c=7Wq_Y2cl0T4op6Wg_3DFc-xtZfCqTTDvfaXkPGyrHDM='},
+    {'id': 2, 'username': 'Kate', 'password': '3456', 'role': 'Nurse', 'email': 'kate@example.com', 'contactNumber': '012-6234675', 'specialization': 'Cardiology', 'intro': 'Miss Kate graduated with an MBBS from International Islamic University Malaysia. She has over 7 years of experience as a practicing doctor.', 'pimage':'https://media.istockphoto.com/id/1330046035/photo/headshot-portrait-of-smiling-female-doctor-in-hospital.jpg?s=612x612&w=0&k=20&c=fsNQPbmFIxoKA-PXl3G745zj7Cvr_cFIGsYknSbz_Tg='},
+    {'id': 3, 'username': 'Kim', 'password': '3456', 'role': 'Nurse', 'email': 'kim@example.com', 'contactNumber': '012-3324699', 'specialization': 'Ophthalmology', 'intro': 'Miss Kim graduated with an MBBS from Jawaharlal Nehru Medical College - KLE University (Belgaum) INDIA. She has 9 years of experience as a practicing doctor.', 'pimage':'https://www.shutterstock.com/image-photo/head-shot-woman-wearing-white-600nw-1529466836.jpg'},
+    {'id': 4, 'username': 'Ryan', 'password': '3456', 'role': 'Nurse', 'email': 'ryan@example.com', 'contactNumber': '012-2595432', 'specialization': 'General Practice', 'intro': 'Mr Ryan graduated with an MBBS from Jawaharlal Nehru Medical College - KLE University (Belgaum) INDIA. She has 9 years of experience as a practicing doctor.', 'pimage':'https://media.istockphoto.com/id/1468678624/photo/nurse-hospital-employee-and-portrait-of-black-man-in-a-healthcare-wellness-and-clinic-feeling.jpg?s=612x612&w=0&k=20&c=AGQPyeEitUPVm3ud_h5_yVX4NKY9mVyXbFf50ZIEtQI='},
+    {'id': 5, 'username': 'Tim', 'password': '3456', 'role': 'Nurse', 'email': 'tim@example.com', 'contactNumber': '012-2595887', 'specialization': 'Dermatology', 'intro': 'Mr Tim graduated with an MBBS from Jawaharlal Nehru Medical College - KLE University (Belgaum) INDIA. She has 9 years of experience as a practicing doctor.', 'pimage':'https://img.freepik.com/free-photo/front-view-male-nurse-studio_23-2150796762.jpg?semt=ais_hybrid'},
+    {'id': 6, 'username': 'Yasmin', 'password': '3456', 'role': 'Nurse', 'email': 'yasmin@example.com', 'contactNumber': '012-2441178', 'specialization': 'Family Medicine', 'intro': 'Miss Yasmin graduated with an MBBS from Jawaharlal Nehru Medical College - KLE University (Belgaum) INDIA. She has 9 years of experience as a practicing doctor.', 'pimage':'https://plus.unsplash.com/premium_photo-1682141165192-7b4678fe96c8?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8bnVyc2VzfGVufDB8fDB8fHww'},
+    {'id': 7, 'username': 'Shanice', 'password': '3456', 'role': 'Nurse', 'email': 'shanice@example.com', 'contactNumber': '012-9544321', 'specialization': 'Obstetrics and Gynecology', 'intro': 'Miss Shanice graduated with an MBBS from Jawaharlal Nehru Medical College - KLE University (Belgaum) INDIA. She has 9 years of experience as a practicing doctor.', 'pimage':'https://media.istockphoto.com/id/1406698322/photo/young-female-nurse-with-folded-arms-standing-in-hospital.jpg?s=612x612&w=0&k=20&c=e9m9bHOguGXk84VrW5Kc-wPdb876ofLn_F27iRY8gGU='},
+    {'id': 8, 'username': 'Corinne', 'password': '3456', 'role': 'Nurse', 'email': 'corinne@example.com', 'contactNumber': '012-1237640', 'specialization': 'Obstetrics and Gynecology', 'intro': 'Miss Corinne graduated with an MBBS from Jawaharlal Nehru Medical College - KLE University (Belgaum) INDIA. She has 9 years of experience as a practicing doctor.', 'pimage':'https://yt3.googleusercontent.com/o7Ve1CElx13g5hFN_cD-dAIKelIw2UJ4J9dcwg03PCkZQwFExLY7oNU6Vh6i_GA4MufKyYGZaA=s900-c-k-c0x00ffffff-no-rj'}
 ]
 
 # Dummy data for doctors
 doctors = [
-    {'id': 1, 'username': 'john', 'password': '2345', 'role': 'Doctor', 'email': 'john@example.com', 'contactNumber': '018-4987676', 'specialization': 'Cardiology', 'approved': True},
-    {'id': 2, 'username': 'smith', 'password': '2345', 'role': 'Doctor', 'email': 'smith@example.com', 'contactNumber': '016-1652679', 'specialization': 'Dermatology', 'approved': True},
-    {'id': 3, 'username': 'jim', 'password': '2345', 'role': 'Doctor', 'email': 'jim@example.com', 'specialization': 'Dermatology', 'contactNumber': '012-1322428', 'approved': True}
+    {'id': 1, 'username': 'John', 'password': '2345', 'role': 'Doctor', 'email': 'john@example.com', 'contactNumber': '018-4987676', 'specialization': 'Cardiology', 'intro': 'Dr John graduated with an MBBS from Melaka Manipal Medical College. He has over 10 years of experience as a practicing doctor and is currently running her own clinic in the heart of Kuala Lumpur.', 'pimage':'https://img.freepik.com/free-photo/doctor-offering-medical-teleconsultation_23-2149329007.jpg'},
+    {'id': 2, 'username': 'Smith', 'password': '2345', 'role': 'Doctor', 'email': 'smith@example.com', 'contactNumber': '016-1652679', 'specialization': 'Orthopedics', 'intro': 'Dr Smith graduated from Universitas Padjadjaran of Indonesia in 2008, and has 12 years of experience as a practising doctor in Malaysia.', 'pimage':'https://www.smhbhopal.com/upload/doctors/1694428861.jpg'},
+    {'id': 3, 'username': 'Jim', 'password': '2345', 'role': 'Doctor', 'email': 'jim@example.com', 'specialization': 'Dermatology', 'contactNumber': '012-1322428', 'intro': 'Dr Jim graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://www.hjhospitals.org/photos/doctors/_MG_1170t.jpg'},
+    {'id': 4, 'username': 'Amy', 'password': '2345', 'role': 'Doctor', 'email': 'amy@example.com', 'specialization': 'Ophthalmology', 'contactNumber': '012-1322428', 'intro': 'Dr Amy graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://img.freepik.com/premium-photo/smiling-korean-young-female-doctor-profile-photo_1279815-42632.jpg'},
+    {'id': 5, 'username': 'Chris', 'password': '2345', 'role': 'Doctor', 'email': 'chris@example.com', 'specialization': 'Neurology', 'contactNumber': '012-1322428', 'intro': 'Dr Chris graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://images.pexels.com/photos/8460090/pexels-photo-8460090.jpeg?cs=srgb&dl=pexels-cristian-rojas-8460090.jpg&fm=jpg'},
+    {'id': 6, 'username': 'Bily', 'password': '2345', 'role': 'Doctor', 'email': 'bily@example.com', 'specialization': 'Pediatrics', 'contactNumber': '012-1322428', 'intro': 'Dr Bily graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://st4.depositphotos.com/3776273/39461/i/450/depositphotos_394613312-stock-photo-covid-19-preventing-virus-healthcare.jpg'},
+    {'id': 7, 'username': 'Ariana', 'password': '2345', 'role': 'Doctor', 'email': 'ariana@example.com', 'specialization': 'Orthopedics', 'contactNumber': '012-1322428', 'intro': 'Dr Ariana graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://plus.unsplash.com/premium_photo-1664474647299-7ef90322be6c?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8d29tZW4lMjBkb2N0b3J8ZW58MHx8MHx8fDA%3D'},
+    {'id': 8, 'username': 'Estelle', 'password': '2345', 'role': 'Doctor', 'email': 'estelle@example.com', 'specialization': 'Family Medicine', 'contactNumber': '012-1322428', 'intro': 'Dr Estelle graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://img.freepik.com/premium-photo/expert-female-doctor-clinic-environment_993044-4525.jpg'},
+    {'id': 9, 'username': 'Patrick', 'password': '2345', 'role': 'Doctor', 'email': 'patrick@example.com', 'specialization': 'Obstetrics and Gynecology', 'contactNumber': '012-1763321', 'intro': 'Dr Patrick graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://img.freepik.com/free-photo/annoyed-young-male-doctor-wearing-medical-robe-stethoscope-around-his-neck-putting-hand-belly-with-closed-eyes-isolated-white-with-copy-space_141793-76538.jpg?size=626&ext=jpg&ga=GA1.1.2008272138.1723334400&semt=ais_hybrid'},
+    {'id': 10, 'username': 'Natalia', 'password': '2345', 'role': 'Doctor', 'email': 'natalia@example.com', 'specialization': 'General Practice', 'contactNumber': '012-6653199', 'intro': 'Dr Natalia graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://images.pexels.com/photos/5215024/pexels-photo-5215024.jpeg?cs=srgb&dl=pexels-shkrabaanthony-5215024.jpg&fm=jpg'}
 ]
+
+# Extracting specializations from the existing dummy data
+nurse_specializations = [nurse['specialization'] for nurse in nurses]
+doctor_specializations = [doctor['specialization'] for doctor in doctors]
+
+# Creating a new dummy data set for specializations
+specializations = {
+    'nurses': list(set(nurse_specializations)),  # Using set to avoid duplicates
+    'doctors': list(set(doctor_specializations))  # Using set to avoid duplicates
+}
 
 # Dummy data for appointments
 appointments = [
@@ -100,13 +145,6 @@ prescriptions = [
     }
 ]
 
-# Dummy data for pending approvals
-pending_approvals = [
-    {'id': 1, 'username': 'Wee', 'password': '2345', 'role': 'Doctor', 'email': 'wee@example.com', 'specialization': 'Dermatology', 'contactNumber': '012-1322428'},
-    {'id': 2, 'username': 'KE', 'password': '3456', 'role': 'Nurse', 'email': 'ke@example.com', 'contactNumber': '012-6232333', 'specialization': 'General'}
-
-]
-
 # Dummy data for medication stock
 medications = [
     {
@@ -161,6 +199,55 @@ medications = [
     }
 ]
 
+# Insert data into MongoDB collections
+admin_collection.insert_one(admin)
+patients_collection.insert_many(patients)
+nurses_collection.insert_many(nurses)
+doctors_collection.insert_many(doctors)
+appointments_collection.insert_many(appointments)
+prescriptions_collection.insert_many(prescriptions)
+medications_collection.insert_many(medications)
+
+print("Data inserted successfully!")
+
+# Insert data into MongoDB collections, checking if the data already exists
+
+# Insert admin data (only if not already present)
+if admin_collection.count_documents({'email': admin['email']}) == 0:
+    admin_collection.insert_one(admin)
+
+# Insert patients data (only if not already present)
+for patient in patients:
+    if patients_collection.count_documents({'email': patient['email']}) == 0:
+        patients_collection.insert_one(patient)
+
+# Insert nurses data (only if not already present)
+for nurse in nurses:
+    if nurses_collection.count_documents({'email': nurse['email']}) == 0:
+        nurses_collection.insert_one(nurse)
+
+# Insert doctors data (only if not already present)
+for doctor in doctors:
+    if doctors_collection.count_documents({'email': doctor['email']}) == 0:
+        doctors_collection.insert_one(doctor)
+
+# Insert appointments data (only if not already present)
+for appointment in appointments:
+    if appointments_collection.count_documents({'id': appointment['id']}) == 0:
+        appointments_collection.insert_one(appointment)
+
+# Insert prescriptions data (only if not already present)
+for prescription in prescriptions:
+    if prescriptions_collection.count_documents({'id': prescription['id']}) == 0:
+        prescriptions_collection.insert_one(prescription)
+
+# Insert medications data (only if not already present)
+for medication in medications:
+    if medications_collection.count_documents({'medication_name': medication['medication_name']}) == 0:
+        medications_collection.insert_one(medication)
+
+print("Data inserted successfully without duplication!")
+
 # ------------------------- Custom filter to format time ------------------------------------------------------------
 @app.template_filter('format_time')
 def format_time(value):
@@ -168,6 +255,11 @@ def format_time(value):
         return datetime.strptime(value, '%H:%M').strftime('%I:%M %p')
     except ValueError:
         return value
+    
+# Route to display the uploaded image
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return f"File uploaded successfully: <img src='{url_for('static', filename='uploads/' + filename)}' alt='pimage'>"
 # -----------------------------------------------------------------------------------------------------
 
 # ----------------------------- Home Page -------------------------------------------------------------
@@ -176,6 +268,22 @@ def index():
     username = session.get('username')
     role = session.get('role')  # Ensure role is stored in session or retrieved from the database
     return render_template('index.html', username=username, role=role)
+
+@app.route('/meeting')
+def meeting():
+    username = session.get('username')
+    role = session.get('role')  # Ensure role is stored in session or retrieved from the database
+    return render_template('meeting.html', username=username, role=role)
+
+# MEETING
+@app.route("/join", methods=["GET", "POST"])
+def join():
+    username = session.get('username')
+    role = session.get('role')  # Ensure role is stored in session or retrieved from the database
+    if request.method == "POST":
+        room_id = request.form.get("roomID")
+        return redirect(f"/meeting?roomID={room_id}")
+    return render_template("join.html", username=username, role=role)
 
 # -------------------------- Auth ---------------------------------------------------------------------
 # Register Function
@@ -188,42 +296,43 @@ def register():
             password = request.form.get('password')
             email = request.form.get('email')
             role = request.form.get('role')
+            
+            # Handle file upload
+            if 'pimage' not in request.files:
+                return render_template('Auth/register.html', message="Profile image is required.", error=True)
+            
+            file = request.files['pimage']
 
             # Check if any field is missing
-            if not all([username, password, email, role, contactNumber]):
-                return render_template('Auth/register.html', message="All fields are required.", error=True)
+            if not all([username, password, email, role, contactNumber]) or not file or not allowed_file(file.filename):
+                return render_template('Auth/register.html', message="All fields are required and the image must be valid.", error=True)
 
-            # Validate role
-            if role not in ['Patient', 'Doctor', 'Nurse']:
-                return render_template('Auth/register.html', message="Invalid role selected.", error=True)
+            # Secure the filename and save the image
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
 
-            # Create new user
+            # Create new patient account
             new_user = {
-                'id': len(patients) + len(doctors) + len(pending_approvals) + 1,
+                'id': len(patients) + 1,  # Adjust ID logic as per your storage mechanism
                 'username': username,
                 'password': password,
                 'email': email,
                 'contactNumber': contactNumber,
                 'role': role,
-                'approved': False  # Set approval status to False initially
+                'approved': True,  # Patients can be approved immediately
+                'pimage': url_for('static', filename='uploads/' + filename)  # Store the image URL
             }
 
-            # Handle user roles
-            if role == 'Patient':
-                patients.append(new_user)
-                session['username'] = username
-                session['role'] = 'patient'
-                return render_template('Patient/patient_register_success.html')
-            elif role in ['Doctor', 'Nurse']:
-                 return render_template('Auth/register_success.html', message="Your account needs to be approved by an admin.")
+            patients.append(new_user)
+            session['username'] = username
+            session['role'] = 'patient'
+            return redirect(url_for('index'))
+        
         except BadRequestKeyError:
             return render_template('Auth/register.html', message="Bad request. Please try again.", error=True)
-    
-    return render_template('Auth/register.html')
 
-@app.route('/patient_register_success')
-def patient_register_success():
-    return render_template('Patient/patient_register_success.html')
+    return render_template('Auth/register.html')
 
 # Login Function
 @app.route('/login', methods=['GET', 'POST'])
@@ -243,19 +352,25 @@ def login():
                 session['role'] = 'admin'
                 if remember_me:
                     session.permanent = True
-                return redirect(url_for('admin_dashboard'))
+                return render_template('Admin/admin_dashboard.html', username=username, doctors=doctors, nurses=nurses)
 
-            # Check if the user is a doctor or nurse
-            for user in doctors + nurses:
+            # Check if the user is a Doctor
+            for user in doctors:
                 if username == user['username'] and password == user['password']:
-                    if user.get('approved'):
                         session['username'] = username
                         session['role'] = user['role'].lower()
                         if remember_me:
                             session.permanent = True
-                        return redirect(url_for('index'))
-                    else:
-                        return render_template('Auth/login.html', message="Your account is awaiting admin approval.", error=True)
+                        return redirect(url_for('doctor_dashboard'))
+
+            # Check if the user is a Nurse
+            for user in nurses:
+                if username == user['username'] and password == user['password']:
+                        session['username'] = username
+                        session['role'] = user['role'].lower()
+                        if remember_me:
+                            session.permanent = True
+                        return redirect(url_for('nurse_dashboard'))
 
             # Check if the user is a patient
             for patient in patients:
@@ -268,9 +383,9 @@ def login():
                     return redirect(url_for('index'))
 
             # Failed login
-            return render_template('login.html', message="Invalid username or password.", error=True)
+            return render_template('Auth/login.html', message="Invalid username or password.", error=True)
         except BadRequestKeyError:
-            return render_template('login.html', message="Bad request. Please try again.", error=True)
+            return render_template('Auth/login.html', message="Bad request. Please try again.", error=True)
 
     return render_template('Auth/login.html')
 
@@ -279,7 +394,7 @@ def login():
 def logout():
     session.pop('username', None)
     session.pop('role', None)
-    return redirect(url_for('login'))
+    return redirect(url_for('index'))
 
 # Forgot Password
 @app.route('/forgot_password')
@@ -288,6 +403,49 @@ def forgot_password():
 # -------------------------------------------------------------------------------------------------------
 
 # ---------------------- Profile Settings ---------------------------------------------------------------
+# Upload Profile Image
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    username = session.get('username')
+    role = session.get('role')
+    
+    # Check if user is logged in
+    if not username:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        if 'pimage' not in request.files:
+            return "No file part"
+
+        file = request.files['pimage']
+        
+        if file.filename == '':
+            return "No selected file"
+
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
+
+            # Update the user's profile image path
+            if role == 'doctor':
+                user = next((doc for doc in doctors if doc['username'] == username), None)
+            elif role == 'nurse':
+                user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+            elif role == 'patient':
+                user = next((pat for pat in patients if pat['username'] == username), None)
+            elif role == 'admin' and username == admin.get('username'):
+                user = admin
+
+            if user is not None:
+                # Update the image path
+                user['pimage'] = f'static/uploads/{filename}'
+            
+            # Redirect back to the profile page
+            return redirect(url_for('view_profile'))
+    
+    return redirect(url_for('view_profile'))
+
 # View Profile
 @app.route('/profile')
 def view_profile():
@@ -345,10 +503,11 @@ def edit_profile():
         user['username'] = request.form['username']
         user['email'] = request.form['email']
         user['contactNumber'] = request.form['contactNumber']
-        user['password'] = request.form['password']  # Remember to hash the password!
+        user['password'] = request.form['password']  
 
         if role == 'doctor' or role == 'nurse':
             user['specialization'] = request.form['specialization']
+            user['intro'] = request.form['intro']
         if role == 'patient':
             user['address'] = request.form['address']
 
@@ -373,7 +532,7 @@ def edit_profile():
 
         return redirect(url_for('view_profile'))
 
-    return render_template('Profile/edit_profile.html', user=user, username=username, role=role)
+    return render_template('Profile/view_profile.html', user=user, role=role)
 # ---------------------------------------------------------------------------------------------------
 
 # -------------------------- Patient --------------------------------------------------------------------------
@@ -548,20 +707,52 @@ def patient_view_prescription():
 
     user_prescriptions = [pres for pres in prescriptions]
     return render_template('Patient/patient_prescription.html', prescriptions=user_prescriptions,role=role)
+
+# View Doctors List
+@app.route('/view_doctors', methods=['GET', 'POST'])
+def view_doctors():
+    username = session.get('username')
+    role = session.get('role')
+    search = request.args.get('search', '')
+    specialization = request.args.get('specialization', '')
+
+    # Filtering
+    filtered_doctors = doctors
+    if search:
+        filtered_doctors = [doc for doc in filtered_doctors if search.lower() in doc['username'].lower()]
+    if specialization:
+        filtered_doctors = [doc for doc in filtered_doctors if doc['specialization'] == specialization]
+    return render_template('view_doctors.html', doctors=filtered_doctors, role=role)
+
+# View Nurse List
+@app.route('/view_nurses')
+def view_nurses():
+    username = session.get('username')
+    role = session.get('role')
+    search = request.args.get('search', '')
+    specialization = request.args.get('specialization', '')
+
+    # Filtering 
+    filtered_nurses = nurses
+    if search:
+        filtered_nurses = [doc for doc in filtered_nurses if search.lower() in doc['username'].lower()]
+    if specialization:
+        filtered_nurses = [doc for doc in filtered_nurses if doc['specialization'] == specialization]
+    return render_template('view_nurses.html', nurses=filtered_nurses, role=role)
 # -------------------------------------------------------------------------------------------------------------
 
 # ----------------------------------- Get Doctors & Nurses Information ----------------------------------------
 def get_doctors():
     return [
-        {'id': 1, 'name': 'John', 'username': 'john', 'password': '2345', 'role': 'Doctor', 'email': 'john@example.com', 'contact number': '018-4987676', 'specialization': 'Cardiology', 'approved': True},
-        {'id': 2, 'name': 'Smith', 'username': 'smith', 'password': '2345', 'role': 'Doctor', 'email': 'smith@example.com', 'contact number': '016-1652679', 'specialization': 'Dermatology', 'approved': True},
+        {'id': 1, 'name': 'John', 'username': 'john', 'password': '2345', 'role': 'Doctor', 'email': 'john@example.com', 'contact number': '018-4987676', 'specialization': 'Cardiology'},
+        {'id': 2, 'name': 'Smith', 'username': 'smith', 'password': '2345', 'role': 'Doctor', 'email': 'smith@example.com', 'contact number': '016-1652679', 'specialization': 'Dermatology'},
         {'id': 3, 'name': 'Jim', 'username': 'jim', 'password': '2345', 'role': 'Doctor', 'email': 'jim@example.com', 'specialization': 'Dermatology', 'contact number': '012-1322428'}
     ]
 
 def get_nurses():
     return [
-    {'id': 1, 'username': 'joy', 'password': '3456', 'role': 'Nurse', 'email': 'joy@example.com', 'contactNumber': '016-7234429', 'specialization': 'Pediatrics', 'approved': True},
-    {'id': 2, 'username': 'kate', 'password': '3456', 'role': 'Nurse', 'email': 'kate@example.com', 'contactNumber': '012-6234675', 'specialization': 'General', 'approved': True}
+    {'id': 1, 'username': 'joy', 'password': '3456', 'role': 'Nurse', 'email': 'joy@example.com', 'contactNumber': '016-7234429', 'specialization': 'Pediatrics'},
+    {'id': 2, 'username': 'kate', 'password': '3456', 'role': 'Nurse', 'email': 'kate@example.com', 'contactNumber': '012-6234675', 'specialization': 'General'}
 ]
 # -----------------------------------------------------------------------------------------------------------------
 
@@ -581,6 +772,7 @@ def write_prescription():
         dosage = request.form['dosage']
         instructions = request.form['instructions']
 
+
         new_prescription = {
             'id': len(prescriptions) + 1,
             'author_username': username,
@@ -596,7 +788,7 @@ def write_prescription():
         return redirect(url_for('view_prescriptions'))
 
     patient_list = [pat for pat in patients]
-    return render_template('Prescription/write_prescription.html', patients=patient_list, role=role)
+    return render_template('Prescription/write_prescription.html', patients=patient_list, role=role, username=username, nurse=nurse, doctor=doctor)
 
 # Doctor & Nurse View Prescription
 @app.route('/view_prescriptions')
@@ -608,7 +800,7 @@ def view_prescriptions():
         return redirect(url_for('index'))  # Redirect if not a doctor or nurse
 
     user_prescriptions = [pres for pres in prescriptions]
-    return render_template('Prescription/view_prescriptions.html', prescriptions=user_prescriptions,role=role)
+    return render_template('Prescription/view_prescriptions.html', prescriptions=user_prescriptions,role=role, username=username, nurse=nurse, doctor=doctor)
 
 # Prescription Page
 @app.route('/prescription',methods=['GET'])
@@ -623,14 +815,14 @@ def prescription_options():
 # -----------------------------------------------------------------------------------------------------------------
 
 # ----------------------------- Doctor -----------------------------------------------------------------------
-# Route for the doctor dashboard
-@app.route('/doctor')
+# Route for the Doctor dashboard
+@app.route('/doctor/dashboard')
 def doctor_dashboard():
     username = session.get('username')
     role = session.get('role')  # Ensure role is stored in session or retrieved from the database
     if role != 'doctor':
         return redirect(url_for('index'))  # Redirect to the index page if not logged in as doctor
-    return render_template('index.html', username=username, appointments=appointments)
+    return render_template('Doctor/doctor_dashboard.html', username=username, appointments=appointments)
 
 # Doctor MY Appointment
 @app.route('/doctor/appointments')
@@ -643,6 +835,15 @@ def doctor_appointments():
 # -------------------------------------------------------------------------------------------------------------------------
 
 # --------------------------------- Nurse --------------------------------------------------------------------------
+# Route for the Nurse dashboard
+@app.route('/nurse/dashboard')
+def nurse_dashboard():
+    username = session.get('username')
+    role = session.get('role')  # Ensure role is stored in session or retrieved from the database
+    if role != 'nurse':
+        return redirect(url_for('index'))  # Redirect to the index page if not logged in as nurse
+    return render_template('Nurse/nurse_dashboard.html', role=role, nurse=nurse, username=username, appointments=appointments)
+
 # Nurse MY Appointment
 @app.route('/nurse/appointments')
 def nurse_appointments():
@@ -663,62 +864,53 @@ def admin_dashboard():
         return redirect(url_for('index'))  # Redirect to the index page if not logged in as admin
     return render_template('Admin/admin_dashboard.html', username=username, doctors=doctors, nurses=nurses)
 
-# Admin View Patients List
-@app.route('/admin/view_patients', methods=['GET', 'POST'])
-def admin_view_patients():
-    search_query = request.args.get('search', '').lower()
-
-    # Filter patients based on the search query
-    filtered_patients = [
-        patient for patient in patients 
-        if search_query in patient['username'].lower() 
-    ]
-
-    return render_template('Admin/admin_view_patients.html', patients=filtered_patients)
-
-# Admin View Patient Address
-@app.route('/admin/view_address/<int:patient_id>', methods=['GET'])
-def admin_view_address(patient_id):
-    # Find the patient by ID
-    patient = next((p for p in patients if p['id'] == patient_id), None)
-
-    if patient:
-        return jsonify(address=patient['address'])
-    else:
-        return jsonify(error="Patient not found"), 404
-
 # Admin View Doctors List
 @app.route('/admin/view_doctors', methods=['GET', 'POST'])
 def admin_view_doctors():
-    search_query = request.args.get('search', '').lower()
+   username = session.get('username')
+   role = session.get('role')
+   search = request.args.get('search', '')
+   specialization = request.args.get('specialization', '')
 
-    # Filter patients based on the search query
-    filtered_doctors = [
-        doctor for doctor in doctors 
-        if search_query in doctor['username'].lower() 
-    ]
+    # Filtering
+   filtered_doctors = doctors
+   if search:
+        filtered_doctors = [doc for doc in filtered_doctors if search.lower() in doc['username'].lower()]
+   if specialization:
+        filtered_doctors = [doc for doc in filtered_doctors if doc['specialization'] == specialization]
 
-    role = session.get('role')
-    if role != 'admin':
-        return redirect(url_for('index'))  # Ensure only admins can access this page
+   return render_template('Admin/admin_view_doctors.html', doctors=filtered_doctors, username=username, role=role)
 
-    # Filter patients
-    doctor_list = [pat for pat in doctors if pat['role'] == 'Doctor']
+# Admin View Doctor Intro
+@app.route('/admin/view_intro/<int:doctor_id>', methods=['GET'])
+def admin_view_intro(doctor_id):
+    print(f"Requested doctor ID: {doctor_id}")
+    doctor = next((d for d in doctors if d['id'] == doctor_id), None)
+    
+    if doctor:
+        print(f"Doctor found: {doctor}")
+        return jsonify(intro=doctor['intro'])
+    else:
+        print("Doctor not found")
+        return jsonify(error="Doctor not found"), 404
 
-    return render_template('Admin/admin_view_doctors.html', doctors=filtered_doctors)
-
+    
 # Admin View Nurse List
-@app.route('/admin/nurses')
+@app.route('/admin/nurses', methods=['GET', 'POST'])
 def admin_view_nurses():
-    search_query = request.args.get('search', '').lower()
+    username = session.get('username')
+    role = session.get('role')
+    search = request.args.get('search', '')
+    specialization = request.args.get('specialization', '')
 
-    # Filter nurses based on the search query
-    filtered_nurses = [
-        nurse for nurse in nurses 
-        if search_query in nurse['username'].lower() 
-    ]
+    # Filtering
+    filtered_nurses = nurses
+    if search:
+        filtered_nurses = [doc for doc in filtered_nurses if search.lower() in doc['username'].lower()]
+    if specialization:
+        filtered_nurses = [doc for doc in filtered_nurses if doc['specialization'] == specialization]
 
-    return render_template('Admin/admin_view_nurses.html', nurses=filtered_nurses)
+    return render_template('Admin/admin_view_nurses.html', nurses=filtered_nurses, username=username, role=role)
 
 # Delete Patient (Admin Only)
 @app.route('/admin/patients/delete/<int:patient_id>', methods=['POST'])
@@ -741,40 +933,69 @@ def admin_delete_nurse(nurse_id):
     nurses = [nurse for nurse in nurses if nurse['id'] != nurse_id]
     return redirect(url_for('admin_view_nurses'))
 
-# Admin View Pending List
-@app.route('/admin/pending_approvals')
-def admin_pending_approvals():
-    username = session.get('username')
-    role = session.get('role')
+# Admin Register Medical Team (Doctor / Nurse)
+@app.route('/admin/register_team', methods=['GET', 'POST'])
+def register_team():
+    # Check if the logged-in user is an admin
+    if 'role' not in session or session['role'] != 'admin':
+        return render_template('error.html', message="Unauthorized access. Only admins can register medical team.")
 
-    if role != 'admin':
-        return redirect(url_for('index'))
+    if request.method == 'POST':
+        try:
+            username = request.form.get('username')
+            contactNumber = request.form.get('contactNumber')
+            password = request.form.get('password')
+            email = request.form.get('email')
+            role = request.form.get('role')
+            specialization = request.form.get('specialization')
+            intro = request.form.get('intro')
+            
+              # Handle file upload
+            if 'pimage' not in request.files:
+                return render_template('Auth/register_team.html', message="Profile image is required.", error=True)
+            
+            file = request.files['pimage']
 
-    return render_template('Admin/admin_pending_approvals.html', pending_approvals=pending_approvals)
+            # Check if any field is missing
+            if not all([username, password, email, role, contactNumber, specialization, intro]) or not file or not allowed_file(file.filename):
+                return render_template('Admin/register_team.html', message="All fields are required and the image must be valid.", error=True)
 
-# Admin Approve Function
-@app.route('/admin/approve/<int:user_id>', methods=['POST'])
-def admin_approve_user(user_id):
-    global pending_approvals
+            # Validate role for team
+            if role not in ['Doctor', 'Nurse']:
+                return render_template('Admin/register_team.html', message="Invalid role selected.", error=True)
 
-    user = next((u for u in pending_approvals if u['id'] == user_id), None)
-    if user:
-        user['approved'] = True
-        if user['role'] == 'Doctor':
-            doctors.append(user)
-        elif user['role'] == 'Nurse':
-            nurses.append(user)
-        pending_approvals = [u for u in pending_approvals if u['id'] != user_id]
-    
-    return redirect(url_for('admin_pending_approvals'))
+            # Secure the filename and save the image
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
 
-# Admin Reject Function
-@app.route('/admin/reject/<int:user_id>', methods=['POST'])
-def admin_reject_user(user_id):
-    global pending_approvals
+            # Create new doctor or nurse
+            new_team = {
+                'id': len(doctors) + len(nurses) + 1,  # Adjust ID logic accordingly
+                'username': username,
+                'password': password,
+                'email': email,
+                'contactNumber': contactNumber,
+                'role': role,
+                'specialization' :specialization,
+                'intro': intro,
+                'pimage': url_for('static', filename='uploads/' + filename)  # Store the image URL
+            }
 
-    pending_approvals = [u for u in pending_approvals if u['id'] != user_id]
-    return redirect(url_for('admin_pending_approvals'))
+             # Add new team member to the respective list based on role
+            if role == 'Doctor':
+                doctors.append(new_team)
+                # After successful registration, redirect to the doctor list view
+                return redirect(url_for('admin_view_doctors'))
+            elif role == 'Nurse':
+                nurses.append(new_team)
+                # After successful registration, redirect to the nurse list view
+                return redirect(url_for('admin_view_nurses'))
+        
+        except BadRequestKeyError:
+            return render_template('Admin/register_team.html', message="Bad request. Please try again.", error=True)
+
+    return render_template('Admin/register_team.html')
 
 # Admin to View All Appointment
 @app.route('/admin/appointments')
@@ -785,10 +1006,14 @@ def admin_appointments():
     role = session.get('role')
     return render_template('Admin/admin_appointments.html', appointments=appointments_sorted, doctors=doctors, username=username, role=role)
 
-# Admin Medical Stock Management Function
+# ---------------------- Admin/Doctor/Nurse Medical Stock Management Function --------------------------------------------------
+
 # View Medical Stock
-@app.route('/admin/medication')
+@app.route('/medication')
 def view_medication():
+    username = session.get('username')
+    role = session.get('role')
+
     for med in medications:
         try:
             # Convert price to float and format it to two decimal places
@@ -796,11 +1021,14 @@ def view_medication():
         except (ValueError, TypeError) as e:
             print(f"Error formatting price {med['price']}: {e}")
             med['price'] = "0.00"  # Default value in case of error
-    return render_template('Medication/view_stock.html', medications=medications)
+    return render_template('Medication/view_stock.html', medications=medications, username=username, role=role)
 
 # Add Medical To Stock
-@app.route('/admin/medication/add', methods=['GET', 'POST'])
+@app.route('/medication/add', methods=['GET', 'POST'])
 def add_medication():
+    username = session.get('username')
+    role = session.get('role')
+
     if request.method == 'POST':
         # Handle file upload
         file = request.files['image']
@@ -822,11 +1050,14 @@ def add_medication():
         medications.append(new_medication)
         flash('Medication added successfully!')
         return redirect(url_for('view_medication'))
-    return render_template('Medication/add_stock.html')
+    return render_template('Medication/add_stock.html', medications=medications, username=username, role=role)
 
 # Edit Medical Stock
-@app.route('/admin/medication/edit/<int:id>', methods=['GET', 'POST'])
+@app.route('/medication/edit/<int:id>', methods=['GET', 'POST'])
 def edit_medication(id):
+    username = session.get('username')
+    role = session.get('role')
+
     medication = next((med for med in medications if med['id'] == id), None)
     if not medication:
         flash('Medication not found!')
@@ -850,15 +1081,43 @@ def edit_medication(id):
         flash('Medication updated successfully!')
         return redirect(url_for('view_medication'))
 
-    return render_template('Medication/edit_stock.html', medication=medication)
+    return render_template('Medication/edit_stock.html', medication=medication, username=username, role=role)
 
 # Delete Medical Stock
-@app.route('/admin/medication/delete/<int:id>')
+@app.route('/medication/delete/<int:id>')
 def delete_medication(id):
+    username = session.get('username')
+    role = session.get('role')
+
     global medications
     medications = [med for med in medications if med['id'] != id]
     flash('Medication deleted successfully!')
     return redirect(url_for('view_medication'))
+
+# Admin/Nurse/Doctor View Patients List
+@app.route('/view_patients', methods=['GET', 'POST'])
+def view_patients():
+    username = session.get('username')
+    role = session.get('role')
+    search_query = request.args.get('search', '').lower()
+
+    # Filter patients based on the search query
+    filtered_patients = [
+        patient for patient in patients 
+        if search_query in patient['username'].lower() 
+    ]
+
+    return render_template('view_patients.html',username=username, patients=filtered_patients, role=role)
+
+# View Patient Address
+@app.route('/view_address/<int:patient_id>', methods=['GET'])
+def view_address(patient_id):
+    # Fetch the patient based on the ID
+    patient = next((p for p in patients if p['id'] == patient_id), None)
+    if patient:
+        return jsonify({'address': patient['address']})
+    return jsonify({'error': 'Patient not found'}), 404
+
 # ------------------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':

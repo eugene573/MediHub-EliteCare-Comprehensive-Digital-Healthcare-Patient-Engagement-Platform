@@ -118,7 +118,7 @@
     
     <div class="container">
         <h2>Register</h2>
-        <form action="{{ url_for('register') }}" method="POST">
+        <form action="{{ url_for('register') }}" method="POST" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" required>
@@ -139,17 +139,12 @@
                 <label for="role">Register as:</label>
                 <select id="role" name="role" required onchange="toggleCertificationField()">
                     <option value="Patient">Patient</option>
-                    <option value="Doctor">Doctor</option>
-                    <option value="Nurse">Nurse</option>
                 </select>
             </div>
-
-            <div class="form-group" id="certification-group" style="display: none;">
-                <label for="certification">Upload Certification/Resume:</label>
-                <input type="file" id="certification" name="certification" accept=".pdf,.doc,.docx,.jpg,.png">
+            <div class="form-group">
+                <label for="pimage" class="form-label">Profile Image:</label>
+                <input type="file" name="pimage" class="form-control" id="pimage" accept="image/*" required>
             </div>
-
-            <div>
                 <input type="submit" value="Register">
                 <a href="{{ url_for('login') }}" class="cancel-btn">Cancel</a>
             </div>

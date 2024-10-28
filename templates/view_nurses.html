@@ -1,0 +1,140 @@
+{% extends "layout.html" %}
+
+{% block title %}View Nurse{% endblock %}
+
+{% block extra_css %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  
+    <style>      
+        /* Style for the search bar container */
+        form {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Style for the search input field */
+        form input[type="text"] {
+            padding: 10px;
+            width: 300px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px 0 0 4px;
+            outline: none;
+        }
+
+        /* Style for the search button */
+        form button {
+            padding: 10px 20px;
+            background-color: #006edc;
+            color: white;
+            font-size: 16px;
+            border: 1px solid #1f6399;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #4f84a7;
+        }
+
+        /* Ensure the search bar and table are responsive */
+        @media (max-width: 768px) {
+            form input[type="text"] {
+                width: 60%;
+            }
+            
+            form button {
+                padding: 10px;
+            }
+        }
+
+        .profile-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .profile-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .profile-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <br><br>
+    <center><h1>Meet Our Nurse</h1></center>
+    
+    <!-- Search Form -->
+    <form method="GET" action="{{ url_for('view_nurses') }}">
+        <input type="text" name="search" placeholder="Search by Nurse Name" value="{{ request.args.get('search', '') }}">
+        &nbsp;&nbsp;
+        <select name="specialization" class="form-select" id="specialization">
+            <option value="">All Specializations</option>
+            <option value="General Practice">General Practice</option>
+            <option value="Family Medicine">Family Medicine</option>
+            <option value="Cardiology">Cardiology</option>
+            <option value="Dermatology">Dermatology</option>
+            <option value="Pediatrics">Pediatrics</option>
+            <option value="Neurology">Neurology</option>
+            <option value="Ophthalmology">Ophthalmology</option>
+            <option value="Orthopedics">Orthopedics</option>
+            <option value="Obstetrics and Gynecology">Obstetrics and Gynecology</option>
+        </select>
+        
+        <button type="submit"><i class="fa fa-search"></i></button>
+    </form>
+
+    <br>
+
+    <!-- Nurses Profiles -->
+    <div class="profile-container">
+        {% for nurse in nurses %}
+            <div class="profile-card">
+                <img src="{{ nurse.pimage }}" alt="{{ nurse.pimage }}" class="profile-image">
+                
+                <h3 style="font-size: 1.2em;margin: 10px 0;color: #333;">Nurse. {{ nurse.username }}</h3>
+                <p>{{ nurse.specialization }}</p>
+                <p>{{ nurse.intro }}</p>
+                
+                <br>
+                <div class="contact-icons">
+                    <a href="{{ nurse.contactNumber }}" target="_blank" class="icon whatsapp" aria-label="WhatsApp">
+                        <i class="fa fa-whatsapp" style="font-size:38px;color:rgb(68, 255, 0)"></i>
+                    </a> 
+                    &nbsp; &nbsp;
+                    <a href="{{ nurse.email }}" class="icon email" aria-label="Email">
+                        <i class="fa fa-envelope" style="font-size:38px;color:rgb(255, 0, 0)"></i>
+                    </a>
+                </div>
+    
+            </div>
+            
+        {% endfor %}
+    </div>
+
+    <br>
+    <br>
+{% endblock %}

@@ -88,9 +88,9 @@ header h1 {
     display: block;
 }
 
-.logout-btn, .login-btn, .register-btn {
-    background-color: #eaeaea;
-    color: #000000;
+.login-btn {
+    background-color: #007bff;
+    color: #ffffff;
     border: none;
     border-radius: 4px;
     padding: 10px 20px;
@@ -99,13 +99,28 @@ header h1 {
     margin: 5px;
 }
 
+.logout-btn {
+    background-color: #f44336;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 5px;
+}
+
+.logout-btn:hover {
+            background-color: #d32f2f; /* Darker red on hover */
+        }
+
 @media (max-width: 768px) {
     header .container {
         flex-direction: column;
         align-items: center;
     }
 
-    .btn, .dropdown-toggle, .logout-btn, .login-btn, .register-btn {
+    .btn, .dropdown-toggle, .logout-btn, .login-btn {
         width: 100%;
         margin-bottom: 10px;
     }
@@ -128,49 +143,134 @@ footer {
             <a class="btn" href="/"><h1>MediHub</h1></a>
 
             {% if role == 'admin' %}
+            <a class="btn" href="/">Home</a>
+            <div class="dropdown">
+                <button class="btn dropdown-toggle">Medical Team</button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="/view_doctors">Doctor</a>
+                    <a class="dropdown-item" href="/view_nurses">Nurse</a>
+                </div>
+            </div>
             <a class="btn" href="/admin/dashboard">Admin Dashboard</a>
-            <a class="btn" href="{{ url_for('view_profile') }}">View Profile</a>
-            <form action="/logout" method="post" style="display:inline;">
-                <button type="submit" class="logout-btn" onClick="return confirm('Are you sure you want to logout?')">Logout</button>
-            </form>
+            <div class="dropdown">
+                <button class="btn dropdown-toggle">View</button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{{ url_for('view_profile') }}">My Profile</a>
+                    <form action="/logout" method="post" style="display:inline;">
+                        <button type="submit" class="logout-btn" onClick="return confirm('Are you sure you want to logout?')">Logout</button>
+                    </form>
+                </div>
+            </div>
 
             {% elif role == 'doctor' %}
-            <a class="btn" href="/doctor/appointments">My Appointment</a>
-            <a class="btn" href="{{ url_for('prescription_options') }}">Prescription</a>
-            <a class="btn" href="{{ url_for('view_profile') }}">View Profile</a>
-            <form action="/logout" method="post" style="display:inline;">
-                <button type="submit" class="logout-btn" onClick="return confirm('Are you sure you want to logout?')">Logout</button>
-            </form>
-
+            <a class="btn" href="/">Home</a>
+            <div class="dropdown">
+                <button class="btn dropdown-toggle">Medical Team</button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="/view_doctors">Doctor</a>
+                    <a class="dropdown-item" href="/view_nurses">Nurse</a>
+                </div>
+            </div>
+            <a class="btn" href="/doctor/dashboard">Doctor Dashboard</a>
+        
+            <div class="dropdown">
+                <button class="btn dropdown-toggle">Meeting</button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="/join">Join</a>
+                    <a class="dropdown-item" href="/meeting">Create</a>
+                </div>
+            </div>
+            
+            <div class="dropdown">
+                <button class="btn dropdown-toggle">View</button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{{ url_for('view_profile') }}">My Profile</a>
+                    <a class="dropdown-item" href="/doctor/appointments">My Appointment</a>
+                    <form action="/logout" method="post" style="display:inline;">
+                        <button type="submit" class="logout-btn" onClick="return confirm('Are you sure you want to logout?')">Logout</button>
+                    </form>
+                </div>
+            </div>
+            
             {% elif role == 'nurse' %}
-            <a class="btn" href="nurse/appointments">My Appointment</a>
-            <a class="btn" href="{{ url_for('prescription_options') }}">Prescription</a>
-            <a class="btn" href="{{ url_for('view_profile') }}">View Profile</a>
-            <form action="/logout" method="post" style="display:inline;">
-                <button type="submit" class="logout-btn" onClick="return confirm('Are you sure you want to logout?')">Logout</button>
-            </form>
+            <a class="btn" href="/">Home</a>
+            <div class="dropdown">
+                <button class="btn dropdown-toggle">Medical Team</button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="/view_doctors">Doctor</a>
+                    <a class="dropdown-item" href="/view_nurses">Nurse</a>
+                </div>
+            </div>
+            <a class="btn" href="/nurse/dashboard">Nurse Dashboard</a>
+        
+            <div class="dropdown">
+                <button class="btn dropdown-toggle">Meeting</button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="/join">Join</a>
+                    <a class="dropdown-item" href="/meeting">Create</a>
+                </div>
+            </div>
+        
+            <div class="dropdown">
+                <button class="btn dropdown-toggle">View</button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{{ url_for('view_profile') }}">My Profile</a>
+                    <a class="dropdown-item" href="/doctor/appointments">My Appointment</a>
+                    <form action="/logout" method="post" style="display:inline;">
+                        <button type="submit" class="logout-btn" onClick="return confirm('Are you sure you want to logout?')">Logout</button>
+                    </form>
+                </div>
+            </div>
+           
 
             {% elif role == 'patient' %}
+            <a class="btn" href="/">Home</a>
+            <div class="dropdown">
+                <button class="btn dropdown-toggle">Medical Team</button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="/view_doctors">Doctor</a>
+                    <a class="dropdown-item" href="/view_nurses">Nurse</a>
+                </div>
+            </div>
             <div class="dropdown">
                 <button class="btn dropdown-toggle">Services</button>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="/patient/home_visit">Home Visit</a>
                     <a class="dropdown-item" href="/patient/telemedicine">Telemedicine</a>
+                    <a class="dropdown-item" href="/patient/home_visit">Home Visit</a>
                 </div>
             </div>
-            <a class="btn" href="/patient/appointments">My Appointment</a>
-            <a class="btn" href="/patient_view_prescription">My Prescription</a>
-            <a class="btn" href="{{ url_for('view_profile') }}">View Profile</a>
-            <form action="/logout" method="post" style="display:inline;">
-                <button type="submit" class="logout-btn" onClick="return confirm('Are you sure you want to logout?')">Logout</button>
-            </form>
+            <div class="dropdown">
+                <button class="btn dropdown-toggle">Meeting</button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="/join">Join</a>
+                    <a class="dropdown-item" href="/meeting">Create</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <button class="btn dropdown-toggle">View</button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{{ url_for('view_profile') }}">My Profile</a>
+                    <a class="dropdown-item" href="/patient/appointments">My Appointment</a>
+                    <a class="dropdown-item" href="/patient_view_prescription">My Prescription</a>
+                    <form action="/logout" method="post" style="display:inline;">
+                        <button type="submit" class="logout-btn" onClick="return confirm('Are you sure you want to logout?')">Logout</button>
+                    </form>
+                </div>
+            </div>
+            
             {% else %}
+            <a class="btn" href="/">Home</a>
+            <div class="dropdown">
+                <button class="btn dropdown-toggle">Medical Team</button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="/view_doctors">Doctor</a>
+                    <a class="dropdown-item" href="/view_nurses">Nurse</a>
+                </div>
+            </div>
             <form action="/login" method="post" style="display:inline;">
                 <button type="submit" class="login-btn">Login</button>
             </form>
-            <form action="/register" method="post" style="display:inline;">
-                <button type="submit" class="register-btn">Register</button>
-            </form>
+            
             {% endif %}
         </div>
     </header>
@@ -185,4 +285,5 @@ footer {
     </footer>
     {% block extra_js %}{% endblock %}
 </body>
+
 </html>

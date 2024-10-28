@@ -194,6 +194,52 @@ $(document).ready(function() {
     background-color: #007BFF;
     color: #fff;
 }
+
+.custom-select {
+    position: relative;
+    width: 100%;
+}
+
+.selected-doctor {
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    display: none;
+    z-index: 1000;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.option:hover {
+    background-color: #f0f0f0;
+}
+
+.doctor-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
 </style>
 {% endblock %}
 
@@ -206,16 +252,32 @@ $(document).ready(function() {
             <h1 class="telemedicine-title">Telemedicine</h1>
             <h4  class="telemedicine-title">Let's schedule the telemedicine service now!</h4>
             <form action="/patient/telemedicine" method="post">
-            <label class="telemedicine-label" for="doctor">Doctor:</label>
-            <select class="telemedicine-input" id="doctor" name="doctor" required aria-label="Select Doctor">
+
+                <label class="telemedicine-label" for="specialization">Specialization:</label>
+                <select class="telemedicine-input" id="specialization" name="specialization" required aria-label="Select Specialization">
+                    <option value="" disabled selected>Select a specialization</option>
                     {% for doctor in doctors %}
-                    <option value="{{ doctor.id }}">{{ doctor.username }} ({{ doctor.specialization }})</option>
+                        <option value="{{ doctor.specialization }}">{{ doctor.specialization }}</option>
                     {% endfor %}
-            </select>
+                </select>
+                
+                <label class="telemedicine-label" for="doctor">Doctor:</label>
+                <div class="custom-select">
+                    <div class="selected-doctor" id="selected-doctor">Select a doctor</div>
+                    <div class="options" id="doctor-options">
+                        {% for doctor in doctors %}
+                        <div class="option" data-specialization="{{ doctor.specialization }}" data-value="{{ doctor.id }}">
+                            <img src="{{ doctor.pimage }}" alt="Profile Image" class="doctor-image">
+                            <span>{{ doctor.username }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" id="doctor" name="doctor" required>
+                </div>
+                
            
             <label class="telemedicine-label" for="date">Date:</label>
             <input class="telemedicine-input" id="datepicker" name="date" required aria-label="Select Date" type="text">
-
 
             <div class="timepicker-container">
                <b><label for="time" class="timepicker-label">Time:</label></b> 
@@ -284,14 +346,57 @@ $(document).ready(function() {
 function generateTimeOptions() {
     const times = [];
     const periods = ['AM', 'PM'];
+    
     periods.forEach(period => {
-        for (let hour = 1; hour <= 12; hour++) {
-            times.push(`${hour}:00 ${period}`);
-            times.push(`${hour}:30 ${period}`);
+        if (period === 'AM') {
+            // Include 9:00 AM to 11:30 AM
+            for (let hour = 9; hour < 12; hour++) {
+                times.push(`${hour}:00 ${period}`);
+                times.push(`${hour}:30 ${period}`);
+            }
+        } else if (period === 'PM') {
+            // Include 1:00 PM to 4:30 PM, skipping 12:00 PM to 12:30 PM
+            for (let hour = 1; hour < 5; hour++) {
+                // Skip 12 PM time slots
+                if (hour === 12) {
+                    continue; // Skip 12:00 PM and 12:30 PM
+                }
+                times.push(`${hour}:00 ${period}`);
+                times.push(`${hour}:30 ${period}`);
+            }
         }
     });
+
     return times;
 }
+
+document.getElementById('specialization').addEventListener('change', function() {
+    const selectedSpecialization = this.value;
+    const doctorOptions = document.querySelectorAll('#doctor-options .option');
+    
+    // Show the doctor options
+    for (const option of doctorOptions) {
+        option.style.display = option.dataset.specialization === selectedSpecialization ? 'flex' : 'none';
+    }
+    document.getElementById('doctor-options').style.display = 'block';
+    document.getElementById('selected-doctor').textContent = 'Select a doctor';
+    document.getElementById('doctor').value = '';
+});
+
+document.getElementById('selected-doctor').addEventListener('click', function() {
+    const options = document.getElementById('doctor-options');
+    options.style.display = options.style.display === 'block' ? 'none' : 'block';
+});
+
+document.querySelectorAll('#doctor-options .option').forEach(option => {
+    option.addEventListener('click', function() {
+        const doctorId = this.dataset.value;
+        const doctorName = this.querySelector('span').textContent;
+        document.getElementById('selected-doctor').textContent = doctorName;
+        document.getElementById('doctor').value = doctorId;
+        document.getElementById('doctor-options').style.display = 'none';
+    });
+});
 
     </script>
 {% endblock %}

@@ -134,7 +134,7 @@
     top: 20px;
     left: 260px;
     background-color: transparent; /* Set background to transparent */
-    color: #006edc;
+    color: #000000;
     border: none;
     padding: 10px 15px;
     cursor: pointer;
@@ -208,49 +208,49 @@ main {
 <body>
     <div class="sidebar" id="sidebar">
         <div class="profile-section">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRymxMvshP0oE-rFxLaRqkQzq6P6hFLwL6IAw&s" alt="Profile Image">
+            <img src="https://cdn-icons-png.flaticon.com/512/560/560199.png" alt="Profile Image">
             <div class="profile-info">
                 <span>Welcome Back,</span>
                 <strong>Admin</strong>
             </div>
         </div>
         <div class="menu">
-            <a href="{{ url_for('admin_dashboard') }}" class="menu-item active">
+            <a href="{{ url_for('admin_dashboard') }}" class="menu-item {% if request.path == url_for('admin_dashboard') %}active{% endif %}">
                 <i class="fas fa-clinic-medical"></i>
                 <span>Dashboard</span>
                 <div class="shortcut">D</div>
             </a>
-            <a href="{{ url_for('admin_view_patients') }}" class="menu-item">
+            <a href="{{ url_for('view_patients') }}" class="menu-item {% if request.path == url_for('view_patients') %}active{% endif %}">
                 <i class="fas fa-users"></i>
                 <span>Patient</span>
                 <div class="shortcut">P</div>
             </a>
-            <a href="{{ url_for('admin_view_doctors') }}" class="menu-item">
+            <a href="{{ url_for('admin_view_doctors') }}" class="menu-item {% if request.path == url_for('admin_view_doctors') %}active{% endif %}">
                 <i class="fas fa-user-md"></i>
                 <span>Doctor</span>
                 <div class="shortcut">D</div>
             </a>
-            <a href="{{ url_for('admin_view_nurses') }}" class="menu-item">
+            <a href="{{ url_for('admin_view_nurses') }}" class="menu-item {% if request.path == url_for('admin_view_nurses') %}active{% endif %}">
                 <i class="fas fa-user-nurse"></i>
                 <span>Nurse</span>
                 <div class="shortcut">N</div>
             </a>
-            <a href="/admin/appointments" class="menu-item">
+            <a href="/admin/register_team" class="menu-item {% if request.path == '/admin/register_team' %}active{% endif %}">
+                <i class="fas fa-id-card-alt"></i>
+                <span>Prescription List</span>
+                <div class="shortcut">PL</div>
+            </a>
+            <a href="/admin/appointments" class="menu-item {% if request.path == '/admin/appointments' %}active{% endif %}">
                 <i class="fas fa-briefcase-medical"></i>
                 <span>Appointment</span>
                 <div class="shortcut">A</div>
             </a>
-            <a href="{{ url_for('admin_pending_approvals') }}" class="menu-item">
-                <i class="fas fa-id-card-alt"></i>
-                <span>Pending Approval</span>
-                <div class="shortcut">PA</div>
-            </a>
-            <a href="/admin/medication" class="menu-item">
+            <a href="/medication" class="menu-item {% if request.path == '/medication' %}active{% endif %}">
                 <i class="fas fa-capsules"></i>
                 <span>Medication Stock</span>
                 <div class="shortcut">MS</div>
             </a>
-            <a href="/" class="menu-item">
+            <a href="/" class="menu-item {% if request.path == '/' %}active{% endif %}">
                 <i class="fas fa-home"></i>
                 <span>Home Page</span>
                 <div class="shortcut">HP</div>
@@ -279,6 +279,16 @@ main {
             sidebar.classList.toggle('collapsed');
             content.classList.toggle('shifted');
         });
+
+          // Get all menu items
+    const menuItems = document.querySelectorAll('.menu-item');
+
+// Set the active menu item based on the current URL
+menuItems.forEach(item => {
+    if (item.href === window.location.href) {
+        item.classList.add('active');
+    }
+});
     </script>
 </body>
 </html>

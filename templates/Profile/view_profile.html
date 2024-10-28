@@ -5,185 +5,186 @@
 {% block extra_css %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Profile</title>
-    <!-- Font Awesome -->
+    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
-    <!-- Google Fonts -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
     <!-- Bootstrap core CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Material Design Bootstrap -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet">
-    <link rel="shortcut icon" type="image/jpg" href="https://image.flaticon.com/icons/png/512/44/44386.png"/>
     
     <style>
-        body {
-            font-family: Arial;
-            font-size: 17px;
-        }
-        * {
-            box-sizing: border-box;
-        }
-        .profile form.example input[type=text] {
-            padding: 10px;
-            font-size: 15.34px;
-            border: 1px solid grey;
-            border-radius: 10px;
-            float: left;
-            width: 80%;
-            background: white;
-        }
-        .profile form.example button {
-            float: left;
-            width: 20%;
-            padding: 10px;
-            background: white;
-            color: black;
-            font-size: 23px;
-            border: 1px solid grey;
-            border-radius: 10px;
-            border-left: none;
-            cursor: pointer;
-        }
-        .profile form.example button:hover {
-            background: grey;
-            transition: 0.8s;
-        }
-        .profile form.example::after {
-            content: "";
-            clear: both;
-            display: table;
-        }
         .profile .button {
-            display: inline-block;
             padding: 10px 20px;
-            background-color: #e6ac1b;
+            background-color: #1b73e6;
             color: #fff;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-            text-align: center;
+            border: 2px solid #2081ff;
+            border-radius: 5px;
+            transition: transform 0.3s, border-color 0.3s;
         }
+    
         .profile .button:hover {
-            background-color: #cd970f;
+            background-color: #2081ff;
+            border-color: #2081ff;
+            transform: translateY(-2px);
         }
-        
+    
+        /* Optional: Different style when field is editable */
+        .editable {
+            background-color: #f0f8ff;
+            border: 1px solid #ddd;
+        }
+    
+        /* Style for the cancel button specifically */
+        .cancel-button {
+            padding: 10px 20px;
+            background-color: #f44336; /* Red color for cancel */
+            color: white;
+            margin-left: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+    
+        .cancel-button:hover {
+            background-color: #d32f2f; /* Darker red on hover */
+        }
     </style>
-    {% endblock %}
+    
+{% endblock %}
 
-    {% block content %}
-    <br><br>
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1></h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="/">Home</a></li>
-                        <li class="breadcrumb-item active">Profile</li>
-                    </ol>
+{% block content %}
+<br><br><br>
+<section class="content">
+    <div class="container-fluid profile">
+        <div class="row">
+            <!-- Profile Picture & Upload Section (Left Column) -->
+            <div class="col-md-3">
+                <!-- Profile Picture Upload -->
+                <div class="card card-primary card-outline">
+                    <div class="card-body box-profile">
+                        <div class="text-center">
+                            <a href="{{ user.pimage }}">
+                                <img class="profile-user-img img-fluid img-circle" src="{{ user.pimage }}" alt="User profile picture">
+                            </a>
+                        </div>
+                        <br><br>
+                        <form enctype="multipart/form-data" action="/upload" method="POST">
+                            <input type="file" name="pimage">
+                            <br><br>
+                           <center>  <button type="submit" class="button mt-2" onClick="return confirm('Are you confirm to upload new profile image?')">Upload</button> </center>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <section class="content">
-        <div class="container-fluid profile"> 
-            <div class="row">
-                <div class="col-md-3">
-                    
-                    <div class="card card-primary card-outline">
-                        <div class="card-body box-profile">
-                            <div class="text-center">
-                                <a href="https://media.istockphoto.com/id/1437816897/photo/business-woman-manager-or-human-resources-portrait-for-career-success-company-we-are-hiring.jpg?b=1&s=612x612&w=0&k=20&c=hEPh7-WEAqHTHdQtPrfEN9-yYCiPGKvD32VZ5lcL6SU=">
-                                    <img class="profile-user-img img-fluid img-circle" src="https://media.istockphoto.com/id/1437816897/photo/business-woman-manager-or-human-resources-portrait-for-career-success-company-we-are-hiring.jpg?b=1&s=612x612&w=0&k=20&c=hEPh7-WEAqHTHdQtPrfEN9-yYCiPGKvD32VZ5lcL6SU=" alt="User profile picture">
-                                </a>
-                            </div>
-                            <br>
-                            <div class="profile"> 
-                                <form enctype="multipart/form-data" action="/" method="POST">
-                                    <input type="file" name="avatar">
-                                    <br><br>
-                                    <center><button type="submit" class="btn">Upload</button></center>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <br>      
-                </div>
-                
-                <div class="col-md-9">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="tab-content">
-                                <div class="active tab-pane" id="personal_info">
-                                    <div class="profile"> 
-                                        <form class="form-horizontal" method="POST" action="/" id="AdminInfoForm">
-                                            <div class="form-group row">
-                                                <label for="inputUsername" class="col-sm-2 col-form-label">User Name:</label>
-                                                <div class="col-sm-10">
-                                                    <input type="text" class="form-control" id="inputUsername" placeholder="User Name" style="color:grey;" value="{{ user.username }}" name="username" readonly>
-                                                    <span class="text-danger error-text username_error"></span>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="inputEmail" class="col-sm-2 col-form-label">Email:</label>
-                                                <div class="col-sm-10">
-                                                    <input type="text" class="form-control" id="inputEmail" placeholder="Email" style="color:grey;" value="{{ user.email }}" name="email" readonly>
-                                                    <span class="text-danger error-text email_error"></span>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="inputContactNumber" class="col-sm-2 col-form-label">Contact Number:</label>
-                                                <div class="col-sm-10">
-                                                    <input type="text" class="form-control" id="inputContactNumber" placeholder="Contact Number" style="color:grey;" value="{{ user.contactNumber }}" name="contact number" readonly>
-                                                    <span class="text-danger error-text ContactNumber_error"></span>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="inputRole" class="col-sm-2 col-form-label">Role:</label>
-                                                <div class="col-sm-10">
-                                                    <input type="text" class="form-control" id="inputRole" placeholder="Role" style="color:grey;" value="{{ user.role }}" name="role" readonly>
-                                                    <span class="text-danger error-text role_error"></span>
-                                                </div>
-                                            </div>
-
-                                            {% if role == 'doctor' or role == 'nurse' %}
-                                            <div class="form-group row">
-                                                <label for="inputSpecialization" class="col-sm-2 col-form-label">Specialization:</label>
-                                                <div class="col-sm-10">
-                                                    <input type="text" class="form-control" id="inputSpecialization" placeholder="Specialization" style="color:grey;" value="{{ user.specialization }}" name="specialization" readonly>
-                                                    <span class="text-danger error-text specialization_error"></span>
-                                                </div>
-                                            </div>
-                                        {% endif %}
-                                            
-                                            {% if role == 'patient' %}
-                                            <div class="form-group row">
-                                                <label for="inputAddress" class="col-sm-2 col-form-label">Address:</label>
-                                                <div class="col-sm-10">
-                                                    <input type="text" class="form-control" id="inputAddress" placeholder="Address" style="color:grey;" value="{{ user.address }}" name="address" readonly>
-                                                    <span class="text-danger error-text address_error"></span>
-                                                </div>
-                                            </div>
-                                            {% endif %}
-
-                                            <center>
-                                            <div class="button-container">
-                                                <a href="{{ url_for('edit_profile') }}" class="button">Edit Profile</a> 
-                                            </div>
-                                            </center>
-                                        </form>
-                                    </div>
+            <!-- Profile Information Section (Right Column) -->
+            <div class="col-md-9">
+                <div class="card">
+                    <div class="card-body">
+                        <form class="form-horizontal" method="POST" action="{{ url_for('edit_profile') }}" id="AdminInfoForm">
+                            <!-- User Information Fields -->
+                            <div class="form-group row">
+                                <label for="inputUsername" class="col-sm-2 col-form-label">User Name:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputUsername" name="username" value="{{ user.username }}" readonly>
                                 </div>
                             </div>
-                        </div>
+                            <div class="form-group row">
+                                <label for="inputEmail" class="col-sm-2 col-form-label">Email:</label>
+                                <div class="col-sm-10">
+                                    <input type="email" class="form-control" id="inputEmail" name="email" value="{{ user.email }}" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputContactNumber" class="col-sm-2 col-form-label">Contact Number:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputContactNumber" name="contactNumber" value="{{ user.contactNumber }}" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputRole" class="col-sm-2 col-form-label">Role:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputRole" name="role" value="{{ user.role }}" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputPassword" class="col-sm-2 col-form-label">Password:</label>
+                                <div class="col-sm-10">
+                                    <input type="password" class="form-control" id="inputPassword" name="password" value="{{ user.password }}" readonly>
+                                </div>
+                            </div>
+                            <!-- Conditional Fields for Doctor/Nurse -->
+                            {% if role == 'doctor' or role == 'nurse' %}
+                            <div class="form-group row">
+                                <label for="inputSpecialization" class="col-sm-2 col-form-label">Specialization:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputSpecialization" name="specialization" value="{{ user.specialization }}" readonly>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="inputIntro" class="col-sm-2 col-form-label">Introduction:</label>
+                                <div class="col-sm-10">
+                                    <textarea class="form-control" id="inputIntro" name="intro" rows="4" readonly>{{ user.intro }}</textarea>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <!-- Conditional Field for Patient Address -->
+                            {% if role == 'patient' %}
+                            <div class="form-group row">
+                                <label for="inputAddress" class="col-sm-2 col-form-label">Address:</label>
+                                <div class="col-sm-10">
+                                    <textarea class="form-control" id="inputAddress" name="address" rows="4" readonly>{{ user.address }}</textarea>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <!-- Edit/Save Button -->
+                            <div class="text-center mt-3">
+                                <button type="button" id="editButton" class="button" onclick="toggleEdit()">Edit Profile</button>
+                                <button type="button" id="cancelButton" class="cancel-button d-none" onclick="cancelEdit()">Cancel</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
-    {% endblock %}
+    </div>
+</section>
+<br><br>
+{% endblock %}
 
+{% block extra_js %}
+<script>
+      function toggleEdit() {
+        // Select all fields except Role and Specialization
+        const fields = document.querySelectorAll('#AdminInfoForm input[type="text"]:not(#inputRole):not(#inputSpecialization), #AdminInfoForm input[type="email"], #AdminInfoForm textarea');
+        const editButton = document.getElementById('editButton');
+        const cancelButton = document.getElementById('cancelButton');
+        const passwordField = document.getElementById('inputPassword'); 
+
+        passwordField.toggleAttribute('readonly');
+        passwordField.classList.toggle('editable');
+        cancelButton.classList.toggle('d-none'); 
+
+        fields.forEach(field => {
+            field.toggleAttribute('readonly');
+            field.classList.toggle('editable');
+        });
+
+        // Toggle button text between "Edit Profile" and "Save Changes"
+        if (editButton.textContent === "Edit Profile") {
+            editButton.textContent = "Save Changes";
+            editButton.classList.add('save-button');
+        } else {
+            editButton.textContent = "Edit Profile";
+            confirm('Are you sure you want to update the profile?');
+            editButton.classList.remove('save-button');
+            document.getElementById('AdminInfoForm').submit(); 
+        }
+    }
+
+    function cancelEdit() {
+    // Reload the page to revert changes or use alternative reset logic
+    location.reload();
+}
+</script>
+{% endblock %}

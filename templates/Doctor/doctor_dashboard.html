@@ -1,0 +1,219 @@
+{% extends 'Doctor/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+  /* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+ 
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+.charts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.chart-wrapper {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 2px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.chart-wrapper h2 {
+    margin-top: 0;
+    font-size: 1.5em;
+    color: #333;
+}
+
+canvas {
+    width: 90% !important;
+    height: 500px !important;
+}
+
+/* Header Cards */
+.header-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.header-card {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+}
+
+.header-card h3 {
+    margin: 10px 0;
+    font-size: 1.2em;
+    color: #333;
+}
+
+.header-card p {
+    margin: 5px 0;
+    font-size: 1.1em;
+    color: #333;
+}
+
+.header-card span {
+    font-size: 0.9em;
+    color: #999;
+}
+
+.header-card .icon {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+</style>
+<body>
+    <div class="container">
+        <!-- Header Cards -->
+        <div class="header-cards">
+            <div class="header-card">
+                <div class="icon"><i class="fas fa-users"></i></div>
+                <h3>Patient</h3>
+                <p>Total Amount: 123</p>
+                <span>+15 last month</span>
+            </div>
+            <div class="header-card">
+                <div class="icon"><i class="fas fa-user-md"></i></div>
+                <h3>Doctor</h3>
+                <p>Total Amount: 29</p>
+                <span>+5 last month</span>
+            </div>
+            <div class="header-card">
+                <div class="icon"><i class="fas fa-user-nurse"></i></div>
+                <h3>Nurse</h3>
+                <p>Total Amount: 24</p>
+                <span>+2 last month</span>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-container">
+            <div class="chart-wrapper">
+                <br>
+                <h2>Total Appointment</h2>
+                <canvas id="revenueChart"></canvas>
+            </div>
+            <br>
+        </div>
+    </div>
+
+    <script>
+        // Revenue Chart
+        const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctxRevenue, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                datasets: [
+                    {
+                        label: 'Home Visit',
+                        data: [100, 200, 150, 200, 250, 300, 250, 200],
+                        borderColor: '#00cc66',
+                        fill: false,
+                        tension: 0.1,
+                    },
+                    {
+                        label: 'Telemedicine',
+                        data: [120, 180, 100, 220, 150, 100, 200, 300],
+                        borderColor: '#ff9933',
+                        fill: false,
+                        tension: 0.1,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.dataset.label || '';
+                                const value = context.raw || 0;
+                                return `${label}: ${value}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 400
+                    }
+                }
+            }
+        });
+
+        // Website Visitors Chart
+        const ctxVisitors = document.getElementById('visitorsChart').getContext('2d');
+        new Chart(ctxVisitors, {
+            type: 'doughnut',
+            data: {
+                labels: ['Direct', 'Organic', 'Paid', 'Social'],
+                datasets: [{
+                    data: [38, 22, 12, 28],
+                    backgroundColor: ['#ff9933', '#00cc66', '#99ccff', '#ff6666'],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                return `${label}: ${value}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+{% endblock %}
