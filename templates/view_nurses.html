@@ -8,7 +8,6 @@
      <!-- Bootstrap core CSS -->
      <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  
     <style>      
         /* Style for the search bar container */
         form {
@@ -145,11 +144,11 @@
                 
                 <br>
                 <div class="contact-icons">
-                    <a href="{{ nurse.contactNumber }}" target="_blank" class="icon whatsapp" aria-label="WhatsApp">
+                    <a href="https://wa.me/{{ nurse.contactNumber }}" target="_blank" class="icon whatsapp" aria-label="WhatsApp">
                         <i class="fa fa-whatsapp" style="font-size:38px;color:rgb(68, 255, 0)"></i>
                     </a> 
                     &nbsp; &nbsp;
-                    <a href="{{ nurse.email }}" class="icon email" aria-label="Email">
+                    <a href="mailto:{{ nurse.email }}" class="icon email" aria-label="Email"></a>
                         <i class="fa fa-envelope" style="font-size:38px;color:rgb(255, 0, 0)"></i>
                     </a>
                 </div>

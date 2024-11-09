@@ -3,13 +3,11 @@
 {% block title %}View Doctor{% endblock %}
 
 {% block extra_css %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
-    <!-- Bootstrap core CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <!-- Bootstrap core CSS -->
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>      
         /* Style for the search bar container */
         form {
@@ -146,11 +144,12 @@
                 
                 <br>
                 <div class="contact-icons">
-                    <a href="{{ doctor.contactNumber }}" target="_blank" class="icon whatsapp" aria-label="WhatsApp">
-                        <i class="fa fa-whatsapp" style="font-size:38px;color:rgb(53, 199, 0)"></i>
+                    
+                    <a href="https://wa.me/{{ doctor.contactNumber }}" target="_blank" class="icon whatsapp" aria-label="WhatsApp">
+                        <i class="fa fa-whatsapp" style="font-size:38px;color:rgb(68, 255, 0)"></i>
                     </a> 
                     &nbsp; &nbsp;
-                    <a href="{{ doctor.email }}" class="icon email" aria-label="Email">
+                   <a href="mailto:{{ doctor.email }}" class="icon email" aria-label="Email"></a>
                         <i class="fa fa-envelope" style="font-size:38px;color:#0565c5;"></i>
                     </a>
                 </div>

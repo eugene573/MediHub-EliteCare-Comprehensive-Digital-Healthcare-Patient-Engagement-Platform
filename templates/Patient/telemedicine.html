@@ -1,17 +1,16 @@
 {% extends "layout.html" %}
 
-{% block title %}Telemedicine{% endblock %}
+{% block title %}Telemedicine Consultation{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css">
 <!-- Bootstrap core CSS -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css">
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <script src="https://code.jquery.com/ui/1.14.0/jquery-ui.js"></script>
 
-
 <style>
-       .telemedicine-container {
+    .telemedicine-container {
         display: flex;
         max-width: 1200px;
         margin: 50px auto;
@@ -44,16 +43,10 @@
         margin-bottom: 20px;
     }
 
-    .telemedicine-label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-        color: #333;
-    }
-
+    /* Input field styles */
     .telemedicine-input {
-        width: 100%;
-        padding: 10px;
+        width: 600px;
+        padding: 15px;
         margin-bottom: 15px;
         border: 1px solid #ccc;
         border-radius: 4px;
@@ -129,280 +122,169 @@
         }
     }
 
-        /* Container for the time picker */
-.timepicker-container {
-    position: relative;
-    display: inline-block;
-    font-family: Arial, sans-serif;
-}
+    /* Container for the time picker */
+    .timepicker-container {
+        position: relative;
+        display: inline-block;
+        font-family: Arial, sans-serif;
+    }
 
-/* Label styles */
-.timepicker-label {
-    font-size: 16px;
-    color: #333;
-    margin-right: 10px;
-}
+    .timepicker-dropdown {
+        display: flex;
+        gap: 20px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
 
-/* Input field styles */
-.telemedicine-input {
-    width: 600px;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-        font-size: 16px;
-}
+    .timepicker-option {
+        padding: 10px 20px;
+        background-color: #00C000; /* Bright green background */
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        text-align: center;
+    }
 
-.timepicker-input:focus {
-    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
-}
+    .timepicker-option.available:hover {
+        background-color: #15ed15; /* Darker green on hover */
+    }
 
-/* Dropdown container styles */
-.timepicker-dropdown {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 1000;
-}
-
-/* Time option styles */
-.timepicker-option {
-    padding: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.timepicker-option:hover {
-    background-color: #007BFF;
-    color: #fff;
-}
-
-.timepicker-option.selected {
-    background-color: #007BFF;
-    color: #fff;
-}
-
-.custom-select {
-    position: relative;
-    width: 100%;
-}
-
-.selected-doctor {
-    padding: 10px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    cursor: pointer;
-}
-
-.options {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    max-height: 200px;
-    overflow-y: auto;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    display: none;
-    z-index: 1000;
-}
-
-.option {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    cursor: pointer;
-}
-
-.option:hover {
-    background-color: #f0f0f0;
-}
-
-.doctor-image {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    margin-right: 10px;
-    object-fit: cover;
-    margin-bottom: 15px;
-}
-
+ /* Style for past times */
+ .past {
+    background-color: grey;
+        pointer-events: none; /* Make past times unclickable */
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<br>
-    <div class="telemedicine-container">
-        <div class="telemedicine-image-container">
-            <img src="https://media.licdn.com/dms/image/D4D12AQGBq7NExgSTRw/article-cover_image-shrink_600_2000/0/1679658451005?e=2147483647&v=beta&t=upWrCwhuiB_Orf46ETajDaKAM2Q30kSL3_gLOKoCAb8" alt="Doctor Telehealth">
+<br> 
+<div class="telemedicine-container">
+    <div class="telemedicine-image-container">
+        <img src="https://s3.envato.com/files/330374396/_8544914.jpg" alt="Doctor Telehealth">
+    </div>
+    <div class="telemedicine-form-container">
+        <h1 class="telemedicine-title">Telemedicine Consultation</h1> 
+        <h4 class="telemedicine-title">Let's schedule your consultation now!</h4>
+       <form action="/patient/telemedicine" method="post">
+        <div>
+            <label class="telemedicine-label" for="person">Doctor:</label>
+            <select class="telemedicine-input" id="person" name="person" required aria-label="Select Doctor">
+                {% for doctor in doctors %}
+                <option value="{{ doctor.id }}">{{ doctor.username }} ({{ doctor.specialization }})</option>
+                {% endfor %}
+            </select>
         </div>
-        <div class="telemedicine-form-container">
-            <h1 class="telemedicine-title">Telemedicine</h1>
-            <h4  class="telemedicine-title">Let's schedule the telemedicine service now!</h4>
-            <form action="/patient/telemedicine" method="post">
 
-                <label class="telemedicine-label" for="specialization">Specialization:</label>
-                <select class="telemedicine-input" id="specialization" name="specialization" required aria-label="Select Specialization">
-                    <option value="" disabled selected>Select a specialization</option>
-                    {% for doctor in doctors %}
-                        <option value="{{ doctor.specialization }}">{{ doctor.specialization }}</option>
-                    {% endfor %}
-                </select>
-                
-                <label class="telemedicine-label" for="doctor">Doctor:</label>
-                <div class="custom-select">
-                    <div class="selected-doctor" id="selected-doctor">Select a doctor</div>
-                    <div class="options" id="doctor-options">
-                        {% for doctor in doctors %}
-                        <div class="option" data-specialization="{{ doctor.specialization }}" data-value="{{ doctor.id }}">
-                            <img src="{{ doctor.pimage }}" alt="Profile Image" class="doctor-image">
-                            <span>{{ doctor.username }}</span>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    <input type="hidden" id="doctor" name="doctor" required>
-                </div>
-                <br><br>
-            <label class="telemedicine-label" for="date">Date:</label>
-            <input class="telemedicine-input" id="datepicker" name="date" required aria-label="Select Date" type="text">
+        <input class="telemedicine-input" id="datepicker" name="date" required aria-label="Select Date" type="text" placeholder="Select Date">
 
-            <div class="timepicker-container">
-               <b><label for="time" class="timepicker-label">Time:</label></b> 
-               <br>
-               <input class="telemedicine-input" id="time" type="text" name="time" readonly required aria-label="Select Time">
-                <div id="timepicker-dropdown" class="timepicker-dropdown">
-                    <!-- Time options will be inserted here dynamically -->
-                </div>
-            </div>
-<br><br>
-            <button class="telemedicine-submit" type="submit" onClick="return confirm('Are you sure you want to book the appointment?')">Confirm</button>
-        </form>
+        <div class="timepicker-container">
+            <input class="telemedicine-input" id="time" type="text" name="time" readonly required aria-label="Select Time" placeholder="Select Time">
+            <div id="timepicker-dropdown" class="timepicker-dropdown"></div>
+        </div>
+
+        <br><br>
+        <button class="telemedicine-submit" type="submit" onClick="return confirm('Are you sure you want to book the appointment?')">Confirm</button>
+    </form>
     </div> 
 </div>
 
-    <div class="telemedicine-intro">
-        <h2>What is Telemedicine?</h2>
-        <p>Telemedicine allows you to consult with your healthcare provider remotely from the comfort of your home using digital technology. This means you can have a doctor's appointment using your smartphone, tablet, or computer without needing to visit the clinic in person.</p>
-    </div>
-    
-    <div class="telemedicine-intro">
-        <h2>How Telemedicine Works?</h2>
-        <p>1.<b>Scheduling an Appointment:</b> Choose a time that fits your schedule.</p>
-        <p>2.<b>Preparing for the Visit:</b> Make sure you have a good internet connection and a device with a camera and microphone. Find a quiet and private place for your appointment.</p>
-        <p>3. <b>During the Appointment:</b> Connect with your doctor via video call. Discuss your symptoms, ask questions, and get medical advice.</p>
-        <p>4. <b>Follow-Up:</b> Receive prescriptions electronically, get referrals to specialists, and schedule follow-up appointments if needed.</p>
-    </div>
-    
-    <div class="telemedicine-intro">
-        <h2>Common Uses of Telemedicine</h2>
-        <p>1.<b>General Consultations:</b> For common illnesses like colds, flu, and minor infections.</p>
-        <p>2.<b>Chronic Disease Management:</b> Ongoing care for conditions like diabetes.</p>
-        <p>3. <b>Post-Surgery Follow-Ups:</b> Quick and convenient follow-up visits to monitor recovery after surgery.</p>
-    </div>
-    <br>
+<div class="telemedicine-intro">
+    <h2>What is Telemedicine?</h2>
+    <p>Telemedicine allows you to consult a doctor or healthcare professional remotely through video calls or online consultations. You can receive medical advice, prescriptions, and more without leaving your home.</p>
+</div>
+
+<div class="telemedicine-intro">
+    <h2>How Telemedicine Works?</h2>
+    <p>1. <b>Scheduling an Appointment:</b> Choose a time and select your doctor.</p>
+    <p>2. <b>Prepare for the Call:</b> Make sure you're in a quiet and well-lit place for the video call.</p>
+    <p>3. <b>Consultation:</b> Your doctor will join the video call at the scheduled time and provide medical advice based on your needs.</p>
+    <p>4. <b>Follow-Up:</b> If necessary, additional consultations can be scheduled or your doctor will provide instructions for care.</p>
+</div>
+
+<div class="telemedicine-intro">
+    <h2>Common Uses of Telemedicine</h2>
+    <p>1. <b>Routine Checkups:</b> Regular checkups for chronic conditions or preventive care.</p>
+    <p>2. <b>Mental Health Consultations:</b> Remote therapy and counseling sessions.</p>
+    <p>3. <b>Prescription Services:</b> Get prescriptions for medications or treatments without visiting the clinic.</p>      
+</div>
+<br>
 {% endblock %}
 
 {% block extra_js %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-    const timeInput = document.getElementById('time');
-    const dropdown = document.getElementById('timepicker-dropdown');
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const dropdown = document.getElementById('timepicker-dropdown');
+        const times = [
+            "9:00 am - 10:00 am",
+            "11:00 am - 12:00 pm",
+            "1:00 pm - 2:00 pm",
+            "3:00 pm - 4:00 pm"
+        ];
 
-    const times = generateTimeOptions();
+        let selectedDate;
 
-    times.forEach(time => {
-        const option = document.createElement('div');
-        option.className = 'timepicker-option';
-        option.innerText = time;
-        dropdown.appendChild(option);
+        function parseTime(timeString) {
+            const [time, period] = timeString.split(' ');
+            const [hours, minutes] = time.split(':').map(num => parseInt(num));
+            let adjustedHours = period === 'pm' && hours !== 12 ? hours + 12 : hours;
+            let adjustedMinutes = minutes || 0;
+            return new Date(selectedDate.setHours(adjustedHours, adjustedMinutes, 0, 0));
+        }
 
-        option.addEventListener('click', function () {
-            timeInput.value = time;
-            dropdown.style.display = 'none';
+        function updateTimeOptions() {
+            console.log("Selected date:", selectedDate);  // Check the selected date
+            console.log("Available time slots:", times);  // Check the time slots
+
+            dropdown.innerHTML = ''; // Clear existing options
+
+            const currentTime = new Date();
+
+            times.forEach(time => {
+                const option = document.createElement('div');
+                option.className = 'timepicker-option';
+                option.innerText = time;
+
+                // Apply available class
+                option.classList.add('available');
+
+                // Parse the time slot
+                const timeSlot = parseTime(time);
+
+                // Check if the time slot is in the past
+                if (timeSlot < currentTime) {
+                    option.classList.add('past'); // Add a class to indicate it's a past time
+                }
+
+                option.addEventListener('click', function () {
+                    document.getElementById('time').value = time;
+                    dropdown.style.display = 'none'; // Hide dropdown after selection
+                });
+
+                dropdown.appendChild(option);
+            });
+
+            dropdown.style.display = 'flex'; // Show dropdown
+        }
+
+        $('#datepicker').datepicker({
+            dateFormat: 'yy-mm-dd',
+            minDate: 0,
+            beforeShowDay: function(date) {
+                const day = date.getDay();
+                return [(day !== 0 && day !== 6), '']; // Disable weekends (Sunday, Saturday)
+            },
+            onSelect: function(dateText) {
+                selectedDate = new Date(dateText);
+                updateTimeOptions();
+            }
         });
     });
 
-    timeInput.addEventListener('focus', function () {
-        dropdown.style.display = 'block';
+    $(document).ready(function() {
+        $('#datepicker').datepicker({
+            dateFormat: 'yy-mm-dd'
+        });
     });
-
-    document.addEventListener('click', function (e) {
-        if (!timeInput.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.style.display = 'none';
-        }
-    });
-});
-
-function generateTimeOptions() {
-    const times = [];
-    const periods = ['AM', 'PM'];
-    
-    periods.forEach(period => {
-        if (period === 'AM') {
-            // Include 9:00 AM to 11:30 AM
-            for (let hour = 9; hour < 12; hour++) {
-                times.push(`${hour}:00 ${period}`);
-                times.push(`${hour}:30 ${period}`);
-            }
-        } else if (period === 'PM') {
-            // Include 1:00 PM to 4:30 PM, skipping 12:00 PM to 12:30 PM
-            for (let hour = 1; hour < 5; hour++) {
-                // Skip 12 PM time slots
-                if (hour === 12) {
-                    continue; // Skip 12:00 PM and 12:30 PM
-                }
-                times.push(`${hour}:00 ${period}`);
-                times.push(`${hour}:30 ${period}`);
-            }
-        }
-    });
-
-    return times;
-}
-
-document.getElementById('specialization').addEventListener('change', function() {
-    const selectedSpecialization = this.value;
-    const doctorOptions = document.querySelectorAll('#doctor-options .option');
-    
-    // Show the doctor options
-    for (const option of doctorOptions) {
-        option.style.display = option.dataset.specialization === selectedSpecialization ? 'flex' : 'none';
-    }
-    document.getElementById('doctor-options').style.display = 'block';
-    document.getElementById('selected-doctor').textContent = 'Select a doctor';
-    document.getElementById('doctor').value = '';
-});
-
-document.getElementById('selected-doctor').addEventListener('click', function() {
-    const options = document.getElementById('doctor-options');
-    options.style.display = options.style.display === 'block' ? 'none' : 'block';
-});
-
-document.querySelectorAll('#doctor-options .option').forEach(option => {
-    option.addEventListener('click', function() {
-        const doctorId = this.dataset.value;
-        const doctorName = this.querySelector('span').textContent;
-        document.getElementById('selected-doctor').textContent = doctorName;
-        document.getElementById('doctor').value = doctorId;
-        document.getElementById('doctor-options').style.display = 'none';
-    });
-});
-
-$(document).ready(function() {
-    $('#datepicker').datepicker({
-        dateFormat: 'yy-mm-dd'
-    });
-});
-
-    </script>
+</script>
 {% endblock %}

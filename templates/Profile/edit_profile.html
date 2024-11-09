@@ -1,0 +1,190 @@
+{% extends "layout.html" %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .editPI-input {
+    width: 100%; /* Make it responsive */
+    height: 150px; /* Set a specific height */
+    padding: 10px; /* Padding for better text appearance */
+    border: 1px solid #ccc; /* Border styling */
+    border-radius: 4px; /* Rounded corners */
+    font-size: 16px; /* Font size */
+    transition: border-color 0.3s, box-shadow 0.3s; /* Smooth transition for focus effects */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+        .editP-container {
+            max-width: 500px;
+            width: 100%;
+            margin: 20px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 9px;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .editP-form {
+            margin-top: 20px;
+        }
+        .editP-label {
+            display: block;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+        .editP-input[type="text"],
+        .editP-input[type="password"] {
+            font-size: 16px;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        .editP-input[type="text"]:focus,
+        .editP-input[type="password"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        .editP-input[type="submit"] {
+            background-color: #1f931b;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .editP-input[type="submit"]:hover {
+            background-color: #21b503b5;
+        }
+        @media (max-width: 480px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+        }
+    
+        .cancel-btn {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #f44336; /* Red color for the cancel button */
+    color: #ffffff; /* White text color */
+    text-align: center;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.cancel-btn:hover {
+    background-color: #d32f2f; /* Darker shade of red for hover effect */
+}
+
+.cancel-btn:active {
+    background-color: #b71c1c; /* Even darker shade when clicked */
+}
+
+/* General styles for form select elements */
+.form-select {
+    width: 100%; /* Full width */
+    padding: 10px; /* Padding for better touch area */
+    margin: 10px 0; /* Margin to separate from other elements */
+    border: 1px solid #ccc; /* Border color */
+    border-radius: 4px; /* Rounded corners */
+    font-size: 16px; /* Font size */
+    background-color: #fff; /* Background color */
+    color: #333; /* Text color */
+    appearance: none; /* Remove default styling */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><polygon points="0,0 20,0 10,10" style="fill:gray;"/></svg>'); /* Custom dropdown arrow */
+    background-repeat: no-repeat; /* Prevent image repeat */
+    background-position: right 10px center; /* Position of the arrow */
+    background-size: 12px; /* Size of the arrow */
+    cursor: pointer; /* Change cursor to pointer */
+}
+
+/* Hover and focus states */
+.form-select:hover, .form-select:focus {
+    border-color: #66afe9; /* Change border color on hover/focus */
+    outline: none; /* Remove default outline */
+}
+
+/* For browsers that don't support the appearance property */
+.form-select::-ms-expand {
+    display: none; /* Hide the default dropdown arrow in IE */
+}
+
+/* Optional styles for disabled state */
+.form-select:disabled {
+    background-color: #f5f5f5; /* Light gray background */
+    color: #aaa; /* Gray text */
+    cursor: not-allowed; /* Change cursor to indicate disabled */
+}
+
+/* Optional media query for responsiveness */
+@media (max-width: 768px) {
+    .form-select {
+        font-size: 14px; /* Smaller font size for mobile */
+    }
+}
+
+    </style>
+{% endblock %}
+
+{% block content %}
+         <br><br>
+         <center>
+    <div class="editP-container">
+        <h2>Edit Profile</h2>
+        <form action="{{ url_for('edit_profile') }}" method="post" enctype="multipart/form-data">
+
+            <label class="editP-label" for="pimage">Profile Image:</label> 
+            <input class="editP-input" type="file" name="pimage" id="pimage" accept="image/*" value="{{ user.pimage }}" required>
+
+            <label class="editP-label" for="username">User Name:</label> 
+            <input class="editP-input" type="text" id="username" name="username" value="{{ user.username }}" required>
+
+            <label class="editP-label" for="name">Email:</label>
+            <input class="editP-input" type="text" id="email" name="email" value="{{ user.email }}" required>
+        
+            <label class="editP-label" for="contactNumber">Contact Number:</label>
+            <input class="editP-input" type="text" id="contactNumber" name="contactNumber" value="{{ user.contactNumber }}" required>
+
+            {% if role == 'doctor' or role == 'nurse' %}
+            <label class="editP-label" for="specialization">Specialization:</label>
+            <select name="specialization" class="form-select" id="specialization" required>
+                <option value="General Practice" {% if user.specialization == 'General Practice' %}selected{% endif %}>General Practice</option>
+                <option value="Family Medicine" {% if user.specialization == 'Family Medicine' %}selected{% endif %}>Family Medicine</option>
+                <option value="Cardiology" {% if user.specialization == 'Cardiology' %}selected{% endif %}>Cardiology</option>
+                <option value="Dermatology" {% if user.specialization == 'Dermatology' %}selected{% endif %}>Dermatology</option>
+                <option value="Pediatrics" {% if user.specialization == 'Pediatrics' %}selected{% endif %}>Pediatrics</option>
+                <option value="Neurology" {% if user.specialization == 'Neurology' %}selected{% endif %}>Neurology</option>
+                <option value="Ophthalmology" {% if user.specialization == 'Ophthalmology' %}selected{% endif %}>Ophthalmology</option>
+                <option value="Orthopedics" {% if user.specialization == 'Orthopedics' %}selected{% endif %}>Orthopedics</option>
+                <option value="Obstetrics and Gynecology" {% if user.specialization == 'Obstetrics and Gynecology' %}selected{% endif %}>Obstetrics and Gynecology</option>
+            </select>
+            <br><br>
+            <label class="editP-label" for="intro">Introduction:</label>
+            <textarea class="editPI-input" id="intro" name="intro" required>{{ user.intro }}</textarea>
+            {% endif %}
+            
+            {% if role == 'patient' %}
+            <label class="editP-label" for="address">Address:</label>
+            <input class="editP-input" type="text" id="address" name="address" value="{{ user.address }}" required>
+            {% endif %}
+           <br><br>
+            <label class="editP-label" for="password">Password:</label>
+            <input class="editP-input" type="password" id="password" name="password" value="{{ user.password }}" required>
+
+            <input class="editP-input" type="submit" value="Update" onClick="return confirm('Are you sure you want to update profile?')">
+            <br><br>
+            <div>
+                <a href="{{ url_for('view_profile') }}" class="cancel-btn">Cancel</a>
+            </div>
+        </form>
+    </div>
+</center>
+{% endblock %} 

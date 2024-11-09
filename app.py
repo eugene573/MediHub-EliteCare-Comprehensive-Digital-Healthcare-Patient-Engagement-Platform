@@ -42,15 +42,15 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
     
 # Dummy data for Admin
-admin = {'username': 'Admin', 'password': '9999', 'email': 'admin@example.com', 'role': 'Admin', 'contactNumber': '012-2358761', 'pimage':'https://www.perfocal.com/blog/content/images/2021/01/Perfocal_17-11-2019_TYWFAQ_100_standard-3.jpg'}
+admin = {'username': 'Admin', 'password': '9999', 'email': 'admin@example.com', 'role': 'Admin', 'contactNumber': '012-2358761', 'pimage':'https://cdn.prod.website-files.com/639ff8596ae419fae300b099/641017314cc67fbb88c517a7_good-linkedin-profile-photo-right-expression-1000x1000.jpeg'}
 
 # Dummy data for patients
 patients = [
-    {'id': 1, 'username': 'Alice', 'password': '1234', 'email': 'alice@example.com', 'contactNumber': '016-7165348', 'role': 'Patient', 'address': '13th Street. 47 W 13th St, New York, NY 10011, USA', 'pimage':'https://www.perfocal.com/blog/content/images/2021/01/Perfocal_17-11-2019_TYWFAQ_100_standard-3.jpg'},
-    {'id': 2, 'username': 'Bob', 'password': '1234', 'email': 'bob@example.com', 'contactNumber': '012-2894590', 'role':'Patient', 'address': 'XXX', 'pimage':'https://plus.unsplash.com/premium_photo-1689977968861-9c91dbb16049?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZSUyMHBpY3R1cmV8ZW58MHx8MHx8fDA%3D'},
-    {'id': 3, 'username': 'Lily', 'password': '1234', 'email': 'lily@example.com', 'contactNumber': '012-2894569', 'role':'Patient', 'address': 'XXX', 'pimage':'https://www.profilebakery.com/wp-content/uploads/2023/04/AI-Profile-Picture.jpg'},
-    {'id': 4, 'username': 'Ray', 'password': '1234', 'email': 'ray@example.com', 'contactNumber': '012-1127338', 'role':'Patient', 'address': 'XXX', 'pimage':'https://i.pinimg.com/474x/98/51/1e/98511ee98a1930b8938e42caf0904d2d.jpg'},
-    {'id': 5, 'username': 'Cael', 'password': '1234', 'email': 'cael@example.com', 'contactNumber': '012-2891232', 'role':'Patient', 'address': 'XXX', 'pimage':'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSoQFvYAr4KD4S-iecBnmLmPf7zuyFyHkd8w&s'}
+    {'id': 1, 'username': 'Alice', 'password': '1234', 'email': 'alice@example.com', 'contactNumber': '016-7165348', 'role': 'Patient', 'address': '420 Jalan Kota Iskandar, 79200 Iskandar Puteri, Johor, Malaysia.', 'pimage':'https://www.perfocal.com/blog/content/images/2021/01/Perfocal_17-11-2019_TYWFAQ_100_standard-3.jpg'},
+    {'id': 2, 'username': 'Bob', 'password': '1234', 'email': 'bob@example.com', 'contactNumber': '012-2894590', 'role':'Patient', 'address': '708 Jalan Rahmat,83000 Batu Pahat, Johor, Malaysia.', 'pimage':'https://plus.unsplash.com/premium_photo-1689977968861-9c91dbb16049?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZSUyMHBpY3R1cmV8ZW58MHx8MHx8fDA%3D'},
+    {'id': 3, 'username': 'Lily', 'password': '1234', 'email': 'lily@example.com', 'contactNumber': '012-2894569', 'role':'Patient', 'address': '271 Jalan Renggam, 86000 Kluang, Johor, Malaysia.', 'pimage':'https://www.profilebakery.com/wp-content/uploads/2023/04/AI-Profile-Picture.jpg'},
+    {'id': 4, 'username': 'Ray', 'password': '1234', 'email': 'ray@example.com', 'contactNumber': '012-1127338', 'role':'Patient', 'address': '101 Jalan Skudai, 81300 Skudai, Johor, Malaysia.', 'pimage':'https://i.pinimg.com/474x/98/51/1e/98511ee98a1930b8938e42caf0904d2d.jpg'},
+    {'id': 5, 'username': 'Cael', 'password': '1234', 'email': 'cael@example.com', 'contactNumber': '012-2891232', 'role':'Patient', 'address': '339 Jalan Trus, 80000 Johor Bahru, Johor, Malaysia.', 'pimage':'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSoQFvYAr4KD4S-iecBnmLmPf7zuyFyHkd8w&s'}
 ]
 
 # Dummy data for nurses
@@ -79,6 +79,15 @@ doctors = [
     {'id': 10, 'username': 'Natalia', 'password': '2345', 'role': 'Doctor', 'email': 'natalia@example.com', 'specialization': 'General Practice', 'contactNumber': '012-6653199', 'intro': 'Dr Natalia graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://images.pexels.com/photos/5215024/pexels-photo-5215024.jpeg?cs=srgb&dl=pexels-shkrabaanthony-5215024.jpg&fm=jpg'}
 ]
 
+# Sample timeslot data
+timeslot_data = {
+    "2024-11-05": [
+        {"time": "12:00 pm - 01:30 pm", "status": "available"},
+        {"time": "02:00 pm - 03:30 pm", "status": "taken"},
+        {"time": "04:00 pm - 05:30 pm", "status": "over"}
+    ],
+}
+
 # Extracting specializations from the existing dummy data
 nurse_specializations = [nurse['specialization'] for nurse in nurses]
 doctor_specializations = [doctor['specialization'] for doctor in doctors]
@@ -91,9 +100,10 @@ specializations = {
 
 # Dummy data for appointments
 appointments = [
-    {'id': 1, 'patient_id': 1, 'doctor_id': 1, 'date': '2024-08-12', 'time': '10:00', 'type': 'telemedicine'},
-    {'id': 2, 'patient_id': 1, 'doctor_id': 2, 'date': '2024-10-01', 'time': '11:00', 'type': 'telemedicine'},
-    {'id': 3, 'patient_id': 2, 'doctor_id': 2, 'date': '2024-08-25', 'time': '12:00', 'type': 'telemedicine'}
+    {'id': 1, 'patient_id': 1, 'doctor_id': 5, 'date': '2024-08-12', 'time': '9:00 am - 10:00 am', 'type': 'telemedicine'},
+    {'id': 2, 'patient_id': 3, 'doctor_id': 3, 'date': '2024-12-28', 'time': '1:00 pm - 2:00 pm', 'type': 'telemedicine'},
+    {'id': 3, 'patient_id': 1, 'doctor_id': 1, 'date': '2024-08-25', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine'},
+    {'id': 4, 'patient_id': 2, 'nurse_id': 2, 'date': '2024-12-25', 'time': '3:00 pm - 4:00 pm', 'type': 'home visit'}
 ]
 
 # Dummy data for prescriptions
@@ -248,6 +258,12 @@ for medication in medications:
 
 print("Data inserted successfully without duplication!")
 
+def get_doctor_name(doctor_id):
+    return next((doctor['username'] for doctor in doctors if doctor['id'] == doctor_id), "Unknown Doctor")
+
+def get_nurse_name(nurse_id):
+    return next((nurse['username'] for nurse in nurses if nurse['id'] == nurse_id), "Unknown Nurse")
+
 # ------------------------- Custom filter to format time ------------------------------------------------------------
 @app.template_filter('format_time')
 def format_time(value):
@@ -266,24 +282,60 @@ def uploaded_file(filename):
 @app.route('/')
 def index():
     username = session.get('username')
-    role = session.get('role')  # Ensure role is stored in session or retrieved from the database
-    return render_template('index.html', username=username, role=role)
+    role = session.get('role')  
 
+        # Fetch user based on role
+    user = None
+    if role == 'admin' and username == admin.get('username'):
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+
+    return render_template('index.html', user=user, username=username, role=role)
+# -------------------------------------------------------------------------------------------------------------------
+
+# ----------------------------- MEETING FUNCTION -------------------------------------------------------------------
 @app.route('/meeting')
 def meeting():
     username = session.get('username')
     role = session.get('role')  
-    return render_template('meeting.html', username=username, role=role)
+
+     # Fetch user based on role
+    user = None
+    if role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+
+    return render_template('meeting.html', username=username, role=role, user=user)
 
 # MEETING
 @app.route("/join", methods=["GET", "POST"])
 def join():
     username = session.get('username')
     role = session.get('role')  
+
+     # Fetch user based on role
+    user = None
+    if role == 'admin' and username == admin.get('username'):
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+
     if request.method == "POST":
         room_id = request.form.get("roomID")
         return redirect(f"/meeting?roomID={room_id}")
-    return render_template("join.html", username=username, role=role)
+    return render_template("join.html", username=username, role=role, user=user)
 
 # -------------------------- Auth ---------------------------------------------------------------------
 # Register Function
@@ -346,41 +398,81 @@ def login():
             if not username or not password:
                 return render_template('Auth/login.html', message="Username and password are required.", error=True)
 
-            # Check if the user is an admin
+            # Check if the user is an ADMIN
             if username == admin['username'] and password == admin['password']:
                 session['username'] = username
                 session['role'] = 'admin'
+                role = session.get('role')  
+
+                 # Fetch user based on role
+                user = None
+                if role == 'admin' and username == admin.get('username'):
+                    user = admin
+
                 if remember_me:
                     session.permanent = True
-                return render_template('Admin/admin_dashboard.html', username=username, doctors=doctors, nurses=nurses)
 
-            # Check if the user is a Doctor
+                return render_template('Admin/admin_dashboard.html', username=username, doctors=doctors, user=user, nurses=nurses)
+
+              # Check if the user is a DOCTOR
             for user in doctors:
                 if username == user['username'] and password == user['password']:
-                        session['username'] = username
-                        session['role'] = user['role'].lower()
-                        if remember_me:
-                            session.permanent = True
-                        return redirect(url_for('doctor_dashboard'))
+                    session['username'] = username
+                    session['id'] = user['id']  # Use user['id'] here instead of doctor['id']
+                    session['role'] = user['role'].lower()
 
-            # Check if the user is a Nurse
+                    role = session.get('role')  
+                
+                    # Fetch user based on role
+                    user = None
+                    if role == 'doctor':
+                        user = next((doc for doc in doctors if doc['username'] == username), None)
+                
+                    if remember_me:
+                        session.permanent = True
+
+                    # Debugging: print session doctor_id after login
+                    print(f"Session doctor_id after login: {session.get('id')}")
+                    return render_template('Doctor/doctor_dashboard.html', role=role, username=username, user=user)
+
+            # Check if the user is a NURSE
             for user in nurses:
                 if username == user['username'] and password == user['password']:
                         session['username'] = username
+                        session['id'] = user['id']  # Use user['id'] here instead of nurse['id']
                         session['role'] = user['role'].lower()
+
+                        role = session.get('role')  
+                
+                         # Fetch user based on role
+                        user = None
+                        if role == 'nurse':
+                             user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+                        
+
                         if remember_me:
                             session.permanent = True
-                        return redirect(url_for('nurse_dashboard'))
 
-            # Check if the user is a patient
+                        # Debugging: print session doctor_id after login
+                        print(f"Session nurse_id after login: {session.get('id')}")
+                        return render_template('Nurse/nurse_dashboard.html', role=role,username=username,user=user)
+
+            # Check if the user is a PATIENT
             for patient in patients:
                 if username == patient['username'] and password == patient['password']:
                     session['id'] = patient['id']
                     session['username'] = username
                     session['role'] = 'patient'
+                    role = session.get('role')  
+                
+                    # Fetch user based on role
+                    user = None
+                    if role == 'patient':
+                        user = next((pat for pat in patients if pat['username'] == username), None)
+
                     if remember_me:
                         session.permanent = True
-                    return redirect(url_for('index'))
+                    return render_template('index.html', role=role,username=username,user=user)
 
             # Failed login
             return render_template('Auth/login.html', message="Invalid username or password.", error=True)
@@ -394,6 +486,7 @@ def login():
 def logout():
     session.pop('username', None)
     session.pop('role', None)
+    session.clear()  # Clears all session data
     return redirect(url_for('index'))
 
 # Forgot Password
@@ -532,7 +625,7 @@ def edit_profile():
 
         return redirect(url_for('view_profile'))
 
-    return render_template('Profile/view_profile.html', user=user, role=role)
+    return render_template('Profile/view_profile.html', user=user, role=role, username=username)
 # ---------------------------------------------------------------------------------------------------
 
 # -------------------------- Patient --------------------------------------------------------------------------
@@ -543,9 +636,21 @@ def patient_dashboard():
     role = session.get('role')  # Ensure role is stored in session or retrieved from the database
     if role != 'patient':
         return redirect(url_for('index'))  # Redirect to the index page if not logged in as patient
-    return render_template('index.html', username=username, appointments=appointments)
+    
+    # Retrieve the user based on role
+    user = None
+    if role == 'admin' and username == admin['username']:
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
 
-# Patient Book Telemedicine Appointment
+    return render_template('index.html', username=username, user=user, role=role, appointments=appointments)
+
+# ------------------------------------------- Patient Book Telemedicine Appointment ---------------------------------------------------
 @app.route('/patient/telemedicine', methods=['GET', 'POST'])
 def book_telemedicine_appointment():
     if 'id' not in session:
@@ -553,55 +658,78 @@ def book_telemedicine_appointment():
     
     username = session.get('username')
     role = session.get('role')
-    current_date = datetime.now().strftime('%Y-%m-%d')  # Get current date in YYYY-MM-DD format
-    
+    current_date = datetime.now().strftime('%Y-%m-%d')
+
+    # Retrieve the user based on role
+    user = None
+    if role == 'admin' and username == admin['username']:
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+
     if request.method == 'POST':
         patient_id = session.get('id')
         if not patient_id:
             return redirect(url_for('login'))
-        
-        # Validate form data here
+
         try:
+            # Retrieve form data
+            selected_doctor_id = request.form.get('person')
+            appointment_date = request.form.get('date')
+            appointment_time = request.form.get('time')
+
+            # Validate the form fields
+            if not selected_doctor_id or not appointment_date or not appointment_time:
+                error_message = "All fields are required."
+                return render_template('Patient/telemedicine.html',
+                                    username=username,
+                                    user=user,
+                                    role=role,
+                                    current_date=current_date,
+                                    doctors=doctors,
+                                    error_message=error_message)
+
+            # Convert doctor_id to integer
+            doctor_id = int(selected_doctor_id)
+
+            # Create new appointment
             new_appointment = {
                 'id': len(appointments) + 1,
                 'patient_id': patient_id,
-                'doctor_id': int(request.form['doctor']),
-                'date': request.form['date'],
-                'time': request.form['time'],
+                'doctor_id': doctor_id,
+                'person_id': doctor_id,  # For telemedicine, person_id is the same as doctor_id
+                'date': appointment_date,
+                'time': appointment_time,
                 'type': 'telemedicine'
             }
             appointments.append(new_appointment)
-            
-            patient_appointments = [app for app in appointments if app['patient_id'] == patient_id]
-            
-            # Set success message
-             # Flash success message
+
+            # Flash success message
             flash("Appointment has been made successfully!", "success")
-            return render_template('Patient/patient_appointments.html',
-                                  username=username,
-                                  role=role,
-                                  appointments=patient_appointments,
-                                  current_date=current_date,
-                                  doctors=doctors)  
+            return redirect(url_for('patient_appointments'))
 
         except Exception as e:
-            # Log the error (you can use logging here)
-            print(f"Error booking appointment: {e}")
-            return render_template('Patient/patient_appointments.html',
-                                  username=username,
-                                  role=role,
-                                  appointments=patient_appointments,
-                                  current_date=current_date,
-                                  doctors=doctors,
-                                  success_message="Failed to book the appointment. Please try again.")  # Pass failure message
+            print(f"Error booking telemedicine appointment: {e}")
+            return render_template('Patient/telemedicine.html',
+                                username=username,
+                                user=user,
+                                role=role,
+                                current_date=current_date,
+                                doctors=doctors,
+                                error_message="Failed to book the appointment. Please try again.")
     
-    return render_template('Patient/telemedicine.html', 
-                          doctors=doctors, 
-                          username=username, 
-                          role=role, 
-                          current_date=current_date)  # Ensure doctors is included here
+    return render_template('Patient/telemedicine.html',
+                        username=username,
+                        user=user,
+                        role=role,
+                        current_date=current_date,
+                        doctors=doctors)
 
-# Patient Book Home Visit 
+# --------------------------------- Patient Book Home Visit -------------------------------------------------------
 @app.route('/patient/home_visit', methods=['GET', 'POST'])
 def book_home_visit_appointment():
     if 'id' not in session:
@@ -611,6 +739,18 @@ def book_home_visit_appointment():
     role = session.get('role')
     current_date = datetime.now().strftime('%Y-%m-%d')
     
+
+# Retrieve the user based on role
+    user = None
+    if role == 'admin' and username == admin['username']:
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+
     if request.method == 'POST':
         patient_id = session.get('id')
         if not patient_id:
@@ -626,6 +766,7 @@ def book_home_visit_appointment():
                 error_message = "All fields are required."
                 return render_template('Patient/home_visit.html',
                                       username=username,
+                                      user=user,
                                       role=role,
                                       current_date=current_date,
                                       doctors=doctors,
@@ -654,6 +795,7 @@ def book_home_visit_appointment():
             print(f"Error booking home visit appointment: {e}")
             return render_template('Patient/home_visit.html',
                                   username=username,
+                                  user=user,
                                   role=role,
                                   current_date=current_date,
                                   doctors=doctors,
@@ -662,32 +804,56 @@ def book_home_visit_appointment():
     
     return render_template('Patient/home_visit.html',
                           username=username,
+                          user=user,
                           role=role,
                           current_date=current_date,
                           doctors=doctors,
                           nurses=nurses)
 
-# Patient View Appointment
+# --------------------------------- Patient View Appointment -------------------------------------------------
+from datetime import datetime
+
 @app.route('/patient/appointments')
 def patient_appointments():
     patient_id = session.get('id')
     
-    # Fetch appointments from the database
+    # Fetch appointments for the current patient
     patient_appointments = [app for app in appointments if app['patient_id'] == patient_id]
 
-    # Sort appointments by date and time
-    patient_appointments.sort(key=lambda x: (datetime.strptime(x['date'], '%Y-%m-%d'), x['time']))
-    
-    # Fetch doctors and nurses data from the database
-    doctors = get_doctors()  # Replace with actual data retrieval function
-    nurses = get_nurses()    # Replace with actual data retrieval function
-
+    # Print to debug appointment data
+    for appointment in patient_appointments:
+        print(f"Appointment: {appointment}")
+ 
     current_date = datetime.now().strftime('%Y-%m-%d')
     username = session.get('username')
     role = session.get('role')
 
+    # Ensure time format consistency by stripping leading/trailing spaces
+    for app in patient_appointments:
+        app['time'] = app['time'].strip()  # Remove extra spaces
+
+    # Sort the filtered appointments from latest to earliest by date and time
+    try:
+        patient_appointments.sort(
+            key=lambda app: datetime.strptime(f"{app['date']} {app['time']}", '%Y-%m-%d %I:%M %p'),
+        )
+    except ValueError as e:
+        print(f"Error in datetime format: {e}")
+    
+    # Retrieve the user based on role
+    user = None
+    if role == 'admin' and username == admin['username']:
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+
     return render_template(
         'Patient/patient_appointments.html',
+        user=user,
         username=username,
         role=role,
         appointments=patient_appointments,
@@ -696,17 +862,28 @@ def patient_appointments():
         nurses=nurses
     )
 
-# Patient View Prescription
+# ------------------------- Patient View Prescription ------------------------------------------------------------
 @app.route('/patient_view_prescription')
 def patient_view_prescription():
     username = session.get('username')
     role = session.get('role')
 
+# Retrieve the user based on role
+    user = None
+    if role == 'admin' and username == admin['username']:
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+
     if role not in ['patient']:
         return redirect(url_for('index'))  # Redirect if not a doctor or nurse
 
     user_prescriptions = [pres for pres in prescriptions]
-    return render_template('Patient/patient_prescription.html', prescriptions=user_prescriptions,role=role)
+    return render_template('Patient/patient_prescription.html', user=user, username=username, prescriptions=user_prescriptions, role=role)
 
 # View Doctors List
 @app.route('/view_doctors', methods=['GET', 'POST'])
@@ -716,13 +893,24 @@ def view_doctors():
     search = request.args.get('search', '')
     specialization = request.args.get('specialization', '')
 
+ # Retrieve the user based on role
+    user = None
+    if role == 'admin' and username == admin['username']:
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+
     # Filtering
     filtered_doctors = doctors
     if search:
         filtered_doctors = [doc for doc in filtered_doctors if search.lower() in doc['username'].lower()]
     if specialization:
         filtered_doctors = [doc for doc in filtered_doctors if doc['specialization'] == specialization]
-    return render_template('view_doctors.html', doctors=filtered_doctors, role=role)
+    return render_template('view_doctors.html', doctors=filtered_doctors, role=role, user=user, username=username)
 
 # View Nurse List
 @app.route('/view_nurses')
@@ -732,13 +920,24 @@ def view_nurses():
     search = request.args.get('search', '')
     specialization = request.args.get('specialization', '')
 
+# Retrieve the user based on role
+    user = None
+    if role == 'admin' and username == admin['username']:
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+
     # Filtering 
     filtered_nurses = nurses
     if search:
         filtered_nurses = [doc for doc in filtered_nurses if search.lower() in doc['username'].lower()]
     if specialization:
         filtered_nurses = [doc for doc in filtered_nurses if doc['specialization'] == specialization]
-    return render_template('view_nurses.html', nurses=filtered_nurses, role=role)
+    return render_template('view_nurses.html', nurses=filtered_nurses, role=role, user=user, username=username)
 # -------------------------------------------------------------------------------------------------------------
 
 # ----------------------------------- Get Doctors & Nurses Information ----------------------------------------
@@ -762,6 +961,17 @@ def get_nurses():
 def write_prescription():
     username = session.get('username')
     role = session.get('role')
+
+# Retrieve the user based on role
+    user = None
+    if role == 'admin' and username == admin['username']:
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
 
     if not role or role not in ['doctor', 'nurse']:
         return redirect(url_for('index'))  # Redirect if not a doctor or nurse
@@ -788,7 +998,7 @@ def write_prescription():
         return redirect(url_for('view_prescriptions'))
 
     patient_list = [pat for pat in patients]
-    return render_template('Prescription/write_prescription.html', patients=patient_list, role=role, username=username, nurse=nurse, doctor=doctor)
+    return render_template('Prescription/write_prescription.html', patients=patient_list, role=role, username=username, nurse=nurse, doctor=doctor, user=user)
 
 # Doctor & Nurse View Prescription
 @app.route('/view_prescriptions')
@@ -796,11 +1006,22 @@ def view_prescriptions():
     username = session.get('username')
     role = session.get('role')
 
+# Retrieve the user based on role
+    user = None
+    if role == 'admin' and username == admin['username']:
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+
     if role not in ['doctor', 'nurse']:
         return redirect(url_for('index'))  # Redirect if not a doctor or nurse
 
     user_prescriptions = [pres for pres in prescriptions]
-    return render_template('Prescription/view_prescriptions.html', prescriptions=user_prescriptions,role=role, username=username, nurse=nurse, doctor=doctor)
+    return render_template('Prescription/view_prescriptions.html', prescriptions=user_prescriptions,role=role, username=username, nurse=nurse, doctor=doctor, user=user)
 
 # Prescription Page
 @app.route('/prescription',methods=['GET'])
@@ -808,10 +1029,21 @@ def prescription_options():
     username = session.get('username')
     role = session.get('role')
     
+    # Retrieve the user based on role
+    user = None
+    if role == 'admin' and username == admin['username']:
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+
     if not username:
         return redirect(url_for('login'))
     
-    return render_template('Prescription/prescription.html', username=username, role=role)
+    return render_template('Prescription/prescription.html', username=username, role=role, user=user)
 # -----------------------------------------------------------------------------------------------------------------
 
 # ----------------------------- Doctor -----------------------------------------------------------------------
@@ -822,16 +1054,63 @@ def doctor_dashboard():
     role = session.get('role')  # Ensure role is stored in session or retrieved from the database
     if role != 'doctor':
         return redirect(url_for('index'))  # Redirect to the index page if not logged in as doctor
-    return render_template('Doctor/doctor_dashboard.html', username=username, appointments=appointments)
+     # Fetch user based on role
+    user = None
+    if role == 'admin' and username == admin.get('username'):
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+    return render_template('Doctor/doctor_dashboard.html', user=user, role=role, username=username, appointments=appointments)
 
 # Doctor MY Appointment
+# --------------------------------- Doctor View Appointments -------------------------------------------------
 @app.route('/doctor/appointments')
 def doctor_appointments():
     doctor_id = session.get('id')
-    doctor_appointments = [app for app in appointments if app.get('doctor_id') == doctor_id]
-    username = session.get('username')
     role = session.get('role')
-    return render_template('Doctor/doctor_appointments.html', username=username, role=role, appointments=doctor_appointments)
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    username = session.get('username')
+
+    if not doctor_id or role != 'doctor':
+        return redirect(url_for('login'))
+
+    doctor_id = int(doctor_id)
+
+    # Debugging: Print the doctor_id and the appointments list
+    print(f"Doctor ID: {doctor_id}")
+    print(f"Appointments: {appointments}")
+    
+    # Filter appointments for the logged-in doctor
+    filtered_appointments = [app for app in appointments if app.get('doctor_id') == doctor_id]
+
+    # Debugging: Print the filtered appointments
+    print(f"Filtered Appointments: {filtered_appointments}")
+
+    # Sort the filtered appointments from latest to earliest by date
+    filtered_appointments.sort(
+        key=lambda app: datetime.strptime(f"{app['date']} {app['time']}", '%Y-%m-%d %I:%M %p')
+    )
+    
+    # Assuming `doctors` and `patients` are lists of dictionaries
+    user = next((doc for doc in doctors if doc['username'] == username), None)
+    patients = []  # Make sure to populate the patients list here
+
+    # Pass patients to the template
+    return render_template(
+        'Doctor/doctor_appointments.html',
+        user=user,
+        role=role,
+        username=username,
+        appointments=filtered_appointments,  # Pass filtered appointments
+        current_date=current_date,
+        doctors=doctors,  # Pass the list of doctors to the template
+        patients=patients  # Pass the list of patients to the template
+    )
+
 # -------------------------------------------------------------------------------------------------------------------------
 
 # --------------------------------- Nurse --------------------------------------------------------------------------
@@ -842,16 +1121,61 @@ def nurse_dashboard():
     role = session.get('role')  # Ensure role is stored in session or retrieved from the database
     if role != 'nurse':
         return redirect(url_for('index'))  # Redirect to the index page if not logged in as nurse
-    return render_template('Nurse/nurse_dashboard.html', role=role, nurse=nurse, username=username, appointments=appointments)
+    
+    user = None
+    if role == 'admin' and username == admin.get('username'):
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+    return render_template('Nurse/nurse_dashboard.html', role=role, nurse=nurse, user=user, username=username, appointments=appointments)
 
 # Nurse MY Appointment
 @app.route('/nurse/appointments')
 def nurse_appointments():
     nurse_id = session.get('id')
-    nurse_appointments = [app for app in appointments if app.get('nurse_id') == nurse_id]
-    username = session.get('username')
     role = session.get('role')
-    return render_template('Nurse/nurse_appointments.html', username=username, role=role, appointments=nurse_appointments)
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    username = session.get('username')
+
+    if not nurse_id or role != 'nurse':
+        return redirect(url_for('login'))
+
+    nurse_id = int(nurse_id)
+
+    # Debugging: Print the nurse_id and the appointments list
+    print(f"Nurse ID: {nurse_id}")
+    print(f"Appointments: {appointments}")
+    
+    # Filter appointments for the logged-in nurse
+    filtered_appointments = [app for app in appointments if app.get('nurse_id') == nurse_id]
+
+    # Debugging: Print the filtered appointments
+    print(f"Filtered Appointments: {filtered_appointments}")
+
+    # Assuming `nurses` and `patients` are lists of dictionaries
+    user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    patients = []  # Make sure to populate the patients list here
+
+    # Sort the filtered appointments from latest to earliest by date
+    filtered_appointments.sort(
+        key=lambda app: datetime.strptime(f"{app['date']} {app['time']}", '%Y-%m-%d %I:%M %p')
+    )
+
+    # Pass patients to the template
+    return render_template(
+        'Nurse/nurse_appointments.html',
+        user=user,
+        role=role,
+        username=username,
+        appointments=filtered_appointments,  # Pass filtered appointments
+        current_date=current_date,
+        nurses=nurses,  # Pass the list of nurses to the template
+        patients=patients  # Pass the list of patients to the template
+    )
 # -------------------------------------------------------------------------------------------------------------------------
 
 # ----------------------------- Admin ------------------------------------------------------------------------------
@@ -862,7 +1186,17 @@ def admin_dashboard():
     role = session.get('role')  # Ensure role is stored in session or retrieved from the database
     if role != 'admin':
         return redirect(url_for('index'))  # Redirect to the index page if not logged in as admin
-    return render_template('Admin/admin_dashboard.html', username=username, doctors=doctors, nurses=nurses)
+    
+    user = None
+    if role == 'admin' and username == admin.get('username'):
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+    return render_template('Admin/admin_dashboard.html', user=user, username=username, doctors=doctors, nurses=nurses)
 
 # Admin View Doctors List
 @app.route('/admin/view_doctors', methods=['GET', 'POST'])
@@ -879,21 +1213,17 @@ def admin_view_doctors():
    if specialization:
         filtered_doctors = [doc for doc in filtered_doctors if doc['specialization'] == specialization]
 
-   return render_template('Admin/admin_view_doctors.html', doctors=filtered_doctors, username=username, role=role)
-
-# Admin View Doctor Intro
-@app.route('/admin/view_intro/<int:doctor_id>', methods=['GET'])
-def admin_view_intro(doctor_id):
-    print(f"Requested doctor ID: {doctor_id}")
-    doctor = next((d for d in doctors if d['id'] == doctor_id), None)
-    
-    if doctor:
-        print(f"Doctor found: {doctor}")
-        return jsonify(intro=doctor['intro'])
-    else:
-        print("Doctor not found")
-        return jsonify(error="Doctor not found"), 404
-
+   user = None
+   if role == 'admin' and username == admin.get('username'):
+        user = admin
+   elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+   elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+   elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+ 
+   return render_template('Admin/admin_view_doctors.html', doctors=filtered_doctors, user=user, username=username, role=role)
     
 # Admin View Nurse List
 @app.route('/admin/nurses', methods=['GET', 'POST'])
@@ -910,14 +1240,25 @@ def admin_view_nurses():
     if specialization:
         filtered_nurses = [doc for doc in filtered_nurses if doc['specialization'] == specialization]
 
-    return render_template('Admin/admin_view_nurses.html', nurses=filtered_nurses, username=username, role=role)
+
+    user = None
+    if role == 'admin' and username == admin.get('username'):
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+
+    return render_template('Admin/admin_view_nurses.html', user=user, nurses=filtered_nurses, username=username, role=role)
 
 # Delete Patient (Admin Only)
 @app.route('/admin/patients/delete/<int:patient_id>', methods=['POST'])
 def admin_delete_patient(patient_id):
     global patients
     patients = [pat for pat in patients if pat['id'] != patient_id]
-    return redirect(url_for('admin_view_patients'))
+    return redirect(url_for('view_patients'))
 
 # Delete Doctor (Admin Only)
 @app.route('/admin/doctors/delete/<int:doctor_id>', methods=['POST'])
@@ -994,8 +1335,73 @@ def register_team():
         
         except BadRequestKeyError:
             return render_template('Admin/register_team.html', message="Bad request. Please try again.", error=True)
-
+   
     return render_template('Admin/register_team.html')
+
+# Admin Edit Doctor Information
+@app.route('/admin/doctors/edit/<int:doctor_id>', methods=['GET', 'POST'])
+def admin_edit_doctor(doctor_id):
+    # Find the doctor to edit by their ID
+    doctor_to_edit = next((doc for doc in doctors if doc['id'] == doctor_id), None)
+    
+    if not doctor_to_edit:
+        return redirect(url_for('admin_view_doctors'))  # If doctor is not found, redirect back to the doctor list
+
+    if request.method == 'POST':
+        # Get the updated data from the form
+        doctor_to_edit['username'] = request.form['username']
+        doctor_to_edit['email'] = request.form['email']
+        doctor_to_edit['specialization'] = request.form['specialization']
+        doctor_to_edit['contactNumber'] = request.form['contactNumber']
+        doctor_to_edit['intro'] = request.form['intro']
+
+        # Save the updated doctor data (in real-world use, save to a database)
+        return redirect(url_for('admin_view_doctors'))  # After editing, redirect back to the doctors list
+
+    return render_template('Admin/admin_edit_doctor.html', doctor=doctor_to_edit)
+
+# Admin Edit Nurse Information
+@app.route('/admin/nurses/edit/<int:nurse_id>', methods=['GET', 'POST'])
+def admin_edit_nurse(nurse_id):
+    # Find the nurse to edit by their ID
+    nurse_to_edit = next((nurse for nurse in nurses if nurse['id'] == nurse_id), None)
+    
+    if not nurse_to_edit:
+        return redirect(url_for('admin_view_nurses'))  
+
+    if request.method == 'POST':
+        # Get the updated data from the form
+        nurse_to_edit['username'] = request.form['username']
+        nurse_to_edit['email'] = request.form['email']
+        nurse_to_edit['specialization'] = request.form['specialization']
+        nurse_to_edit['contactNumber'] = request.form['contactNumber']
+        nurse_to_edit['intro'] = request.form['intro']
+
+        # Save the updated nurse data (in real-world use, save to a database)
+        return redirect(url_for('admin_view_nurses'))  # After editing, redirect back to the nurses list
+
+    return render_template('Admin/admin_edit_nurse.html', nurse=nurse_to_edit)
+
+# Admin Edit Patient Information
+@app.route('/admin/patients/edit/<int:patient_id>', methods=['GET', 'POST'])
+def admin_edit_patient(patient_id):
+    # Find the patient to edit by their ID
+    patient_to_edit = next((pat for pat in patients if pat['id'] == patient_id), None)
+    
+    if not patient_to_edit:
+        return redirect(url_for('view_patients'))  
+
+    if request.method == 'POST':
+        # Get the updated data from the form
+        patient_to_edit['username'] = request.form['username']
+        patient_to_edit['email'] = request.form['email']
+        patient_to_edit['contactNumber'] = request.form['contactNumber']
+        patient_to_edit['address'] = request.form['address']
+
+        # Save the updated patient data (in real-world use, save to a database)
+        return redirect(url_for('view_patients'))  # After editing, redirect back to the patients list
+
+    return render_template('Admin/admin_edit_patient.html', patient=patient_to_edit)
 
 # Admin to View All Appointment
 @app.route('/admin/appointments')
@@ -1004,7 +1410,18 @@ def admin_appointments():
     appointments_sorted = sorted(appointments, key=lambda x: (datetime.strptime(x['date'], '%Y-%m-%d'), x['time']))
     username = session.get('username')
     role = session.get('role')
-    return render_template('Admin/admin_appointments.html', appointments=appointments_sorted, doctors=doctors, username=username, role=role)
+    current_date = datetime.now().strftime('%Y-%m-%d')
+
+    user = None
+    if role == 'admin' and username == admin.get('username'):
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+    return render_template('Admin/admin_appointments.html', appointments=appointments_sorted, current_date=current_date, user=user, doctors=doctors, nurses=nurses, username=username, role=role)
 
 # ---------------------- Admin/Doctor/Nurse Medical Stock Management Function --------------------------------------------------
 
@@ -1021,13 +1438,33 @@ def view_medication():
         except (ValueError, TypeError) as e:
             print(f"Error formatting price {med['price']}: {e}")
             med['price'] = "0.00"  # Default value in case of error
-    return render_template('Medication/view_stock.html', medications=medications, username=username, role=role)
+
+    user = None
+    if role == 'admin' and username == admin.get('username'):
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+    return render_template('Medication/view_stock.html', medications=medications, user=user, username=username, role=role)
 
 # Add Medical To Stock
 @app.route('/medication/add', methods=['GET', 'POST'])
 def add_medication():
     username = session.get('username')
     role = session.get('role')
+
+    user = None
+    if role == 'admin' and username == admin.get('username'):
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
 
     if request.method == 'POST':
         # Handle file upload
@@ -1050,13 +1487,23 @@ def add_medication():
         medications.append(new_medication)
         flash('Medication added successfully!')
         return redirect(url_for('view_medication'))
-    return render_template('Medication/add_stock.html', medications=medications, username=username, role=role)
+    return render_template('Medication/add_stock.html', medications=medications, user=user, username=username, role=role)
 
 # Edit Medical Stock
 @app.route('/medication/edit/<int:id>', methods=['GET', 'POST'])
 def edit_medication(id):
     username = session.get('username')
     role = session.get('role')
+
+    user = None
+    if role == 'admin' and username == admin.get('username'):
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
 
     medication = next((med for med in medications if med['id'] == id), None)
     if not medication:
@@ -1081,7 +1528,7 @@ def edit_medication(id):
         flash('Medication updated successfully!')
         return redirect(url_for('view_medication'))
 
-    return render_template('Medication/edit_stock.html', medication=medication, username=username, role=role)
+    return render_template('Medication/edit_stock.html', medication=medication, user=user, username=username, role=role)
 
 # Delete Medical Stock
 @app.route('/medication/delete/<int:id>')
@@ -1101,13 +1548,22 @@ def view_patients():
     role = session.get('role')
     search_query = request.args.get('search', '').lower()
 
+    user = None
+    if role == 'admin' and username == admin.get('username'):
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None) 
     # Filter patients based on the search query
     filtered_patients = [
         patient for patient in patients 
         if search_query in patient['username'].lower() 
     ]
 
-    return render_template('view_patients.html',username=username, patients=filtered_patients, role=role)
+    return render_template('view_patients.html',username=username, user=user, patients=filtered_patients, role=role)
 
 # View Patient Address
 @app.route('/view_address/<int:patient_id>', methods=['GET'])

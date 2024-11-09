@@ -1,0 +1,142 @@
+{% extends "layout.html" %}
+
+{% block title %}View Doctors{% endblock %}
+
+{% block extra_css %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>View Doctors</title>
+    <style>
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #fff;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #006edc;
+            color: white;
+        }
+
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #006edc;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        a:hover {
+            background-color: #1f6399;
+        }
+
+        /* Style for the search bar container */
+form {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+/* Style for the search input field */
+form input[type="text"] {
+    padding: 10px;
+    width: 300px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px;
+    outline: none;
+}
+
+/* Style for the search button */
+form button {
+    padding: 10px 20px;
+    background-color: #006edc;
+    color: white;
+    font-size: 16px;
+    border: 1px solid #1f6399;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #4f84a7;
+}
+/* Ensure the search bar and table are responsive */
+@media (max-width: 768px) {
+    form input[type="text"] {
+        width: 60%;
+    }
+    
+    form button {
+        padding: 10px;
+    }
+}
+
+.btn-danger {
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    background-color: #c82333;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+    <h1>Doctor List</h1>
+    
+     <!-- Search Form -->
+     <form method="GET" action="{{ url_for('patient_view_doctors') }}">
+        <input type="text" name="search" placeholder="Search by doctor username" value="{{ request.args.get('search', '') }}">
+        <button type="submit"><i class="fa fa-search"></i></button>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Contact Number</th>
+                <th>Specialization</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for doctor in doctors %}
+            <tr>
+                <td>{{ doctor.id }}</td>
+                <td>{{ doctor.username }}</td>
+                <td>{{ doctor.email }}</td>
+                <td>{{ doctor.contactNumber }}</td>
+                <td>{{ doctor.specialization }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    {% endblock %}
+    
+

@@ -161,6 +161,7 @@
 
 .logout-btn:hover {
     background-color: #e35656;
+    transform: translateY(-2px);
 }
 
 main {
@@ -204,16 +205,24 @@ main {
     background-color: #e35656;
 }
 
+.user-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
     </style>
 </head>
 <body>
     <div class="sidebar" id="sidebar">
        
         <div class="profile-section">
-            <img src="https://cdn-icons-png.flaticon.com/512/9193/9193824.png" alt="Profile Image">
+            <img src="{{ user.pimage }}" alt="Profile Image" class="user-image">
             <div class="profile-info">
                 <span>Welcome Back,</span>
-                <strong>Doctor</strong>
+                <strong>{{ user.username }}</strong>
             </div>
         </div>
         

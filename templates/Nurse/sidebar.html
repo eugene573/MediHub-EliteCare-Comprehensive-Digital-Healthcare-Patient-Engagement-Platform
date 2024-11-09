@@ -160,6 +160,7 @@
 
 .logout-btn:hover {
     background-color: #e35656;
+    transform: translateY(-2px);
 }
 
 main {
@@ -201,17 +202,26 @@ main {
 }
 .sidebar.collapsed .logout-btn:hover {
     background-color: #e35656;
+    transform: translateY(-2px);
 }
 
+.user-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
     </style>
 </head>
 <body>
     <div class="sidebar" id="sidebar">
         <div class="profile-section">
-            <img src="https://static.vecteezy.com/system/resources/previews/001/880/227/non_2x/nurse-professional-avatar-character-icon-free-vector.jpg" alt="Profile Image">
+            <img src="{{ user.pimage }}" alt="Profile Image" class="user-image">
             <div class="profile-info">
                 <span>Welcome Back,</span>
-                <strong>Nurse</strong>
+                <strong>{{ user.username }}</strong>
             </div>
         </div>
         <div class="menu">

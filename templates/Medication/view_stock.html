@@ -90,7 +90,7 @@ table td {
 }
 
 table th {
-    background-color: #0056b3;
+    background-color: #006edc;
     color: #fff;
 }
 
@@ -109,7 +109,7 @@ table img {
 
 /* Edit Action Links */
 .edit-link {
-            color: #0056b3;
+            color: #006edc;
             text-decoration: none;
             margin-right: 10px;
         }
@@ -171,7 +171,7 @@ table img {
                 <td>
                     <a href="{{ url_for('edit_medication', id=medication.id) }}" class="edit-link"><i class="fas fa-pen"></i></a>
                   
-                    <a href="{{ url_for('delete_medication', id=medication.id) }}" class="delete-link" onclick="return confirm('Are you sure to delete it?')"><i class="fas fa-trash"></i></a>
+                    <a href="{{ url_for('delete_medication', id=medication.id) }}" class="delete-link" onclick="return confirm('Are you sure to delete it?')"><i class="fas fa-trash" ></i></a>
                 </td>
             </tr>
             {% endfor %}

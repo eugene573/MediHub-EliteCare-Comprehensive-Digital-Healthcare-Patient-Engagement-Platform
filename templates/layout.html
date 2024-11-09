@@ -116,6 +116,7 @@ header h1 {
 
 .logout-btn:hover {
             background-color: #d32f2f; /* Darker red on hover */
+            transform: translateY(-2px);
         }
 
 @media (max-width: 768px) {
@@ -139,6 +140,16 @@ footer {
     margin-top: auto; /* Ensures footer stays at the bottom */
 }
 
+
+.user-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
     </style>
 </head>
 <body>
@@ -155,11 +166,11 @@ footer {
                     <a class="dropdown-item" href="/view_nurses">Nurse</a>
                 </div>
             </div>
-            <a class="btn" href="/admin/dashboard">Admin Dashboard</a>
+            <a class="btn" href="/admin/dashboard">Dashboard</a>
             <div class="dropdown">
-                <button class="btn dropdown-toggle">View</button>
+                <button class="btn dropdown-toggle"><img src="{{ user.pimage }}" alt="Profile Image" class="user-image"></button>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{{ url_for('view_profile') }}">My Profile</a>
+                    <a class="dropdown-item" href="{{ url_for('view_profile') }}">Profile</a>
                     <form action="/logout" method="post" style="display:inline;">
                         <button type="submit" class="logout-btn" onClick="return confirm('Are you sure you want to logout?')">Logout</button>
                     </form>
@@ -175,7 +186,7 @@ footer {
                     <a class="dropdown-item" href="/view_nurses">Nurse</a>
                 </div>
             </div>
-            <a class="btn" href="/doctor/dashboard">Doctor Dashboard</a>
+            <a class="btn" href="/doctor/dashboard">Dashboard</a>
         
             <div class="dropdown">
                 <button class="btn dropdown-toggle">Meeting</button>
@@ -186,10 +197,10 @@ footer {
             </div>
             
             <div class="dropdown">
-                <button class="btn dropdown-toggle">View</button>
+                <button class="btn dropdown-toggle"><img src="{{ user.pimage }}" alt="Profile Image" class="user-image"></button>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{{ url_for('view_profile') }}">My Profile</a>
-                    <a class="dropdown-item" href="/doctor/appointments">My Appointment</a>
+                    <a class="dropdown-item" href="{{ url_for('view_profile') }}">Profile</a>
+                    <a class="dropdown-item" href="/doctor/appointments">Appointment</a>
                     <form action="/logout" method="post" style="display:inline;">
                         <button type="submit" class="logout-btn" onClick="return confirm('Are you sure you want to logout?')">Logout</button>
                     </form>
@@ -205,7 +216,7 @@ footer {
                     <a class="dropdown-item" href="/view_nurses">Nurse</a>
                 </div>
             </div>
-            <a class="btn" href="/nurse/dashboard">Nurse Dashboard</a>
+            <a class="btn" href="/nurse/dashboard">Dashboard</a>
         
             <div class="dropdown">
                 <button class="btn dropdown-toggle">Meeting</button>
@@ -216,10 +227,10 @@ footer {
             </div>
         
             <div class="dropdown">
-                <button class="btn dropdown-toggle">View</button>
+                <button class="btn dropdown-toggle"><img src="{{ user.pimage }}" alt="Profile Image" class="user-image"></button>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{{ url_for('view_profile') }}">My Profile</a>
-                    <a class="dropdown-item" href="/doctor/appointments">My Appointment</a>
+                    <a class="dropdown-item" href="{{ url_for('view_profile') }}">Profile</a>
+                    <a class="dropdown-item" href="/doctor/appointments">Appointment</a>
                     <form action="/logout" method="post" style="display:inline;">
                         <button type="submit" class="logout-btn" onClick="return confirm('Are you sure you want to logout?')">Logout</button>
                     </form>
@@ -251,11 +262,11 @@ footer {
                 </div>
             </div>
             <div class="dropdown">
-                <button class="btn dropdown-toggle">View</button>
+                <button class="btn dropdown-toggle"><img src="{{ user.pimage }}" alt="Profile Image" class="user-image"></button>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{{ url_for('view_profile') }}">My Profile</a>
-                    <a class="dropdown-item" href="/patient/appointments">My Appointment</a>
-                    <a class="dropdown-item" href="/patient_view_prescription">My Prescription</a>
+                    <a class="dropdown-item" href="{{ url_for('view_profile') }}">Profile</a>
+                    <a class="dropdown-item" href="/patient/appointments">Appointment</a>
+                    <a class="dropdown-item" href="/patient_view_prescription">Prescription</a>
                     <form action="/logout" method="post" style="display:inline;">
                         <button type="submit" class="logout-btn" onClick="return confirm('Are you sure you want to logout?')">Logout</button>
                     </form>
