@@ -103,7 +103,11 @@ appointments = [
     {'id': 1, 'patient_id': 1, 'doctor_id': 5, 'date': '2024-08-12', 'time': '9:00 am - 10:00 am', 'type': 'telemedicine'},
     {'id': 2, 'patient_id': 3, 'doctor_id': 3, 'date': '2024-12-28', 'time': '1:00 pm - 2:00 pm', 'type': 'telemedicine'},
     {'id': 3, 'patient_id': 1, 'doctor_id': 1, 'date': '2024-08-25', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine'},
-    {'id': 4, 'patient_id': 2, 'nurse_id': 2, 'date': '2024-12-25', 'time': '3:00 pm - 4:00 pm', 'type': 'home visit'}
+    {'id': 4, 'patient_id': 1, 'nurse_id': 2, 'date': '2024-12-16', 'time': '3:00 pm - 4:00 pm', 'type': 'home visit'},
+
+    {'id': 5, 'patient_id': 1, 'doctor_id': 1, 'date': '2024-11-13', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine'},
+    {'id': 6, 'patient_id': 1, 'doctor_id': 1, 'date': '2024-11-13', 'time': '1:00 pm - 2:00 pm', 'type': 'home visit'},
+    {'id': 7, 'patient_id': 1, 'doctor_id': 1, 'date': '2024-11-13', 'time': '9:00 pm - 10:00 pm', 'type': 'telemedicine'}
 ]
 
 # Dummy data for prescriptions
@@ -276,8 +280,30 @@ def format_time(value):
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return f"File uploaded successfully: <img src='{url_for('static', filename='uploads/' + filename)}' alt='pimage'>"
+
+# Helper function to convert time to 24-hour format
+def convert_to_24hr_format(time_str):
+    return datetime.strptime(time_str, '%I:%M %p')  
+
+def merge_appointments(source_id, target_id):
+    source_appt = next((a for a in appointments if a['id'] == source_id), None)
+    target_appt = next((a for a in appointments if a['id'] == target_id), None)
+    
+    if source_appt and target_appt and source_appt['date'] == target_appt['date']:
+        source_appt['time'] = target_appt['time']
+        return True
+    return False
 # -----------------------------------------------------------------------------------------------------
 
+@app.route('/merge_appointments', methods=['POST'])
+def handle_merge():
+    source_id = int(request.form.get('source_id'))
+    target_id = int(request.form.get('target_id'))
+    
+    success = merge_appointments(source_id, target_id)
+    if success:
+        return jsonify({"status": "success"})
+    return jsonify({"status": "error", "message": "Could not merge appointments"}), 400
 # ----------------------------- Home Page -------------------------------------------------------------
 @app.route('/')
 def index():
@@ -811,8 +837,6 @@ def book_home_visit_appointment():
                           nurses=nurses)
 
 # --------------------------------- Patient View Appointment -------------------------------------------------
-from datetime import datetime
-
 @app.route('/patient/appointments')
 def patient_appointments():
     patient_id = session.get('id')
@@ -832,13 +856,11 @@ def patient_appointments():
     for app in patient_appointments:
         app['time'] = app['time'].strip()  # Remove extra spaces
 
-    # Sort the filtered appointments from latest to earliest by date and time
-    try:
-        patient_appointments.sort(
-            key=lambda app: datetime.strptime(f"{app['date']} {app['time']}", '%Y-%m-%d %I:%M %p'),
-        )
-    except ValueError as e:
-        print(f"Error in datetime format: {e}")
+    # Sort appointments by date and time
+    appointments_sorted = sorted(patient_appointments, key=lambda x: (
+        datetime.strptime(x['date'], '%Y-%m-%d'),
+        convert_to_24hr_format(x['time'].split(' - ')[0])  # Get the start time and convert to 24-hour format
+    ))
     
     # Retrieve the user based on role
     user = None
@@ -856,7 +878,7 @@ def patient_appointments():
         user=user,
         username=username,
         role=role,
-        appointments=patient_appointments,
+        appointments=appointments_sorted,
         current_date=current_date,
         doctors=doctors,
         nurses=nurses
@@ -1079,22 +1101,20 @@ def doctor_appointments():
         return redirect(url_for('login'))
 
     doctor_id = int(doctor_id)
-
-    # Debugging: Print the doctor_id and the appointments list
-    print(f"Doctor ID: {doctor_id}")
-    print(f"Appointments: {appointments}")
     
     # Filter appointments for the logged-in doctor
     filtered_appointments = [app for app in appointments if app.get('doctor_id') == doctor_id]
 
-    # Debugging: Print the filtered appointments
-    print(f"Filtered Appointments: {filtered_appointments}")
-
-    # Sort the filtered appointments from latest to earliest by date
-    filtered_appointments.sort(
-        key=lambda app: datetime.strptime(f"{app['date']} {app['time']}", '%Y-%m-%d %I:%M %p')
-    )
+    # Ensure time format consistency by stripping leading/trailing spaces
+    for app in filtered_appointments:
+        app['time'] = app['time'].strip()  # Remove extra spaces
     
+    # Sort appointments by date and time
+    appointments_sorted = sorted(filtered_appointments, key=lambda x: (
+        datetime.strptime(x['date'], '%Y-%m-%d'),
+        convert_to_24hr_format(x['time'].split(' - ')[0])  # Get the start time and convert to 24-hour format
+    ))
+
     # Assuming `doctors` and `patients` are lists of dictionaries
     user = next((doc for doc in doctors if doc['username'] == username), None)
     patients = []  # Make sure to populate the patients list here
@@ -1105,12 +1125,11 @@ def doctor_appointments():
         user=user,
         role=role,
         username=username,
-        appointments=filtered_appointments,  # Pass filtered appointments
+        appointments=appointments_sorted,  # Pass filtered appointments
         current_date=current_date,
         doctors=doctors,  # Pass the list of doctors to the template
         patients=patients  # Pass the list of patients to the template
     )
-
 # -------------------------------------------------------------------------------------------------------------------------
 
 # --------------------------------- Nurse --------------------------------------------------------------------------
@@ -1145,25 +1164,23 @@ def nurse_appointments():
         return redirect(url_for('login'))
 
     nurse_id = int(nurse_id)
-
-    # Debugging: Print the nurse_id and the appointments list
-    print(f"Nurse ID: {nurse_id}")
-    print(f"Appointments: {appointments}")
     
     # Filter appointments for the logged-in nurse
     filtered_appointments = [app for app in appointments if app.get('nurse_id') == nurse_id]
 
-    # Debugging: Print the filtered appointments
-    print(f"Filtered Appointments: {filtered_appointments}")
+    # Ensure time format consistency by stripping leading/trailing spaces
+    for app in filtered_appointments:
+        app['time'] = app['time'].strip()  # Remove extra spaces
+    
+    # Sort appointments by date and time
+    appointments_sorted = sorted(filtered_appointments, key=lambda x: (
+        datetime.strptime(x['date'], '%Y-%m-%d'),
+        convert_to_24hr_format(x['time'].split(' - ')[0])  # Get the start time and convert to 24-hour format
+    ))
 
     # Assuming `nurses` and `patients` are lists of dictionaries
     user = next((nurse for nurse in nurses if nurse['username'] == username), None)
     patients = []  # Make sure to populate the patients list here
-
-    # Sort the filtered appointments from latest to earliest by date
-    filtered_appointments.sort(
-        key=lambda app: datetime.strptime(f"{app['date']} {app['time']}", '%Y-%m-%d %I:%M %p')
-    )
 
     # Pass patients to the template
     return render_template(
@@ -1171,7 +1188,7 @@ def nurse_appointments():
         user=user,
         role=role,
         username=username,
-        appointments=filtered_appointments,  # Pass filtered appointments
+        appointments=appointments_sorted,  # Pass filtered appointments
         current_date=current_date,
         nurses=nurses,  # Pass the list of nurses to the template
         patients=patients  # Pass the list of patients to the template
@@ -1406,8 +1423,13 @@ def admin_edit_patient(patient_id):
 # Admin to View All Appointment
 @app.route('/admin/appointments')
 def admin_appointments():
+
     # Sort appointments by date and time
-    appointments_sorted = sorted(appointments, key=lambda x: (datetime.strptime(x['date'], '%Y-%m-%d'), x['time']))
+    appointments_sorted = sorted(appointments, key=lambda x: (
+        datetime.strptime(x['date'], '%Y-%m-%d'),
+        convert_to_24hr_format(x['time'].split(' - ')[0])  # Get the start time and convert to 24-hour format
+    ))
+
     username = session.get('username')
     role = session.get('role')
     current_date = datetime.now().strftime('%Y-%m-%d')

@@ -99,14 +99,6 @@
             margin: 2px 0;
             color: grey;
         }
-    
-        footer {
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            padding: 1rem 0;
-            margin-top: auto;
-        }
     </style>
 </head>
 <body>
@@ -136,7 +128,7 @@
         
        <!-- Upcoming Appointments -->
 <div id="upcoming" class="task-list">
-     {% for appointment in appointments | sort(attribute='date', reverse=true) %}
+    {% for appointment in appointments | sort(attribute='date') %}
         {% if appointment.date >= current_date %}
             <div class="date">
                 <h2>{{ appointment.date }}</h2>
@@ -192,7 +184,7 @@
         
         <!-- Completed Appointments -->
         <div id="completed" class="task-list" style="display: none;">
-            {% for appointment in appointments %}
+            {% for appointment in appointments | sort(attribute='date') %}
                 {% if appointment.date < current_date %}
                     <div class="date">
                         <h2>{{ appointment.date }}</h2>
