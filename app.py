@@ -105,9 +105,12 @@ appointments = [
     {'id': 3, 'patient_id': 1, 'doctor_id': 1, 'date': '2024-08-25', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine'},
     {'id': 4, 'patient_id': 1, 'nurse_id': 2, 'date': '2024-12-16', 'time': '3:00 pm - 4:00 pm', 'type': 'home visit'},
 
-    {'id': 5, 'patient_id': 1, 'doctor_id': 1, 'date': '2024-11-13', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine'},
-    {'id': 6, 'patient_id': 1, 'doctor_id': 1, 'date': '2024-11-13', 'time': '1:00 pm - 2:00 pm', 'type': 'home visit'},
-    {'id': 7, 'patient_id': 1, 'doctor_id': 1, 'date': '2024-11-13', 'time': '9:00 pm - 10:00 pm', 'type': 'telemedicine'}
+    {'id': 5, 'patient_id': 1, 'doctor_id': 1, 'date': '2024-01-05', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine'},
+    {'id': 6, 'patient_id': 3, 'doctor_id': 3, 'date': '2024-01-13', 'time': '1:00 pm - 2:00 pm', 'type': 'home visit'},
+    {'id': 7, 'patient_id': 2, 'doctor_id': 2, 'date': '2024-01-09', 'time': '9:00 am - 10:00 am', 'type': 'telemedicine'},
+    {'id': 8, 'patient_id': 4, 'doctor_id': 4, 'date': '2024-11-13', 'time': '11:00 am - 12:00 pm', 'type': 'home visit'},
+    {'id': 9, 'patient_id': 5, 'doctor_id': 5, 'date': '2024-11-13', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine'},
+    {'id': 10, 'patient_id': 1, 'doctor_id': 2, 'date': '2024-11-13', 'time': '1:00 pm - 2:00 pm', 'type': 'telemedicine'},
 ]
 
 # Dummy data for prescriptions
@@ -812,7 +815,6 @@ def book_home_visit_appointment():
             }
             appointments.append(new_appointment)
                     
-                    
             # Flash success message
             flash("Appointment has been made successfully!", "success")
             return redirect(url_for('patient_appointments'))
@@ -884,6 +886,15 @@ def patient_appointments():
         nurses=nurses
     )
 
+# Delete Appointment
+@app.route('/patient/appointments/delete/<int:appointment_id>', methods=['POST'])
+def delete_appointment(appointment_id):
+    global appointments
+    # Find the appointment by ID and remove it from the list
+    appointments = [app for app in appointments if app['id'] != appointment_id]
+    
+    flash("Appointment has been deleted successfully!", "success")
+    return redirect(url_for('patient_appointments'))
 # ------------------------- Patient View Prescription ------------------------------------------------------------
 @app.route('/patient_view_prescription')
 def patient_view_prescription():
@@ -1115,9 +1126,13 @@ def doctor_appointments():
         convert_to_24hr_format(x['time'].split(' - ')[0])  # Get the start time and convert to 24-hour format
     ))
 
-    # Assuming `doctors` and `patients` are lists of dictionaries
-    user = next((doc for doc in doctors if doc['username'] == username), None)
-    patients = []  # Make sure to populate the patients list here
+     # Retrieve current doctor user information
+    user = next((doctor for doctor in doctors if doctor['username'] == username), None)
+
+     # Debugging output
+    for appointment in appointments_sorted:
+        patient = next((p for p in patients if p['id'] == appointment['patient_id']), None)
+        doctor = next((d for d in doctors if d['id'] == appointment.get('doctor_id')), None)
 
     # Pass patients to the template
     return render_template(
@@ -1178,9 +1193,12 @@ def nurse_appointments():
         convert_to_24hr_format(x['time'].split(' - ')[0])  # Get the start time and convert to 24-hour format
     ))
 
-    # Assuming `nurses` and `patients` are lists of dictionaries
+    # Retrieve current nurse user information
     user = next((nurse for nurse in nurses if nurse['username'] == username), None)
-    patients = []  # Make sure to populate the patients list here
+
+     # Debugging output
+    for appointment in appointments_sorted:
+        patient = next((p for p in patients if p['id'] == appointment['patient_id']), None)
 
     # Pass patients to the template
     return render_template(
@@ -1275,6 +1293,8 @@ def admin_view_nurses():
 def admin_delete_patient(patient_id):
     global patients
     patients = [pat for pat in patients if pat['id'] != patient_id]
+
+    flash("Patient has been deleted successfully!", "success")
     return redirect(url_for('view_patients'))
 
 # Delete Doctor (Admin Only)
@@ -1282,6 +1302,8 @@ def admin_delete_patient(patient_id):
 def admin_delete_doctor(doctor_id):
     global doctors
     doctors = [doc for doc in doctors if doc['id'] != doctor_id]
+
+    flash("Doctor has been deleted successfully!", "success")
     return redirect(url_for('admin_view_doctors'))
 
 # Delete Nurse (Admin Only)
@@ -1289,6 +1311,8 @@ def admin_delete_doctor(doctor_id):
 def admin_delete_nurse(nurse_id):
     global nurses
     nurses = [nurse for nurse in nurses if nurse['id'] != nurse_id]
+
+    flash("Nurse has been deleted successfully!", "success")
     return redirect(url_for('admin_view_nurses'))
 
 # Admin Register Medical Team (Doctor / Nurse)
@@ -1344,10 +1368,12 @@ def register_team():
             if role == 'Doctor':
                 doctors.append(new_team)
                 # After successful registration, redirect to the doctor list view
+                flash("Doctor has been registered successfully!", "success")
                 return redirect(url_for('admin_view_doctors'))
             elif role == 'Nurse':
                 nurses.append(new_team)
                 # After successful registration, redirect to the nurse list view
+                flash("Nurse has been registered successfully!", "success")
                 return redirect(url_for('admin_view_nurses'))
         
         except BadRequestKeyError:
@@ -1372,7 +1398,7 @@ def admin_edit_doctor(doctor_id):
         doctor_to_edit['contactNumber'] = request.form['contactNumber']
         doctor_to_edit['intro'] = request.form['intro']
 
-        # Save the updated doctor data (in real-world use, save to a database)
+        flash("Doctor has been updated successfully!", "success")
         return redirect(url_for('admin_view_doctors'))  # After editing, redirect back to the doctors list
 
     return render_template('Admin/admin_edit_doctor.html', doctor=doctor_to_edit)
@@ -1394,7 +1420,7 @@ def admin_edit_nurse(nurse_id):
         nurse_to_edit['contactNumber'] = request.form['contactNumber']
         nurse_to_edit['intro'] = request.form['intro']
 
-        # Save the updated nurse data (in real-world use, save to a database)
+        flash("Nurse has been updated successfully!", "success") 
         return redirect(url_for('admin_view_nurses'))  # After editing, redirect back to the nurses list
 
     return render_template('Admin/admin_edit_nurse.html', nurse=nurse_to_edit)
@@ -1415,7 +1441,7 @@ def admin_edit_patient(patient_id):
         patient_to_edit['contactNumber'] = request.form['contactNumber']
         patient_to_edit['address'] = request.form['address']
 
-        # Save the updated patient data (in real-world use, save to a database)
+        flash("Patient has been updated successfully!", "success")
         return redirect(url_for('view_patients'))  # After editing, redirect back to the patients list
 
     return render_template('Admin/admin_edit_patient.html', patient=patient_to_edit)
@@ -1443,7 +1469,14 @@ def admin_appointments():
         user = next((nurse for nurse in nurses if nurse['username'] == username), None)
     elif role == 'patient':
         user = next((pat for pat in patients if pat['username'] == username), None)
-    return render_template('Admin/admin_appointments.html', appointments=appointments_sorted, current_date=current_date, user=user, doctors=doctors, nurses=nurses, username=username, role=role)
+
+     # Debugging output
+    for appointment in appointments_sorted:
+        patient = next((p for p in patients if p['id'] == appointment['patient_id']), None)
+        doctor = next((d for d in doctors if d['id'] == appointment.get('doctor_id')), None)
+        nurse = next((n for n in nurses if n['id'] == appointment.get('nurse_id')), None)
+        
+    return render_template('Admin/admin_appointments.html', appointments=appointments_sorted, current_date=current_date, user=user, doctors=doctors, nurses=nurses, username=username, patients=patients, role=role)
 
 # ---------------------- Admin/Doctor/Nurse Medical Stock Management Function --------------------------------------------------
 

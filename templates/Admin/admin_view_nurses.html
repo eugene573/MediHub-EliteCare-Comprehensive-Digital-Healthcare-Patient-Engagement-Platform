@@ -168,6 +168,20 @@ border-color: #bd2130;
     border-top: 1px solid #ddd;
     background-color: #f9f9f9;
 }
+
+.flash-message-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050; /* Ensure it's above other content */
+    width: 300px; /* Adjust width as needed */
+    pointer-events: none;
+}
+
+.alert {
+    margin-top: 10px;
+    pointer-events: auto;
+}
 </style>
 </head>
 {% extends 'Admin/base.html' %}
@@ -177,6 +191,18 @@ border-color: #bd2130;
 {% block content %}
     <h1>Nurse List</h1>
     
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+  {% for category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {% endfor %}
+{% endif %}
+{% endwith %}
+
  <!-- Button to trigger the modal -->
  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registerStaffModal">
     Register New Nurse
@@ -405,6 +431,15 @@ border-color: #bd2130;
          });
      });
  });
+
+  // Automatically hide alerts after 5 seconds
+  setTimeout(() => {
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+      alert.classList.remove('show');  // Hides the alert
+      alert.classList.add('fade');  // Optional: adds fade effect when disappearing
+    });
+  }, 2000);
  </script>
      {% endblock %}
  

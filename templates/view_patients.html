@@ -171,6 +171,42 @@ form button:hover {
     border-top: 1px solid #ddd;
     background-color: #f9f9f9;
 }
+
+.copy-btn {
+    background-color: transparent; /* Transparent background */
+    color: #1d65c3; /* Green color */
+    border: none; /* No border */
+    padding: 5px 10px; /* Padding */
+    cursor: pointer; /* Pointer cursor on hover */
+    margin-left: 10px; /* Space between the address and button */
+    font-size: 18px; /* Icon size */
+    border-radius: 5px; /* Rounded corners */
+    transition: all 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.copy-btn:hover {
+    color: white; /* White icon on hover */
+    background-color: #1d65c3; /* Green background on hover */
+    transform: scale(1.1); /* Slightly enlarge the icon on hover */
+}
+
+.copy-btn:focus {
+    outline: none; /* Remove outline when button is focused */
+}
+
+.flash-message-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050; /* Ensure it's above other content */
+    width: 300px; /* Adjust width as needed */
+    pointer-events: none;
+}
+
+.alert {
+    margin-top: 10px;
+    pointer-events: auto;
+}
 </style>
 </head>
 {% if role == 'doctor' %}
@@ -185,7 +221,19 @@ form button:hover {
 
 {% block content %}
    <center> <h1>Patient List</h1> </center>
-    <!-- Search Form -->
+    
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+  {% for category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {% endfor %}
+{% endif %}
+{% endwith %}
+
     <form method="GET" action="{{ url_for('view_patients') }}">
         <input type="text" name="search" placeholder="Search by Patient Name" value="{{ request.args.get('search', '') }}">
         <button type="submit"><i class="fa fa-search"></i></button>
@@ -277,7 +325,9 @@ form button:hover {
                     <div class="form-group">
                         <label for="patientAddress{{ patient.id }}"><strong>Address:</strong></label>
                         <div class="input-group">
-                            <textarea class="form-control" id="patientAddress{{ patient.id }}" rows="3" readonly>{{ patient.address }}</textarea>
+                            <textarea class="form-control" id="patientAddress{{ patient.id }}" rows="3" readonly>{{ patient.address }}</textarea> <button class="copy-btn" onclick="copyAddress('{{ patient.address }}')">
+                                <i class="fas fa-copy"></i> <!-- Font Awesome Clipboard Icon -->
+                            </button>
                         </div>
                     </div>
                                       
@@ -315,6 +365,32 @@ form button:hover {
         });
     });
 });
+
+function copyAddress(address) {
+        // Create a temporary input element
+        var tempInput = document.createElement("input");
+        tempInput.value = address;  // Set the value to the address
+        document.body.appendChild(tempInput);  // Append the input to the body
+        
+        // Select the input text and copy to clipboard
+        tempInput.select();
+        document.execCommand("copy");
+        
+        // Remove the temporary input
+        document.body.removeChild(tempInput);
+
+        // Alert to show the user that the address has been copied
+        alert("Address copied to clipboard!");
+    }
+
+// Automatically hide alerts after 5 seconds
+  setTimeout(() => {
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+      alert.classList.remove('show');  // Hides the alert
+      alert.classList.add('fade');  // Optional: adds fade effect when disappearing
+    });
+  }, 2000);
 </script>
 {% endblock %}
 

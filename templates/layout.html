@@ -155,7 +155,7 @@ footer {
 <body>
     <header>
         <div class="container">
-            <img src="{{ url_for('static', filename='uploads/MEDIHUB2.png') }}" alt="MediHub" width="150" height="100">
+            <a href="/"><img src="{{ url_for('static', filename='uploads/MEDIHUB2.png') }}" alt="MediHub" width="150" height="100"></a> 
 
             {% if role == 'admin' %}
             <a class="btn" href="/">Home</a>
