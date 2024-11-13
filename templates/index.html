@@ -252,6 +252,14 @@
   }
 }
         }
+
+        .profile-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+}
     </style>
     {% endblock %}
 
@@ -318,15 +326,18 @@
     <br>
     <hr style="border: none; height: 1px; width: 80%; background: linear-gradient(to right, #ccc, #999, #ccc); border-radius: 5px; margin: 40px auto;">
     <center><h2>Feedback</h2></center>
-    <center><p>Please include any details that might help us understand your feedback better, such as specific issues you encountered or suggestions for improvement.</p></center>
+    <center><p>Please include any details that might help us understand your feedback better, specific issues you encountered or suggestions for improvement.</p></center>
+    
     <section id="contact" class="container">
-        <form action="/" method="post">
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required>
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-            <label for="message">Message:</label>
-            <textarea id="message" name="message" required></textarea>
+        <form action="/submit-feedback" method="post">
+            
+            <!-- Hidden input field for pimage -->
+            <input type="hidden" name="pimage" value="{{ user.pimage }}">
+            
+            <input type="hidden" id="name" name="name" value="{{ user.username }}">
+        
+            <textarea id="message" name="message" placeholder="Message:" required></textarea>
+            
             <button type="submit" class="send-btn">Send</button>
         </form>
     </section>    

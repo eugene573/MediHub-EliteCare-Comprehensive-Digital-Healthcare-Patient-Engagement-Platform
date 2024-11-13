@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <style>
+       
+        .controls-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .feedback-container {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .feedback-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .feedback-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .feedback-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .profile-image {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .feedback-content {
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .feedback-actions {
+        display: flex;
+        gap: 16px;
+        padding: 20px;
+    }
+
+    .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        background-color: #f3f4f6;
+        color: #4b5563;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+        background-color: #e5e7eb;
+    }
+
+    .action-btn.active-helpful {
+        background-color: #22c55e;
+        color: white;
+    }
+
+    .action-btn.active-not-helpful {
+        background-color: #ef4444;
+        color: white;
+    }
+
+        @media (max-width: 768px) {
+            .controls-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+{% extends 'Admin/base.html' %}
+
+{% block title %}Admin - User Feedback{% endblock %}
+
+{% block content %}
+<body>
+    
+    <br><br>
+    {% if feedback %}
+    <div class="feedback-container">
+        {% for entry in feedback %}
+        <div class="feedback-card">
+            <div class="feedback-header">
+                <div class="user-info">
+                    
+                        <img src="{{ entry.pimage }}" alt="Profile Image of {{ entry.name }}" class="profile-image">
+                 
+                    <div class="user-details">
+                        <span class="user-name">{{ entry.name }}</span>
+                    </div>
+                </div>
+                <button class="action-btn">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+            </div>
+            <p class="feedback-content">{{ entry.message }}</p>
+            <div class="feedback-actions">
+                <button class="action-btn" onclick="toggleFeedback(this, 'helpful')">
+                    <i class="far fa-thumbs-up"></i>
+                    Helpful
+                </button>
+                <button class="action-btn" onclick="toggleFeedback(this, 'not-helpful')">
+                    <i class="far fa-thumbs-down"></i>
+                    Not Helpful
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-feedback">
+        <i class="far fa-comment-dots fa-3x"></i>
+        <p>No feedback submitted yet.</p>
+    </div>
+    {% endif %}
+
+    <script>
+        // Filter buttons interaction
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.querySelector('.search-input');
+        const feedbackCards = document.querySelectorAll('.feedback-card');
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            feedbackCards.forEach(card => {
+                const content = card.textContent.toLowerCase();
+                if (content.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Card hover effect
+        feedbackCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+
+        function toggleFeedback(button, feedbackType) {
+        // Reset all buttons to their default state
+        const buttons = document.querySelectorAll('.action-btn');
+        buttons.forEach(btn => {
+            btn.classList.remove('active-helpful', 'active-not-helpful');
+        });
+
+        // Add the active class based on the feedback type
+        if (feedbackType === 'helpful') {
+            button.classList.add('active-helpful');
+        } else if (feedbackType === 'not-helpful') {
+            button.classList.add('active-not-helpful');
+        }
+    }
+    </script>
+</body>
+</html>
+{% endblock %}

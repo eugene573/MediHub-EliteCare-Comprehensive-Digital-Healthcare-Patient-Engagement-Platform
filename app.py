@@ -113,6 +113,14 @@ appointments = [
     {'id': 10, 'patient_id': 1, 'doctor_id': 2, 'date': '2024-11-13', 'time': '1:00 pm - 2:00 pm', 'type': 'telemedicine'},
 ]
 
+# Dummy feedback data
+feedback_list = [
+    {'name': 'Ray', 'pimage':'https://i.pinimg.com/474x/98/51/1e/98511ee98a1930b8938e42caf0904d2d.jpg', 'message': 'Great service, really helpful!'},
+    {'name': 'Lily', 'pimage':'https://www.profilebakery.com/wp-content/uploads/2023/04/AI-Profile-Picture.jpg', 'message': 'Very informative, will use again.'},
+    {'name': 'Cael', 'pimage':'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSoQFvYAr4KD4S-iecBnmLmPf7zuyFyHkd8w&s', 
+     'message': 'I love the ease of scheduling appointments!'}
+]
+
 # Dummy data for prescriptions
 prescriptions = [
     {
@@ -307,6 +315,18 @@ def handle_merge():
     if success:
         return jsonify({"status": "success"})
     return jsonify({"status": "error", "message": "Could not merge appointments"}), 400
+
+@app.route('/get_taken_times', methods=['POST'])
+def get_taken_times():
+    doctor_id = request.json.get('doctor_id')
+    selected_date = request.json.get('date')
+
+    # Query your database for appointments on the selected date for the given doctor
+    # Replace this with your actual query
+    appointments = appointment.query.filter_by(doctor_id=doctor_id, date=selected_date).all()
+    taken_times = [appointment.time for appointment in appointments]
+
+    return jsonify(taken_times=taken_times)
 # ----------------------------- Home Page -------------------------------------------------------------
 @app.route('/')
 def index():
@@ -325,6 +345,43 @@ def index():
         user = next((pat for pat in patients if pat['username'] == username), None)
 
     return render_template('index.html', user=user, username=username, role=role)
+
+# Route to handle feedback submission
+@app.route('/submit-feedback', methods=['POST'])
+def submit_feedback():
+    name = request.form['name']
+    message = request.form['message']
+    pimage = request.form['pimage']
+    
+    # Append the new feedback to the dummy list
+    feedback_list.append({'name': name, 'message': message, 'pimage': pimage})
+    
+    # Flash message to confirm submission
+    flash("Your feedback has been submitted successfully!", "success")
+    
+    # Redirect to a confirmation page or the home page
+    return redirect(url_for('index'))
+
+# Route for the admin page to view feedback
+@app.route('/admin/feedback')
+def admin_feedback_page():
+    username = session.get('username')
+    role = session.get('role')
+    feedback_data = feedback_list
+    
+    user = None
+    if role == 'admin' and username == admin.get('username'):
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+
+    # Render the feedback page with the feedback data
+    return render_template('Admin/feedback.html', feedback=feedback_data,username=username, role=role, user=user)
+
 # -------------------------------------------------------------------------------------------------------------------
 
 # ----------------------------- MEETING FUNCTION -------------------------------------------------------------------
@@ -1101,12 +1158,13 @@ def doctor_dashboard():
 
 # Doctor MY Appointment
 # --------------------------------- Doctor View Appointments -------------------------------------------------
-@app.route('/doctor/appointments')
+@app.route('/doctor/appointments', methods=['GET', 'POST'])
 def doctor_appointments():
     doctor_id = session.get('id')
     role = session.get('role')
     current_date = datetime.now().strftime('%Y-%m-%d')
     username = session.get('username')
+    search_date = request.args.get('search_date')  
 
     if not doctor_id or role != 'doctor':
         return redirect(url_for('login'))
@@ -1126,6 +1184,12 @@ def doctor_appointments():
         convert_to_24hr_format(x['time'].split(' - ')[0])  # Get the start time and convert to 24-hour format
     ))
 
+    # If a search date is provided, filter appointments by the date
+    if search_date:
+        appointments_sorted = [appt for appt in appointments_sorted if appt['date'] == search_date]
+
+    no_appointments_found = len(appointments_sorted) == 0
+
      # Retrieve current doctor user information
     user = next((doctor for doctor in doctors if doctor['username'] == username), None)
 
@@ -1143,7 +1207,9 @@ def doctor_appointments():
         appointments=appointments_sorted,  # Pass filtered appointments
         current_date=current_date,
         doctors=doctors,  # Pass the list of doctors to the template
-        patients=patients  # Pass the list of patients to the template
+        patients=patients,
+        search_date=search_date,
+        no_appointments_found=no_appointments_found  # Pass the list of patients to the template
     )
 # -------------------------------------------------------------------------------------------------------------------------
 
@@ -1168,13 +1234,14 @@ def nurse_dashboard():
     return render_template('Nurse/nurse_dashboard.html', role=role, nurse=nurse, user=user, username=username, appointments=appointments)
 
 # Nurse MY Appointment
-@app.route('/nurse/appointments')
+@app.route('/nurse/appointments', methods=['GET', 'POST'])
 def nurse_appointments():
     nurse_id = session.get('id')
     role = session.get('role')
     current_date = datetime.now().strftime('%Y-%m-%d')
     username = session.get('username')
-
+    search_date = request.args.get('search_date')  # Get the search date from the query params
+    
     if not nurse_id or role != 'nurse':
         return redirect(url_for('login'))
 
@@ -1193,6 +1260,12 @@ def nurse_appointments():
         convert_to_24hr_format(x['time'].split(' - ')[0])  # Get the start time and convert to 24-hour format
     ))
 
+    # If a search date is provided, filter appointments by the date
+    if search_date:
+        appointments_sorted = [appt for appt in appointments_sorted if appt['date'] == search_date]
+
+    no_appointments_found = len(appointments_sorted) == 0
+
     # Retrieve current nurse user information
     user = next((nurse for nurse in nurses if nurse['username'] == username), None)
 
@@ -1209,7 +1282,9 @@ def nurse_appointments():
         appointments=appointments_sorted,  # Pass filtered appointments
         current_date=current_date,
         nurses=nurses,  # Pass the list of nurses to the template
-        patients=patients  # Pass the list of patients to the template
+        patients=patients,  # Pass the list of patients to the template
+        search_date=search_date, 
+        no_appointments_found=no_appointments_found
     )
 # -------------------------------------------------------------------------------------------------------------------------
 
@@ -1447,14 +1522,19 @@ def admin_edit_patient(patient_id):
     return render_template('Admin/admin_edit_patient.html', patient=patient_to_edit)
 
 # Admin to View All Appointment
-@app.route('/admin/appointments')
+@app.route('/admin/appointments', methods=['GET', 'POST'])
 def admin_appointments():
-
-    # Sort appointments by date and time
+    search_date = request.args.get('search_date')  # Get the search date from the query params
     appointments_sorted = sorted(appointments, key=lambda x: (
         datetime.strptime(x['date'], '%Y-%m-%d'),
         convert_to_24hr_format(x['time'].split(' - ')[0])  # Get the start time and convert to 24-hour format
     ))
+
+   # If a search date is provided, filter appointments by the date
+    if search_date:
+        appointments_sorted = [appt for appt in appointments_sorted if appt['date'] == search_date]
+
+    no_appointments_found = len(appointments_sorted) == 0
 
     username = session.get('username')
     role = session.get('role')
@@ -1476,7 +1556,7 @@ def admin_appointments():
         doctor = next((d for d in doctors if d['id'] == appointment.get('doctor_id')), None)
         nurse = next((n for n in nurses if n['id'] == appointment.get('nurse_id')), None)
         
-    return render_template('Admin/admin_appointments.html', appointments=appointments_sorted, current_date=current_date, user=user, doctors=doctors, nurses=nurses, username=username, patients=patients, role=role)
+    return render_template('Admin/admin_appointments.html', appointments=appointments_sorted, current_date=current_date, user=user, doctors=doctors, nurses=nurses, username=username, patients=patients, role=role, search_date=search_date, no_appointments_found=no_appointments_found)
 
 # ---------------------- Admin/Doctor/Nurse Medical Stock Management Function --------------------------------------------------
 

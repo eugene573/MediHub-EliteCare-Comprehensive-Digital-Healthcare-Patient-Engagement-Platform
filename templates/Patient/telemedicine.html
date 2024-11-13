@@ -154,6 +154,7 @@
     background-color: grey;
         pointer-events: none; /* Make past times unclickable */
     }
+    .timepicker-option.taken { background-color: red; cursor: not-allowed; }
 </style>
 {% endblock %}
 
@@ -222,6 +223,12 @@
             "3:00 pm - 4:00 pm"
         ];
 
+        // Dummy data for appointments
+        const appointments = [
+            {'id': 2, 'patient_id': 3, 'doctor_id': 3, 'date': '2024-12-28', 'time': '1:00 pm - 2:00 pm', 'type': 'telemedicine'}
+        ];
+
+        let takenTimes = []; // Holds taken times for the selected date
         let selectedDate;
 
         function parseTime(timeString) {
@@ -232,12 +239,16 @@
             return new Date(selectedDate.setHours(adjustedHours, adjustedMinutes, 0, 0));
         }
 
+        function markAsTaken(time) {
+            if (!takenTimes.includes(time)) {
+                takenTimes.push(time); // Add the selected time to takenTimes
+                console.log("Marked as taken:", time); // Debugging output
+                updateTimeOptions(); // Refresh the dropdown to show the updated status
+            }
+        }
+
         function updateTimeOptions() {
-            console.log("Selected date:", selectedDate);  // Check the selected date
-            console.log("Available time slots:", times);  // Check the time slots
-
             dropdown.innerHTML = ''; // Clear existing options
-
             const currentTime = new Date();
 
             times.forEach(time => {
@@ -245,21 +256,28 @@
                 option.className = 'timepicker-option';
                 option.innerText = time;
 
-                // Apply available class
-                option.classList.add('available');
-
-                // Parse the time slot
-                const timeSlot = parseTime(time);
-
-                // Check if the time slot is in the past
-                if (timeSlot < currentTime) {
-                    option.classList.add('past'); // Add a class to indicate it's a past time
+                // Check if the time slot is already taken
+                if (takenTimes.includes(time)) {
+                    option.classList.add('taken'); // Add a 'taken' class for styling
+                    option.classList.remove('available'); // Remove 'available' class if added
+                    option.style.backgroundColor = 'red'; // Style taken slots in red
+                    option.style.pointerEvents = 'none'; // Disable click on taken slots
+                } else {
+                    option.classList.add('available'); // Apply available class for selectable times
                 }
 
-                option.addEventListener('click', function () {
-                    document.getElementById('time').value = time;
-                    dropdown.style.display = 'none'; // Hide dropdown after selection
-                });
+                const timeSlot = parseTime(time);
+
+                if (timeSlot < currentTime) {
+                    option.classList.add('past'); // Add a class to indicate it's a past time
+                    option.style.pointerEvents = 'none'; // Disable click on past slots
+                } else if (!takenTimes.includes(time)) {
+                    option.addEventListener('click', function () {
+                        document.getElementById('time').value = time;
+                        markAsTaken(time); // Mark the selected time slot as taken
+                        dropdown.style.display = 'none'; // Hide dropdown after selection
+                    });
+                }
 
                 dropdown.appendChild(option);
             });
@@ -276,15 +294,17 @@
             },
             onSelect: function(dateText) {
                 selectedDate = new Date(dateText);
+
+                // Filter taken times from appointments based on selected date
+                takenTimes = appointments
+                    .filter(appointment => appointment.date === dateText)
+                    .map(appointment => appointment.time);
+
+                console.log("Taken times for selected date:", takenTimes); // Debugging output
                 updateTimeOptions();
             }
         });
     });
-
-    $(document).ready(function() {
-        $('#datepicker').datepicker({
-            dateFormat: 'yy-mm-dd'
-        });
-    });
 </script>
+
 {% endblock %}

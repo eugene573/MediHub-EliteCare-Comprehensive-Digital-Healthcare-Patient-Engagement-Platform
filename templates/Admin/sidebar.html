@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
       body {
     font-family: Arial, sans-serif;
@@ -87,7 +88,7 @@
 
 .menu-item.active,
 .menu-item:hover {
-    background-color: #006edc;
+    background-color: #0073e6;
     color: white;
 }
 
@@ -100,7 +101,7 @@
 .logout a {
     color: white;
     text-decoration: none;
-    background-color: #006edc;
+    background-color: #0073e6;
     font-size: 16px;
     display: block;
 }
@@ -244,20 +245,25 @@ main {
                 <span>Nurse</span>
                 <div class="shortcut">N</div>
             </a>
-            <a href="/admin/register_team" class="menu-item {% if request.path == '/admin/register_team' %}active{% endif %}">
-                <i class="fas fa-id-card-alt"></i>
-                <span>Prescription List</span>
-                <div class="shortcut">PL</div>
-            </a>
             <a href="/admin/appointments" class="menu-item {% if request.path == '/admin/appointments' %}active{% endif %}">
                 <i class="fas fa-briefcase-medical"></i>
                 <span>Appointment</span>
                 <div class="shortcut">A</div>
             </a>
+            <a href="/admin/register_team" class="menu-item {% if request.path == '/admin/register_team' %}active{% endif %}">
+                <i class="fas fa-id-card-alt"></i>
+                <span>Prescription List</span>
+                <div class="shortcut">PL</div>
+            </a>
             <a href="/medication" class="menu-item {% if request.path == '/medication' %}active{% endif %}">
                 <i class="fas fa-capsules"></i>
                 <span>Medication Stock</span>
                 <div class="shortcut">MS</div>
+            </a>
+            <a href="/admin/feedback" class="menu-item {% if request.path == '/admin/feedback' %}active{% endif %}">
+                <i class="material-icons" style="font-size:24px">feedback</i>
+                <span>User Feedback</span>
+                <div class="shortcut">UF</div>
             </a>
             <a href="/" class="menu-item {% if request.path == '/' %}active{% endif %}">
                 <i class="fas fa-home"></i>
@@ -267,10 +273,11 @@ main {
         </div>
         <div class="logout">
             <form action="/logout" method="post" style="display:inline;">
-                <button type="submit" class="logout-btn" onClick="return confirm('Are you sure you want to logout?')">
+                <button type="submit" class="logout-btn" name="logout_button" onClick="return confirm('Are you sure you want to logout?')">
                     <i class="fas fa-sign-out-alt logout-icon"></i>
                     <span class="logout-text">Logout</span>
                 </button>
+                
             </form>
         </div>
     </div>

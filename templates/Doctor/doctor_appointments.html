@@ -120,6 +120,79 @@
 .copy-btn:focus {
     outline: none; /* Remove outline when button is focused */
 }
+
+  /* Form container */
+  form {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Added to center items horizontally */
+    gap: 1rem;
+    padding: 1.5rem;
+    width: 100%; /* Ensures form takes full width */
+}
+
+/* Rest of the styles remain the same */
+input[type="date"] {
+    padding: 0.5rem 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 1rem;
+    color: #495057;
+    background-color: white;
+    transition: border-color 0.2s ease-in-out;
+}
+
+input[type="date"]:focus {
+    outline: none;
+    border-color: #4dabf7;
+    box-shadow: 0 0 0 2px rgba(77, 171, 247, 0.2);
+}
+
+button[name="search_button"] {
+    padding: 0.5rem 0.8rem;
+    background-color: #228be6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+button[name="search_button"]:hover {
+    background-color: #1c7ed6;
+}
+
+.btn-clear {
+    padding: 0.5rem 0.8rem;
+    background-color: #e9ecef;
+    color: #495057;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-clear:hover {
+    background-color: #dee2e6;
+    color: #212529;
+}
+
+/* Updated responsive adjustments */
+@media (max-width: 480px) {
+    form {
+        flex-direction: column;
+        align-items: center; /* Changed from stretch to center */
+        padding: 1rem;
+    }
+    
+    input[type="date"],
+    button[type="submit"],
+    .btn-clear {
+        width: 80%; /* Changed from 100% to 80% for better mobile appearance */
+        margin-bottom: 0.5rem;
+    }
+}
     </style>
 </head>
 <body>
@@ -128,7 +201,7 @@
     {% block title %}Dashboard{% endblock %}
     
     {% block content %} 
-    <br><br>
+
     <div class="container">
  <!-- Flash Messages -->
  {% with messages = get_flashed_messages(with_categories=true) %}
@@ -142,11 +215,21 @@
  {% endif %}
 {% endwith %}
 
+<form method="get" action="/doctor/appointments">
+    <input type="date" name="search_date" value="{{ search_date }}" />
+    <button type="submit" name="search_button">Search</button>
+    {% if search_date %}
+    <a href="/doctor/appointments" class="btn-clear">Clear</a>
+    {% endif %}   
+</form>
         <div class="tabs">
             <button class="tab active" onclick="showTab('upcoming')">Upcoming</button>
             <button class="tab" onclick="showTab('completed')">Completed</button>
         </div>
-        
+        {% if no_appointments_found %}
+        <p>No appointments found for the selected date.</p>
+    {% else %}
+
         <!-- Upcoming Appointments -->
 <div id="upcoming" class="task-list">
     {% for date, date_appointments in appointments | groupby('date') %}
@@ -251,6 +334,7 @@
             {% endfor %}
         </div>
     </div>
+{% endif %}
 
     <script>
         function showTab(tabId) {
