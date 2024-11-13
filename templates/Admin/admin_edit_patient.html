@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/static/uploads/MediHubq.png" type="image/x-icon" sizes="512x512">
     <title>Edit Patient Information</title>
     <style>
         /* Reset some basic styles */
@@ -103,6 +104,11 @@
         }
     </style>
 </head>
+{% extends 'Admin/base.html' %}
+
+{% block title %}Admin - User Feedback{% endblock %}
+
+{% block content %}
 <body>
     <form method="POST">
         <h1>{{ patient['username'] }}'s Information</h1>
@@ -125,4 +131,5 @@
         </div>
     </form>
 </body>
+{% endblock %}
 </html>

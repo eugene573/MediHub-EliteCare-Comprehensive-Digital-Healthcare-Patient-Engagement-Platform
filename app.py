@@ -1459,6 +1459,20 @@ def register_team():
 # Admin Edit Doctor Information
 @app.route('/admin/doctors/edit/<int:doctor_id>', methods=['GET', 'POST'])
 def admin_edit_doctor(doctor_id):
+
+    username = session.get('username')
+    role = session.get('role')
+
+    user = None
+    if role == 'admin' and username == admin.get('username'):
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+
     # Find the doctor to edit by their ID
     doctor_to_edit = next((doc for doc in doctors if doc['id'] == doctor_id), None)
     
@@ -1476,14 +1490,27 @@ def admin_edit_doctor(doctor_id):
         flash("Doctor has been updated successfully!", "success")
         return redirect(url_for('admin_view_doctors'))  # After editing, redirect back to the doctors list
 
-    return render_template('Admin/admin_edit_doctor.html', doctor=doctor_to_edit)
+    return render_template('Admin/admin_edit_doctor.html', doctor=doctor_to_edit, user=user, username=username, role=role)
 
 # Admin Edit Nurse Information
 @app.route('/admin/nurses/edit/<int:nurse_id>', methods=['GET', 'POST'])
 def admin_edit_nurse(nurse_id):
+   
+    username = session.get('username')
+    role = session.get('role')
+
+    user = None
+    if role == 'admin' and username == admin.get('username'):
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
     # Find the nurse to edit by their ID
     nurse_to_edit = next((nurse for nurse in nurses if nurse['id'] == nurse_id), None)
-    
+
     if not nurse_to_edit:
         return redirect(url_for('admin_view_nurses'))  
 
@@ -1498,11 +1525,25 @@ def admin_edit_nurse(nurse_id):
         flash("Nurse has been updated successfully!", "success") 
         return redirect(url_for('admin_view_nurses'))  # After editing, redirect back to the nurses list
 
-    return render_template('Admin/admin_edit_nurse.html', nurse=nurse_to_edit)
+    return render_template('Admin/admin_edit_nurse.html', nurse=nurse_to_edit, user=user, username=username, role=role)
 
 # Admin Edit Patient Information
 @app.route('/admin/patients/edit/<int:patient_id>', methods=['GET', 'POST'])
 def admin_edit_patient(patient_id):
+
+    username = session.get('username')
+    role = session.get('role')
+
+    user = None
+    if role == 'admin' and username == admin.get('username'):
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+
     # Find the patient to edit by their ID
     patient_to_edit = next((pat for pat in patients if pat['id'] == patient_id), None)
     
@@ -1519,7 +1560,7 @@ def admin_edit_patient(patient_id):
         flash("Patient has been updated successfully!", "success")
         return redirect(url_for('view_patients'))  # After editing, redirect back to the patients list
 
-    return render_template('Admin/admin_edit_patient.html', patient=patient_to_edit)
+    return render_template('Admin/admin_edit_patient.html', patient=patient_to_edit, user=user, username=username, role=role)
 
 # Admin to View All Appointment
 @app.route('/admin/appointments', methods=['GET', 'POST'])
