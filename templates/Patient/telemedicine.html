@@ -161,6 +161,7 @@
 
 {% block content %}
 <br> 
+
 <div class="telemedicine-container">
     <div class="telemedicine-image-container">
         <img src="https://s3.envato.com/files/330374396/_8544914.jpg" alt="Doctor Telehealth">
@@ -178,7 +179,7 @@
             </select>
         </div>
 
-        <input class="telemedicine-input" id="datepicker" name="date" required aria-label="Select Date" type="text" placeholder="Select Date">
+        <input class="telemedicine-input" id="datepicker" name="date" required aria-label="Select Date" type="text" placeholder="mm/dd/yyyy" onkeydown="return false;" readonly>
 
         <div class="timepicker-container">
             <input class="telemedicine-input" id="time" type="text" name="time" readonly required aria-label="Select Time" placeholder="Select Time">
@@ -215,97 +216,105 @@
 
 {% block extra_js %}
 <script>
+ 
+//--------------------------- TIME -------------------------------
     document.addEventListener('DOMContentLoaded', function () {
-        const dropdown = document.getElementById('timepicker-dropdown');
-        const times = [
-            "9:00 am - 10:00 am",
-            "11:00 am - 12:00 pm",
-            "1:00 pm - 2:00 pm",
-            "3:00 pm - 4:00 pm"
-        ];
+    const dropdown = document.getElementById('timepicker-dropdown');
+    const times = [
+        "9:00 am - 10:00 am",
+        "11:00 am - 12:00 pm",
+        "1:00 pm - 2:00 pm",
+        "3:00 pm - 4:00 pm"
+    ];
 
-        // Dummy data for appointments
-        const appointments = [
-            {'id': 2, 'patient_id': 3, 'doctor_id': 3, 'date': '2024-12-28', 'time': '1:00 pm - 2:00 pm', 'type': 'telemedicine'}
-        ];
+    // Dummy data for appointments
+    const appointments = [
+        {'id': 1, 'patient_id': 1, 'doctor_id': 5, 'date': '2024-08-12', 'time': '9:00 am - 10:00 am', 'type': 'telemedicine'},
+        {'id': 2, 'patient_id': 3, 'doctor_id': 3, 'date': '2024-12-28', 'time': '1:00 pm - 2:00 pm', 'type': 'telemedicine'},
+        {'id': 3, 'patient_id': 1, 'doctor_id': 1, 'date': '2024-08-25', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine'},
+        {'id': 4, 'patient_id': 1, 'nurse_id': 2, 'date': '2024-12-16', 'time': '3:00 pm - 4:00 pm', 'type': 'home visit'},
+        {'id': 5, 'patient_id': 1, 'doctor_id': 1, 'date': '2025-01-06', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine'},
+        {'id': 6, 'patient_id': 3, 'doctor_id': 3, 'date': '2024-01-13', 'time': '1:00 pm - 2:00 pm', 'type': 'home visit'},
+        {'id': 7, 'patient_id': 2, 'doctor_id': 2, 'date': '2024-01-09', 'time': '9:00 am - 10:00 am', 'type': 'telemedicine'},
+        {'id': 8, 'patient_id': 4, 'doctor_id': 4, 'date': '2024-11-13', 'time': '11:00 am - 12:00 pm', 'type': 'home visit'},
+        {'id': 9, 'patient_id': 5, 'doctor_id': 5, 'date': '2024-11-13', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine'},
+        {'id': 10, 'patient_id': 1, 'doctor_id': 2, 'date': '2024-11-13', 'time': '1:00 pm - 2:00 pm', 'type': 'telemedicine'}
+    ];
 
-        let takenTimes = []; // Holds taken times for the selected date
-        let selectedDate;
+    let takenTimes = []; // Holds taken times for the selected date
+    let selectedDate;
 
-        function parseTime(timeString) {
-            const [time, period] = timeString.split(' ');
-            const [hours, minutes] = time.split(':').map(num => parseInt(num));
-            let adjustedHours = period === 'pm' && hours !== 12 ? hours + 12 : hours;
-            let adjustedMinutes = minutes || 0;
-            return new Date(selectedDate.setHours(adjustedHours, adjustedMinutes, 0, 0));
-        }
+    function parseTime(timeString) {
+        const [time, period] = timeString.split(' ');
+        const [hours, minutes] = time.split(':').map(num => parseInt(num));
+        let adjustedHours = period === 'pm' && hours !== 12 ? hours + 12 : hours;
+        let adjustedMinutes = minutes || 0;
+        return new Date(selectedDate.setHours(adjustedHours, adjustedMinutes, 0, 0));
+    }
 
-        function markAsTaken(time) {
-            if (!takenTimes.includes(time)) {
-                takenTimes.push(time); // Add the selected time to takenTimes
-                console.log("Marked as taken:", time); // Debugging output
-                updateTimeOptions(); // Refresh the dropdown to show the updated status
-            }
-        }
+    function markAsTaken(time) {
+    if (!takenTimes.includes(time)) {
+        takenTimes.push(time); // Add the selected time to takenTimes
+        console.log("Marked as taken:", time); // Debugging output
+        updateTimeOptions(); // Refresh the dropdown to show the updated status
+    }
+}
 
-        function updateTimeOptions() {
-            dropdown.innerHTML = ''; // Clear existing options
-            const currentTime = new Date();
+function updateTimeOptions() {
+    dropdown.innerHTML = ''; // Clear existing options
+    const currentTime = new Date();
 
-            times.forEach(time => {
-                const option = document.createElement('div');
-                option.className = 'timepicker-option';
-                option.innerText = time;
+    times.forEach(time => {
+        const option = document.createElement('div');
+        option.className = 'timepicker-option';
+        option.innerText = time;
 
-                // Check if the time slot is already taken
-                if (takenTimes.includes(time)) {
-                    option.classList.add('taken'); // Add a 'taken' class for styling
-                    option.classList.remove('available'); // Remove 'available' class if added
-                    option.style.backgroundColor = 'red'; // Style taken slots in red
-                    option.style.pointerEvents = 'none'; // Disable click on taken slots
-                } else {
-                    option.classList.add('available'); // Apply available class for selectable times
-                }
+        const timeSlot = parseTime(time);
 
-                const timeSlot = parseTime(time);
-
-                if (timeSlot < currentTime) {
-                    option.classList.add('past'); // Add a class to indicate it's a past time
-                    option.style.pointerEvents = 'none'; // Disable click on past slots
-                } else if (!takenTimes.includes(time)) {
-                    option.addEventListener('click', function () {
-                        document.getElementById('time').value = time;
-                        markAsTaken(time); // Mark the selected time slot as taken
-                        dropdown.style.display = 'none'; // Hide dropdown after selection
-                    });
-                }
-
-                dropdown.appendChild(option);
+        if (takenTimes.includes(time)) {
+            option.classList.add('taken'); // Add 'taken' class for styling
+            option.style.backgroundColor = 'red'; // Style taken slots in red
+            option.style.pointerEvents = 'none'; // Disable click on taken slots
+        } else if (timeSlot < currentTime) {
+            option.classList.add('past'); // Mark past times
+            option.style.pointerEvents = 'none';
+        } else {
+            option.classList.add('available');
+            option.addEventListener('click', function () {
+                document.getElementById('time').value = time;
+                markAsTaken(time); // Mark the selected time slot as taken
+                dropdown.style.display = 'none'; // Hide dropdown after selection
             });
-
-            dropdown.style.display = 'flex'; // Show dropdown
         }
 
-        $('#datepicker').datepicker({
-            dateFormat: 'yy-mm-dd',
-            minDate: 0,
-            beforeShowDay: function(date) {
-                const day = date.getDay();
-                return [(day !== 0 && day !== 6), '']; // Disable weekends (Sunday, Saturday)
-            },
-            onSelect: function(dateText) {
-                selectedDate = new Date(dateText);
-
-                // Filter taken times from appointments based on selected date
-                takenTimes = appointments
-                    .filter(appointment => appointment.date === dateText)
-                    .map(appointment => appointment.time);
-
-                console.log("Taken times for selected date:", takenTimes); // Debugging output
-                updateTimeOptions();
-            }
-        });
+        dropdown.appendChild(option);
     });
+
+    dropdown.style.display = 'flex'; // Show dropdown
+}
+
+    $('#datepicker').datepicker({
+        dateFormat: 'yy-mm-dd',
+        minDate: 0,
+        beforeShowDay: function(date) {
+            const day = date.getDay();
+            return [(day !== 0 && day !== 6), '']; // Disable weekends (Sunday, Saturday)
+        },
+        onSelect: function(dateText) {
+            selectedDate = new Date(dateText);
+
+            // Filter taken times from appointments based on selected date
+            takenTimes = appointments
+                .filter(appointment => appointment.date === dateText)
+                .map(appointment => appointment.time);
+
+            console.log("Taken times for selected date:", takenTimes); // Debugging output
+            updateTimeOptions();
+        }
+    });
+});
+
 </script>
+
 
 {% endblock %}

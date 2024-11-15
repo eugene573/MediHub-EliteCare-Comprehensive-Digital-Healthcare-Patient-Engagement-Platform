@@ -1,4 +1,5 @@
 import os
+import random
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
 from werkzeug.exceptions import BadRequestKeyError
 from datetime import datetime
@@ -100,17 +101,17 @@ specializations = {
 
 # Dummy data for appointments
 appointments = [
-    {'id': 1, 'patient_id': 1, 'doctor_id': 5, 'date': '2024-08-12', 'time': '9:00 am - 10:00 am', 'type': 'telemedicine'},
-    {'id': 2, 'patient_id': 3, 'doctor_id': 3, 'date': '2024-12-28', 'time': '1:00 pm - 2:00 pm', 'type': 'telemedicine'},
-    {'id': 3, 'patient_id': 1, 'doctor_id': 1, 'date': '2024-08-25', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine'},
+    {'id': 1, 'patient_id': 1, 'doctor_id': 5, 'date': '2024-08-12', 'time': '9:00 am - 10:00 am', 'type': 'telemedicine', 'meeting_room_code':'543230'},
+    {'id': 2, 'patient_id': 3, 'doctor_id': 3, 'date': '2024-12-28', 'time': '1:00 pm - 2:00 pm', 'type': 'telemedicine', 'meeting_room_code':'987647'},
+    {'id': 3, 'patient_id': 1, 'doctor_id': 1, 'date': '2024-08-25', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine', 'meeting_room_code':'392146'},
     {'id': 4, 'patient_id': 1, 'nurse_id': 2, 'date': '2024-12-16', 'time': '3:00 pm - 4:00 pm', 'type': 'home visit'},
 
-    {'id': 5, 'patient_id': 1, 'doctor_id': 1, 'date': '2024-01-05', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine'},
-    {'id': 6, 'patient_id': 3, 'doctor_id': 3, 'date': '2024-01-13', 'time': '1:00 pm - 2:00 pm', 'type': 'home visit'},
-    {'id': 7, 'patient_id': 2, 'doctor_id': 2, 'date': '2024-01-09', 'time': '9:00 am - 10:00 am', 'type': 'telemedicine'},
+    {'id': 5, 'patient_id': 1, 'doctor_id': 1, 'date': '2025-01-06', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine', 'meeting_room_code':'642187'},
+    {'id': 6, 'patient_id': 3, 'doctor_id': 3, 'date': '2025-01-13', 'time': '1:00 pm - 2:00 pm', 'type': 'home visit'},
+    {'id': 7, 'patient_id': 2, 'doctor_id': 2, 'date': '2025-01-09', 'time': '9:00 am - 10:00 am', 'type': 'telemedicine', 'meeting_room_code':'436231'},
     {'id': 8, 'patient_id': 4, 'doctor_id': 4, 'date': '2024-11-13', 'time': '11:00 am - 12:00 pm', 'type': 'home visit'},
-    {'id': 9, 'patient_id': 5, 'doctor_id': 5, 'date': '2024-11-13', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine'},
-    {'id': 10, 'patient_id': 1, 'doctor_id': 2, 'date': '2024-11-13', 'time': '1:00 pm - 2:00 pm', 'type': 'telemedicine'},
+    {'id': 9, 'patient_id': 5, 'doctor_id': 5, 'date': '2024-11-13', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine', 'meeting_room_code':'912042'},
+    {'id': 10, 'patient_id': 1, 'doctor_id': 2, 'date': '2024-11-13', 'time': '1:00 pm - 2:00 pm', 'type': 'telemedicine', 'meeting_room_code':'492741'},
 ]
 
 # Dummy feedback data
@@ -741,7 +742,11 @@ def patient_dashboard():
 def book_telemedicine_appointment():
     if 'id' not in session:
         return redirect(url_for('login'))
-    
+
+    # Store the selected time in the session to persist across page reloads
+    if 'takenTimes' not in session:
+        session['takenTimes'] = []
+
     username = session.get('username')
     role = session.get('role')
     current_date = datetime.now().strftime('%Y-%m-%d')
@@ -772,16 +777,28 @@ def book_telemedicine_appointment():
             if not selected_doctor_id or not appointment_date or not appointment_time:
                 error_message = "All fields are required."
                 return render_template('Patient/telemedicine.html',
-                                    username=username,
-                                    user=user,
-                                    role=role,
-                                    current_date=current_date,
-                                    doctors=doctors,
-                                    error_message=error_message)
+                                       username=username,
+                                       user=user,
+                                       role=role,
+                                       current_date=current_date,
+                                       doctors=doctors,
+                                       error_message=error_message)
+
+            # Check if the selected time has already been booked
+            if appointment_time in session['takenTimes']:
+                error_message = f"The time slot {appointment_time} is already taken."
+                return render_template('Patient/telemedicine.html',
+                                       username=username,
+                                       user=user,
+                                       role=role,
+                                       current_date=current_date,
+                                       doctors=doctors,
+                                       error_message=error_message)
 
             # Convert doctor_id to integer
             doctor_id = int(selected_doctor_id)
-
+            # Generate a random six-digit meeting room code
+            meeting_room_code = random.randint(100000, 999999)     
             # Create new appointment
             new_appointment = {
                 'id': len(appointments) + 1,
@@ -790,30 +807,36 @@ def book_telemedicine_appointment():
                 'person_id': doctor_id,  # For telemedicine, person_id is the same as doctor_id
                 'date': appointment_date,
                 'time': appointment_time,
-                'type': 'telemedicine'
+                'type': 'telemedicine',
+                'meeting_room_code': meeting_room_code  # Add meeting room code here
             }
             appointments.append(new_appointment)
 
+            # Add the time to takenTimes to prevent future bookings
+            session['takenTimes'].append(appointment_time)
+
             # Flash success message
-            flash("Appointment has been made successfully!", "success")
+            flash(f"Appointment has been made successfully!", "success")
             return redirect(url_for('patient_appointments'))
 
         except Exception as e:
             print(f"Error booking telemedicine appointment: {e}")
             return render_template('Patient/telemedicine.html',
-                                username=username,
-                                user=user,
-                                role=role,
-                                current_date=current_date,
-                                doctors=doctors,
-                                error_message="Failed to book the appointment. Please try again.")
-    
+                                   username=username,
+                                   user=user,
+                                   role=role,
+                                   current_date=current_date,
+                                   doctors=doctors,
+                                   error_message="Failed to book the appointment. Please try again.")
+
     return render_template('Patient/telemedicine.html',
-                        username=username,
-                        user=user,
-                        role=role,
-                        current_date=current_date,
-                        doctors=doctors)
+                           username=username,
+                           user=user,
+                           role=role,
+                           current_date=current_date,
+                           doctors=doctors,
+                           appointments=appointments)
+
 
 # --------------------------------- Patient Book Home Visit -------------------------------------------------------
 @app.route('/patient/home_visit', methods=['GET', 'POST'])
@@ -893,7 +916,8 @@ def book_home_visit_appointment():
                           role=role,
                           current_date=current_date,
                           doctors=doctors,
-                          nurses=nurses)
+                          nurses=nurses,
+                          appointments=appointments)
 
 # --------------------------------- Patient View Appointment -------------------------------------------------
 @app.route('/patient/appointments')
