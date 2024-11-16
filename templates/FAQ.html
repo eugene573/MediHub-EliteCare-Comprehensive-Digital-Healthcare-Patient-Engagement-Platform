@@ -1,0 +1,97 @@
+{% extends "layout.html" %} 
+
+{% block title %}FAQ{% endblock %} 
+
+{% block extra_css %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap core CSS -->
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+ <link rel="icon" href="/static/uploads/MediHubq.png" type="image/x-icon" sizes="512x512">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+     
+      
+        .faq {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .question {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .question:hover {
+            color: #007BFF;
+        }
+        .answer {
+            display: none;
+            margin-bottom: 15px;
+            font-size: 1em;
+            color: #333;
+        }
+        .answer.show {
+            display: block;
+        }
+    
+    </style>
+  {% endblock %}  
+
+{% block content %}
+<br><br><br><br>
+<body>
+<div class="container">
+    <center> <h1>Frequently Asked Questions (FAQ)</h1>
+        <p>Everything you need to know about MediHub</p> </center>
+    <div class="faq">
+        <div class="question" onclick="toggleAnswer(0)">What is MediHub?</div>
+        <div class="answer" id="answer0">
+            MediHub is a comprehensive digital healthcare platform offering online appointment bookings, home visits from qualified medical teams, and personalized prescription services for patients after their consultation or treatment.
+        </div>
+
+        <div class="question" onclick="toggleAnswer(1)">How do I book an appointment?</div>
+        <div class="answer" id="answer1">
+            You can book an appointment by signing in to your account and selecting the type of service you need, whether it's a telemedicine consultation or a home visit. Choose your preferred doctor or medical team and available time slots.
+        </div>
+
+        <div class="question" onclick="toggleAnswer(2)">Do I need to pay for the home visit service?</div>
+        <div class="answer" id="answer2">
+            Yes, the home visit service is chargeable. The cost is based on your location and the type of medical team (doctor or nurse) requested. You will receive a detailed breakdown of the charges before confirming the appointment.
+        </div>
+
+        <div class="question" onclick="toggleAnswer(3)">Can I change my appointment time?</div>
+        <div class="answer" id="answer3">
+            Yes, you can reschedule your appointment up to 24 hours before the scheduled time. You can log in to your account and change the appointment details in the "My Appointments" section.
+        </div>
+
+        <div class="question" onclick="toggleAnswer(4)">How are prescriptions handled?</div>
+        <div class="answer" id="answer4">
+            After your consultation, your doctor will issue a prescription based on your diagnosis and treatment plan. The prescription can be sent directly to your email or to a pharmacy of your choice for fulfillment.
+        </div>
+
+        <div class="question" onclick="toggleAnswer(5)">Is my medical information secure with MediHub EliteCare?</div>
+        <div class="answer" id="answer5">
+            Absolutely. We prioritize your privacy and follow strict security measures to ensure your medical information is protected. All data is encrypted and stored securely to comply with healthcare privacy regulations.
+        </div>
+    </div>
+</div>
+<br><br>
+
+<script>
+    function toggleAnswer(index) {
+        const answer = document.getElementById('answer' + index);
+        answer.classList.toggle('show');
+    }
+</script>
+
+</body>
+{% endblock %}

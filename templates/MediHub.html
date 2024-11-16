@@ -1,0 +1,138 @@
+{% extends "layout.html" %} 
+
+{% block title %}About MediHub{% endblock %} 
+
+{% block extra_css %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <!-- Bootstrap core CSS -->
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+ <link rel="icon" href="/static/uploads/MediHubq.png" type="image/x-icon" sizes="512x512">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #000000;
+            --accent-color: #e74c3c;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: var(--primary-color);
+        }
+
+        .hero-section {
+            background: linear-gradient(to right, #f8f9fa, #e9ecef);
+            padding: 4rem 0;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-primary {
+            width: 100%;
+            max-width:  1100px;
+            height: 400px;
+            object-fit: cover;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-primary:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-secondary {
+            max-width: 200px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .mission-statement {
+            font-size: 1.9rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin: 2rem 0;
+            text-align: center;
+            padding: 0 1rem;
+        }
+
+        .mission-statement::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 3px;
+            background-color: var(--accent-color);
+            margin: 1rem auto;
+        }
+
+        .description {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 1rem;
+            text-align: center;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .mission-statement {
+                font-size: 1.2rem;
+            }
+
+            .description {
+                font-size: 1rem;
+            }
+
+            .logo-primary {
+                max-width: 200px;
+            }
+
+            .logo-secondary {
+                max-width: 150px;
+            }
+        }
+    </style>
+  {% endblock %}  
+
+  {% block content %}
+<body>
+    <div class="hero-section">
+        <div class="content-wrapper">
+            <div class="logo-container">
+                <img src="/static/uploads/df.jpg" alt="MediHub Logo" class="logo-primary">   
+                <h1 class="mission-statement">
+                    We are on a mission to make healthcare accessible and efficient for everyone.
+                </h1>          
+                <br>
+                <img src="/static/uploads/MediHubq.png" alt="MediHub Logo" class="logo-secondary">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <img src="/static/uploads/MEDIHUB2.png" alt="MediHub Logo" class="logo-secondary">
+            </div>
+          
+            <div class="description">
+                MediHub EliteCare: Comprehensive Digital Healthcare & Patient Engagement Platform is a healthcare services 
+                system that provides online appointment booking for consultations with experienced doctors, home visits 
+                from qualified medical teams such as doctors or nurses who come to the patient's home, and prescription 
+                services tailored to the patient's situation following treatment.
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}

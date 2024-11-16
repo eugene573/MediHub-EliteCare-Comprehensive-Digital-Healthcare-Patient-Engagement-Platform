@@ -1,65 +1,50 @@
-
-
 {% block extra_css %}
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css" />
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <script src="https://code.jquery.com/ui/1.14.0/jquery-ui.js"></script>
-<!-- Bootstrap core CSS -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet" />
-<!-- Add the font-awesome for the copy icon -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 <link rel="icon" href="/static/uploads/MediHubq.png" type="image/x-icon" sizes="512x512" />
 <style>
-  #root {
-    width: 100vw;
-    height: 85vh; /* Adjusted height for space */
-    border: 1px solid #ccc;
-    border-radius: 8px;
-  }
 
-  .content-spacing {
-    margin-top: 1px; /* Adjust the value as needed */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
 
-  .home-button {
-    margin-top: 20px;
-    background-color: #007bff;
+#root {
+            width: 100vw;
+            height: 100vh;
+            }
+
+            .cancel-button {
+    margin-top: 10px;
+    background-color: #c82333;
     color: white;
-    padding: 10px 20px;
+    padding: 3px 730px;
     border: none;
     border-radius: 5px;
     text-decoration: none;
     font-size: 16px;
   }
 
-  .home-button:hover {
-    background-color: #0056b3;
+  .cancel-button:hover {
+    background-color: #bd2130;
   }
+  
 </style>
-{% endblock %} 
+{% endblock %}
 
 {% block content %}
-<div class="content-spacing">
-  
+<center><button class="cancel-button" onclick="confirmLeave()">Leave</button> <!-- Cancel button --></center>
+  <div id="root"></div>
 
-  <!-- Home Button -->
-  <a href="/" class="home-button">Go Back to Home</a>
-
-  <div id="root"></div> <!-- Container for the video conference -->
-</div>
 
 <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
 <script>
-  window.onload = function () {
-    const meetingRoomID = "{{ request.args.get('roomID') }}"; // Get roomID from URL parameters
-    
-    const userID = Math.floor(Math.random() * 10000) + "";
-    const userName = "{{ username }}"; // Placeholder for server-side username
-    const appID = 1594418666;
-    const serverSecret = "26fe88651d1d421204a8ae94a53e2328";
+  document.addEventListener("DOMContentLoaded", function () {
+    const meetingRoomID = "{{ request.args.get('roomID') }}"; 
+    const userID = Math.floor(Math.random() * 10000) + ""; 
+    const userName = "{{ username }}"; 
+    const appID = 1594418666; 
+    const serverSecret = "26fe88651d1d421204a8ae94a53e2328"; 
+
     const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
       appID,
       serverSecret,
@@ -68,7 +53,6 @@
       userName
     );
 
-    // Initialize Zego meeting
     const zp = ZegoUIKitPrebuilt.create(kitToken);
     zp.joinRoom({
       container: document.querySelector("#root"),
@@ -85,7 +69,7 @@
         },
         {
           name: "Meeting ID",
-          url: meetingRoomID, // Display the roomID as the Meeting ID
+          url: meetingRoomID,
         },
       ],
       scenario: {
@@ -103,7 +87,23 @@
       layout: "Auto",
       showLayoutButton: false,
     });
-  };
-</script>
+  });
 
+  function confirmLeave() {
+    const confirmation = confirm("Are you sure you want to leave?");
+    if (confirmation) {
+      // Fetch user role (this can be done using a session variable, or a JS object)
+      const role = '{{ role }}';  // Assume the role is passed to the template
+
+      if (role === 'patient') {
+        window.location.href = '/patient/appointments';  // Redirect to the home page for patient
+      } else if (role === 'doctor') {
+        window.location.href = '/doctor/appointments';  // Redirect to doctor's appointments page
+      } else {
+        window.location.href = '/';  // Default redirect (can be customized)
+      }
+    }
+  }
+</script>
 {% endblock %}
+

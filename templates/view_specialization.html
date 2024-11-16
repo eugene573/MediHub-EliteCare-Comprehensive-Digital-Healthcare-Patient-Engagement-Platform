@@ -1,0 +1,112 @@
+{% extends "layout.html" %} 
+
+{% block title %}View Specialist{% endblock %} 
+
+{% block extra_css %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .specialist-section {
+            padding: 2rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        .specialist-section:last-child {
+            border-bottom: none;
+        }
+        .specialist-img {
+            width: 100%;
+            max-width:  900px;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin: 1rem 0;
+        }
+        .section-title {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #3498db;
+            display: inline-block;
+        }
+        .intro-section {
+            background-color: #f8f9fa;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+        }
+        .specialist-description {
+            color: #666;
+            line-height: 1.6;
+            margin: 1rem 0;
+        }
+    </style>
+{% endblock %}  
+
+{% block content %}
+
+<body>
+    <br><br><br>
+    <center><h1>Our Specialist</h1></center>
+    <div class="container">
+
+        <div class="specialist-section">
+            <img src="/static\uploads\gen.jpg" alt="General Practice" class="specialist-img"> <br>
+            <h2 class="section-title">General Practice</h2> 
+            <p class="specialist-description">Our general practitioners are your first point of contact for most health issues. They provide comprehensive primary care services and coordinate with other specialists when needed.</p>
+        </div>
+
+        <div class="specialist-section">
+            
+            <img src="/static\uploads\fam.jpg" alt="Family Medicine" class="specialist-img"> <br>
+            <h2 class="section-title">Family Medicine</h2>
+            <p class="specialist-description">Our family medicine specialists provide continuous, comprehensive healthcare for individuals and families of all ages, focusing on preventive care and managing chronic conditions.</p>
+        </div>
+
+        <div class="specialist-section">
+            <img src="/static\uploads\car.jpg" alt="Cardiology" class="specialist-img"> <br>
+            <h2 class="section-title">Cardiology</h2>
+            <p class="specialist-description">Our cardiologists specialize in diagnosing and treating heart conditions, using the latest technology and techniques to ensure optimal cardiovascular health.</p>
+        </div>
+
+        <div class="specialist-section">
+            <img src="/static\uploads\der.jpg" alt="Dermatology" class="specialist-img"> <br>
+            <h2 class="section-title">Dermatology</h2>
+            <p class="specialist-description">Our dermatologists are experts in treating conditions affecting the skin, hair, and nails, offering both medical and cosmetic services.</p>
+        </div>
+
+        <div class="specialist-section">
+            <img src="/static\uploads\per.jpg" alt="Pediatrics" class="specialist-img"> <br>
+            <h2 class="section-title">Pediatrics</h2> 
+            <p class="specialist-description">Our pediatricians provide specialized care for children from birth through adolescence, ensuring healthy growth and development.</p>
+        </div>
+
+        <div class="specialist-section">
+            <img src="/static\uploads\neu.jpg" alt="Neurology" class="specialist-img"> <br>
+            <h2 class="section-title">Neurology</h2>
+            <p class="specialist-description">Our neurologists diagnose and treat disorders of the nervous system, including conditions affecting the brain, spinal cord, and nerves.</p>
+        </div>
+
+        <div class="specialist-section">
+            <img src="/static\uploads\oph.jpg" alt="Ophthalmology" class="specialist-img"> <br>
+            <h2 class="section-title">Ophthalmology</h2> 
+            <p class="specialist-description">Our ophthalmologists provide comprehensive eye care, from routine examinations to complex surgical procedures.</p>
+        </div>
+
+        <div class="specialist-section">
+           
+            <img src="/static\uploads\ort.jpg" alt="Orthopedics" class="specialist-img"> <br>
+            <h2 class="section-title">Orthopedics</h2>
+            <p class="specialist-description">Our orthopedic specialists treat conditions affecting the musculoskeletal system, helping patients recover from injuries and maintain mobility.</p>
+        </div>
+
+        <div class="specialist-section"> 
+            <img src="/static\uploads\ong.jpg" alt="Obstetrics and Gynecology" class="specialist-img"> <br>
+            <h2 class="section-title">Obstetrics and Gynecology</h2> 
+            <p class="specialist-description">Our OB/GYN specialists provide comprehensive women's healthcare services, from routine check-ups to pregnancy care and specialized treatments.</p>
+        </div>
+    </div>
+</body>
+{% endblock %}

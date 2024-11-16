@@ -383,6 +383,135 @@ def admin_feedback_page():
     # Render the feedback page with the feedback data
     return render_template('Admin/feedback.html', feedback=feedback_data,username=username, role=role, user=user)
 
+# View Doctors List
+@app.route('/view_doctors', methods=['GET', 'POST'])
+def view_doctors():
+    username = session.get('username')
+    role = session.get('role')
+    search = request.args.get('search', '')
+    specialization = request.args.get('specialization', '')
+
+ # Retrieve the user based on role
+    user = None
+    if role == 'admin' and username == admin['username']:
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+
+    # Filtering
+    filtered_doctors = doctors
+    if search:
+        filtered_doctors = [doc for doc in filtered_doctors if search.lower() in doc['username'].lower()]
+    if specialization:
+        filtered_doctors = [doc for doc in filtered_doctors if doc['specialization'] == specialization]
+    return render_template('view_doctors.html', doctors=filtered_doctors, role=role, user=user, username=username)
+
+# View Nurse List
+@app.route('/view_nurses')
+def view_nurses():
+    username = session.get('username')
+    role = session.get('role')
+    search = request.args.get('search', '')
+    specialization = request.args.get('specialization', '')
+
+# Retrieve the user based on role
+    user = None
+    if role == 'admin' and username == admin['username']:
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+
+    # Filtering 
+    filtered_nurses = nurses
+    if search:
+        filtered_nurses = [doc for doc in filtered_nurses if search.lower() in doc['username'].lower()]
+    if specialization:
+        filtered_nurses = [doc for doc in filtered_nurses if doc['specialization'] == specialization]
+    return render_template('view_nurses.html', nurses=filtered_nurses, role=role, user=user, username=username)
+
+# View Specialization
+@app.route('/view_specialization')
+def view_specialization():
+    username = session.get('username')
+    role = session.get('role')
+
+# Retrieve the user based on role
+    user = None
+    if role == 'admin' and username == admin['username']:
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+
+    return render_template('view_specialization.html', role=role, user=user, username=username)
+
+# MediHub
+@app.route('/MediHub')
+def MediHub():
+    username = session.get('username')
+    role = session.get('role')
+
+# Retrieve the user based on role
+    user = None
+    if role == 'admin' and username == admin['username']:
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+
+    return render_template('MediHub.html', role=role, user=user, username=username)
+
+# ContactUS
+@app.route('/contactUs')
+def contactUs():
+    username = session.get('username')
+    role = session.get('role')
+
+# Retrieve the user based on role
+    user = None
+    if role == 'admin' and username == admin['username']:
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+
+    return render_template('contactUs.html', role=role, user=user, username=username)
+
+# FAQ
+@app.route('/FAQ')
+def FAQ():
+    username = session.get('username')
+    role = session.get('role')
+
+# Retrieve the user based on role
+    user = None
+    if role == 'admin' and username == admin['username']:
+        user = admin
+    elif role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+    elif role == 'patient':
+        user = next((pat for pat in patients if pat['username'] == username), None)
+
+    return render_template('FAQ.html', role=role, user=user, username=username)
 # -------------------------------------------------------------------------------------------------------------------
 
 # ----------------------------- MEETING FUNCTION -------------------------------------------------------------------
@@ -998,60 +1127,6 @@ def patient_view_prescription():
 
     user_prescriptions = [pres for pres in prescriptions]
     return render_template('Patient/patient_prescription.html', user=user, username=username, prescriptions=user_prescriptions, role=role)
-
-# View Doctors List
-@app.route('/view_doctors', methods=['GET', 'POST'])
-def view_doctors():
-    username = session.get('username')
-    role = session.get('role')
-    search = request.args.get('search', '')
-    specialization = request.args.get('specialization', '')
-
- # Retrieve the user based on role
-    user = None
-    if role == 'admin' and username == admin['username']:
-        user = admin
-    elif role == 'doctor':
-        user = next((doc for doc in doctors if doc['username'] == username), None)
-    elif role == 'nurse':
-        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
-    elif role == 'patient':
-        user = next((pat for pat in patients if pat['username'] == username), None)
-
-    # Filtering
-    filtered_doctors = doctors
-    if search:
-        filtered_doctors = [doc for doc in filtered_doctors if search.lower() in doc['username'].lower()]
-    if specialization:
-        filtered_doctors = [doc for doc in filtered_doctors if doc['specialization'] == specialization]
-    return render_template('view_doctors.html', doctors=filtered_doctors, role=role, user=user, username=username)
-
-# View Nurse List
-@app.route('/view_nurses')
-def view_nurses():
-    username = session.get('username')
-    role = session.get('role')
-    search = request.args.get('search', '')
-    specialization = request.args.get('specialization', '')
-
-# Retrieve the user based on role
-    user = None
-    if role == 'admin' and username == admin['username']:
-        user = admin
-    elif role == 'doctor':
-        user = next((doc for doc in doctors if doc['username'] == username), None)
-    elif role == 'nurse':
-        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
-    elif role == 'patient':
-        user = next((pat for pat in patients if pat['username'] == username), None)
-
-    # Filtering 
-    filtered_nurses = nurses
-    if search:
-        filtered_nurses = [doc for doc in filtered_nurses if search.lower() in doc['username'].lower()]
-    if specialization:
-        filtered_nurses = [doc for doc in filtered_nurses if doc['specialization'] == specialization]
-    return render_template('view_nurses.html', nurses=filtered_nurses, role=role, user=user, username=username)
 # -------------------------------------------------------------------------------------------------------------
 
 # ----------------------------------- Get Doctors & Nurses Information ----------------------------------------
