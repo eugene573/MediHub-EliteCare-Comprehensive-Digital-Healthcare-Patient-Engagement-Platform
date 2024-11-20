@@ -9,19 +9,19 @@ from pymongo import MongoClient
 from flask_cors import CORS
 
 # Connect to MongoDB (use your URI here)
-client = MongoClient("mongodb+srv://eugenefong2002:fong55668921@cluster0.5mjroyf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+#client = MongoClient("mongodb+srv://eugenefong2002:fong55668921@cluster0.5mjroyf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 
 # Select the database you want to work with
-db = client['test']
+#db = client['test']
 
 # Collections
-admin_collection = db['admins']
-patients_collection = db['patients']
-nurses_collection = db['nurses']
-doctors_collection = db['doctors']
-appointments_collection = db['appointments']
-prescriptions_collection = db['prescriptions']
-medications_collection = db['medications']
+#admin_collection = db['admins']
+#patients_collection = db['patients']
+#nurses_collection = db['nurses']
+#doctors_collection = db['doctors']
+#appointments_collection = db['appointments']
+#prescriptions_collection = db['prescriptions']
+#medications_collection = db['medications']
 
 # Set up the upload folder and allowed extensions
 UPLOAD_FOLDER = 'static/uploads'  # Ensure this folder exists or create it
@@ -32,8 +32,8 @@ def allowed_file(filename):
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Change this to a random secret key for security
-app.config["MONGO_URI"] = "mongodb+srv://eugenefong2002:fong55668921@cluster0.5mjroyf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-mongo = PyMongo(app)
+#app.config["MONGO_URI"] = "mongodb+srv://eugenefong2002:fong55668921@cluster0.5mjroyf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+#mongo = PyMongo(app)
 # Configure upload folder
 UPLOAD_FOLDER = 'static/uploads/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -231,53 +231,53 @@ medications = [
 ]
 
 # Insert data into MongoDB collections
-admin_collection.insert_one(admin)
-patients_collection.insert_many(patients)
-nurses_collection.insert_many(nurses)
-doctors_collection.insert_many(doctors)
-appointments_collection.insert_many(appointments)
-prescriptions_collection.insert_many(prescriptions)
-medications_collection.insert_many(medications)
+#admin_collection.insert_one(admin)
+#patients_collection.insert_many(patients)
+#nurses_collection.insert_many(nurses)
+#doctors_collection.insert_many(doctors)
+#appointments_collection.insert_many(appointments)
+#prescriptions_collection.insert_many(prescriptions)
+#medications_collection.insert_many(medications)
 
-print("Data inserted successfully!")
+#print("Data inserted successfully!")
 
 # Insert data into MongoDB collections, checking if the data already exists
 
 # Insert admin data (only if not already present)
-if admin_collection.count_documents({'email': admin['email']}) == 0:
-    admin_collection.insert_one(admin)
+#if admin_collection.count_documents({'email': admin['email']}) == 0:
+#    admin_collection.insert_one(admin)
 
 # Insert patients data (only if not already present)
-for patient in patients:
-    if patients_collection.count_documents({'email': patient['email']}) == 0:
-        patients_collection.insert_one(patient)
+#for patient in patients:
+#   if patients_collection.count_documents({'email': patient['email']}) == 0:
+#        patients_collection.insert_one(patient)
 
 # Insert nurses data (only if not already present)
-for nurse in nurses:
-    if nurses_collection.count_documents({'email': nurse['email']}) == 0:
-        nurses_collection.insert_one(nurse)
+#for nurse in nurses:
+#    if nurses_collection.count_documents({'email': nurse['email']}) == 0:
+#        nurses_collection.insert_one(nurse)
 
 # Insert doctors data (only if not already present)
-for doctor in doctors:
-    if doctors_collection.count_documents({'email': doctor['email']}) == 0:
-        doctors_collection.insert_one(doctor)
+#for doctor in doctors:
+#    if doctors_collection.count_documents({'email': doctor['email']}) == 0:
+#        doctors_collection.insert_one(doctor)
 
 # Insert appointments data (only if not already present)
-for appointment in appointments:
-    if appointments_collection.count_documents({'id': appointment['id']}) == 0:
-        appointments_collection.insert_one(appointment)
+#for appointment in appointments:
+#    if appointments_collection.count_documents({'id': appointment['id']}) == 0:
+#        appointments_collection.insert_one(appointment)
 
 # Insert prescriptions data (only if not already present)
-for prescription in prescriptions:
-    if prescriptions_collection.count_documents({'id': prescription['id']}) == 0:
-        prescriptions_collection.insert_one(prescription)
+#for prescription in prescriptions:
+#    if prescriptions_collection.count_documents({'id': prescription['id']}) == 0:
+#        prescriptions_collection.insert_one(prescription)
 
 # Insert medications data (only if not already present)
-for medication in medications:
-    if medications_collection.count_documents({'name': medication['name']}) == 0:
-        medications_collection.insert_one(medication)
+#for medication in medications:
+#    if medications_collection.count_documents({'name': medication['name']}) == 0:
+#        medications_collection.insert_one(medication)
 
-print("Data inserted successfully without duplication!")
+#print("Data inserted successfully without duplication!")
 
 def get_doctor_name(doctor_id):
     return next((doctor['username'] for doctor in doctors if doctor['id'] == doctor_id), "Unknown Doctor")
@@ -329,7 +329,7 @@ def get_taken_times():
 
     # Query your database for appointments on the selected date for the given doctor
     # Replace this with your actual query
-    appointments = appointment.query.filter_by(doctor_id=doctor_id, date=selected_date).all()
+    appointments = appointments.query.filter_by(doctor_id=doctor_id, date=selected_date).all()
     taken_times = [appointment.time for appointment in appointments]
 
     return jsonify(taken_times=taken_times)
@@ -875,10 +875,6 @@ def patient_dashboard():
 @app.route('/patient/telemedicine', methods=['GET', 'POST'])
 def book_telemedicine_appointment():
   
-    # Store the selected time in the session to persist across page reloads
-    if 'takenTimes' not in session:
-        session['takenTimes'] = []
-
     username = session.get('username')
     role = session.get('role')
     current_date = datetime.now().strftime('%Y-%m-%d')
@@ -914,16 +910,6 @@ def book_telemedicine_appointment():
                                        doctors=doctors,
                                        error_message=error_message)
 
-            # Check if the selected time has already been booked
-            if appointment_time in session['takenTimes']:
-                error_message = f"The time slot {appointment_time} is already taken."
-                return render_template('Patient/telemedicine.html',
-                                       username=username,
-                                       user=user,
-                                       role=role,
-                                       current_date=current_date,
-                                       doctors=doctors,
-                                       error_message=error_message)
 
             # Convert doctor_id to integer
             doctor_id = int(selected_doctor_id)
@@ -942,8 +928,6 @@ def book_telemedicine_appointment():
             }
             appointments.append(new_appointment)
 
-            # Add the time to takenTimes to prevent future bookings
-            session['takenTimes'].append(appointment_time)
 
             # Flash success message
             flash(f"Appointment has been made successfully!", "success")
@@ -1516,7 +1500,7 @@ def nurse_dashboard():
         user = next((nurse for nurse in nurses if nurse['username'] == username), None)
     elif role == 'patient':
         user = next((pat for pat in patients if pat['username'] == username), None)
-    return render_template('Nurse/nurse_dashboard.html', role=role, nurse=nurse, user=user, username=username, appointments=appointments)
+    return render_template('Nurse/nurse_dashboard.html', role=role, nurses=nurses, user=user, username=username, appointments=appointments)
 
 # Nurse MY Appointment
 @app.route('/nurse/appointments', methods=['GET', 'POST'])
