@@ -260,6 +260,74 @@
             margin-bottom: 15px;
 }
 
+.text-section {
+            flex: 1;
+        }
+        .text-section h2 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .text-section p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .text-section .columns {
+            display: flex;
+            gap: 40px;
+        }
+        .text-section .column {
+            flex: 1;
+        }
+        .text-section .column h3 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .text-section .column ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+        .text-section .column ul li {
+            margin-bottom: 8px;
+        }
+        .image-section {
+            flex: 1;
+            text-align: center;
+        }
+        .image-section img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .gcontainer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+
+        .section-heading {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-heading::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background-color: #0565c5;
+        }
     </style>
     {% endblock %}
 
@@ -267,14 +335,15 @@
 
     <section id="hero">
         <div class="container">
-            <h2 style="color:black">Welcome to MediHub</h2>
+            <h2 class="section-heading text-center">Welcome to MediHub</h2>
+           
             <p style="color:black">MediHub is a healthcare services system where providing the best healthcare for you.</p>
             <a href="#services" class="btn">Our Services</a>
         </div>
     </section>
     <br><br>
     <section id="services" class="container services-section">
-       <center><h2>OUR SERVICES</h2></center> 
+        <h2 class="section-heading text-center">OUR SERVICES</h2>
         <div class="services-grid">
             <div class="service">
                 <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 48 48"><g fill="#1d65c3"><path fill-rule="evenodd" d="M8 6a2 2 0 0 0-2 2v26a2 2 0 0 0 2 2h15v4h-7v2h16v-2h-7v-4h15a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zm31 28V10H9v24h3v-2.62c0-2.022 2.407-4.622 5.22-5.726c.008.414.047 1.558.104 2.012c.061.49.145.978.236 1.379q.03.13.062.25A1.999 1.999 0 0 0 18.667 33a2 2 0 0 0 .26-3.983a6 6 0 0 1-.067-.27c-.08-.349-.156-.791-.213-1.246c-.094-.754-.141-1.543-.084-2.303q.386-.11.77-.198c.259-.059.434.39.562.718c.04.1.074.189.105.248c1.305 0 2.653.008 4 .017c1.347.008 2.695.017 4 .017c.038-.073.078-.177.122-.291c.13-.34.294-.766.545-.709q.537.122 1.072.289q0 .387.009.788c.017.968.034 1.977-.204 2.923h-.877a.67.67 0 0 0-.597.369l-.666 1.333a.7.7 0 0 0-.07.298v1.333c0 .369.298.667.666.667h1.333v-1.333h-.666v-.51l.412-.824h1.842l.412.824v.51h-.666V33H32a.667.667 0 0 0 .667-.667V31a.7.7 0 0 0-.07-.298l-.667-1.334a.67.67 0 0 0-.597-.368h-.423c.212-1.06.226-2.126.225-3.202C33.793 26.922 36 29.444 36 31.38V34zm-20.333-2.323a.67.67 0 0 0 .666-.677a.67.67 0 0 0-.666-.677A.67.67 0 0 0 18 31c0 .383.308.677.667.677M24 9a1 1 0 1 0 0-2a1 1 0 0 0 0 2" clip-rule="evenodd"/><path d="M30 18a6 6 0 1 1-12 0a6 6 0 0 1 12 0"/></g></svg>
@@ -297,9 +366,8 @@
     <br>
     <hr style="border: none; height: 1px; width: 80%; background: linear-gradient(to right, #ccc, #999, #ccc); border-radius: 5px; margin: 40px auto;">
 
-        <center><h2>OUR MEDICAL TEAM</h2></center> 
-   <br><br>
-
+    <h2 class="section-heading text-center">OUR MEDICAL TEAM</h2>
+   <br>
     <center>
         <div style="display: flex; align-items: center; justify-content: center;">
           <img class="img1" src="https://www.shutterstock.com/image-photo/healthcare-medical-staff-concept-portrait-600nw-2281024823.jpg" alt="Doctor" width="450" height="300">
@@ -326,22 +394,48 @@
       
     <br>
     <hr style="border: none; height: 1px; width: 80%; background: linear-gradient(to right, #ccc, #999, #ccc); border-radius: 5px; margin: 40px auto;">
-    <center><h2>Feedback</h2></center>
-    <center><p>Please include any details that might help us understand your feedback better, specific issues you encountered or suggestions for improvement.</p></center>
     
-    <section id="contact" class="container">
-        <form action="/submit-feedback" method="post">
-            
-            <!-- Hidden input field for pimage -->
-            <input type="hidden" name="pimage" value="{{ user.pimage }}">
-            
-            <input type="hidden" id="name" name="name" value="{{ user.username }}">
-        
-            <textarea id="message" name="message" placeholder="Message:" required></textarea>
-            
-            <button type="submit" class="send-btn">Send</button>
-        </form>
-    </section>    
+    <div class="gcontainer">
+        <!-- Text Section -->
+        <div class="text-section">
+            <h2 class="section-heading text-center">Suitable Conditions</h2>
+            <p>Many common illnesses and chronic conditions can be effectively treated through a video consultation. Below are some typical conditions that can be treated on Doctor Anywhere:</p>
+            <div class="columns">
+                <!-- Common Illness Column -->
+                <div class="column">
+                    <h3>Common Illness</h3>
+                    <ul>
+                        <li>Fever</li>
+                        <li>Cough, sore throat or laryngitis</li>
+                        <li>Diarrhea / Vomiting</li>
+                        <li>Flu / Cold</li>
+                        <li>Sinusitis</li>
+                        <li>Rash and skin conditions</li>
+                        <li>Cold sores</li>
+                        <li>Headache</li>
+                        <li>Giddiness / Dizziness</li>
+                        <li>Red eye</li>
+                    </ul>
+                </div>
+                <!-- Chronic Conditions Column -->
+                <div class="column">
+                    <h3>Chronic Conditions</h3>
+                    <ul>
+                        <li>Diabetes</li>
+                        <li>Hypertension</li>
+                        <li>Hyperlipidemia</li>
+                        <li>Other secondary diseases which may arise from the chronic disease conditions mentioned above (e.g., Ischemic Disease, Peripheral Artery Disease etc.)</li>
+                    </ul>
+                </div>
+            </div>
+            <p>For conditions that are not listed above, the doctor will assess your history, current symptoms and any other available documents to determine if your condition is suitable for a video consultation.</p>
+        </div>
+
+        <!-- Image Section -->
+        <div class="image-section">
+            <img src="https://img.freepik.com/premium-photo/young-man-protective-face-mask-talking-collegue-by-video-call_425904-3849.jpg?semt=ais_hybrid" alt="Doctor with stethoscope">
+        </div>
+    </div>
     
     <script>
         document.addEventListener("DOMContentLoaded", function() {

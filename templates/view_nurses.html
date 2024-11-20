@@ -10,6 +10,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="icon" href="/static/uploads/MediHubq.png" type="image/x-icon" sizes="512x512">
     <style>      
+    .section-heading {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-heading::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background-color: #0565c5;
+        }
         /* Style for the search bar container */
         form {
             display: flex;
@@ -109,7 +127,7 @@
 
 {% block content %}
     <br><br><br>
-    <center><h1>Meet Our Nurse</h1></center>
+    <h2 class="section-heading text-center">Meet Our Nurse</h2>
     
     <!-- Search Form -->
     <form method="GET" action="{{ url_for('view_nurses') }}">

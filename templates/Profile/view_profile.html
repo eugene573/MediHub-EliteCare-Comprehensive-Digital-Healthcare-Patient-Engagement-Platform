@@ -46,12 +46,39 @@
             background-color: #d32f2f; /* Darker red on hover */
             transform: translateY(-2px);
         }
+
+        .flash-message-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050; /* Ensure it's above other content */
+    width: 300px; /* Adjust width as needed */
+    pointer-events: none;
+}
+
+.alert {
+    margin-top: 10px;
+    pointer-events: auto;
+}
     </style>
     
 {% endblock %}
 
 {% block content %}
 <br><br><br>
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+  {% endwith %}
+
 <section class="content">
     <div class="container-fluid profile">
         <div class="row">

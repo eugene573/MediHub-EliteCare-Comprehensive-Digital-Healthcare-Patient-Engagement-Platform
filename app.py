@@ -126,8 +126,9 @@ feedback_list = [
 prescriptions = [
     {
         "id": 1,
-        "patient_id": "P001",
-        "patient_name": "John Doe",
+        "author_username":"John",
+        "patient_id": "2",
+        "patient_username": "Bob",
         "medication": "Lisinopril",
         "dosage": "10 mg",
         "instructions": "Take once daily with food",
@@ -135,8 +136,9 @@ prescriptions = [
     },
     {
         "id": 2,
-        "patient_id": "P002",
-        "patient_name": "Jane Smith",
+        "author_username":"John",
+        "patient_id": "1",
+        "patient_username": "Alice",
         "medication": "Metformin",
         "dosage": "500 mg",
         "instructions": "Take twice daily with meals",
@@ -144,17 +146,19 @@ prescriptions = [
     },
     {
         "id": 3,
-        "patient_id": "P003",
-        "patient_name": "Alice Johnson",
+        "author_username":"John",
+        "patient_id": "5",
+        "patient_username": "Cael",
         "medication": "Atorvastatin",
         "dosage": "20 mg",
         "instructions": "Take once daily in the evening",
-        "date": "2024-08-10"
+        "date": "2024-08-13"
     },
     {
         "id": 4,
-        "patient_id": "P004",
-        "patient_name": "Bob Brown",
+        "author_username":"John",
+        "patient_id": "3",
+        "patient_username": "Lily",
         "medication": "Amlodipine",
         "dosage": "5 mg",
         "instructions": "Take once daily in the morning",
@@ -162,8 +166,9 @@ prescriptions = [
     },
     {
         "id": 5,
-        "patient_id": "P005",
-        "patient_name": "Emily Davis",
+        "author_username":"Smith",
+        "patient_id": "4",
+        "patient_username": "Ray",
         "medication": "Omeprazole",
         "dosage": "20 mg",
         "instructions": "Take once daily before breakfast",
@@ -175,7 +180,7 @@ prescriptions = [
 medications = [
     {
         'id': 1,
-        'medication_name': 'Paracetamol',
+        'name': 'Paracetamol',
         'description': 'Used for pain relief and fever reduction.',
         'quantity': 100,
         'price': 0.10,  # Price per unit
@@ -185,7 +190,7 @@ medications = [
     },
     {
         'id': 2,
-        'medication_name': 'Amoxicillin',
+        'name': 'Amoxicillin',
         'description': 'An antibiotic used to treat various infections.',
         'quantity': 200,
         'price': 0.50,  # Price per unit
@@ -195,7 +200,7 @@ medications = [
     },
     {
         'id': 3,
-        'medication_name': 'Ibuprofen',
+        'name': 'Ibuprofen',
         'description': 'Nonsteroidal anti-inflammatory drug used for pain, fever, and inflammation.',
         'quantity': 150,
         'price': 0.20,  # Price per unit
@@ -205,7 +210,7 @@ medications = [
     },
     {
         'id': 4,
-        'medication_name': 'Ciprofloxacin',
+        'name': 'Ciprofloxacin',
         'description': 'Antibiotic used to treat a variety of bacterial infections.',
         'quantity': 75,
         'price': 1.00,  # Price per unit
@@ -215,7 +220,7 @@ medications = [
     },
     {
         'id': 5,
-        'medication_name': 'Lisinopril',
+        'name': 'Lisinopril',
         'description': 'Medication used to treat high blood pressure and heart failure.',
         'quantity': 120,
         'price': 0.15,  # Price per unit
@@ -269,7 +274,7 @@ for prescription in prescriptions:
 
 # Insert medications data (only if not already present)
 for medication in medications:
-    if medications_collection.count_documents({'medication_name': medication['medication_name']}) == 0:
+    if medications_collection.count_documents({'name': medication['name']}) == 0:
         medications_collection.insert_one(medication)
 
 print("Data inserted successfully without duplication!")
@@ -869,9 +874,7 @@ def patient_dashboard():
 # ------------------------------------------- Patient Book Telemedicine Appointment ---------------------------------------------------
 @app.route('/patient/telemedicine', methods=['GET', 'POST'])
 def book_telemedicine_appointment():
-    if 'id' not in session:
-        return redirect(url_for('login'))
-
+  
     # Store the selected time in the session to persist across page reloads
     if 'takenTimes' not in session:
         session['takenTimes'] = []
@@ -893,8 +896,6 @@ def book_telemedicine_appointment():
 
     if request.method == 'POST':
         patient_id = session.get('id')
-        if not patient_id:
-            return redirect(url_for('login'))
 
         try:
             # Retrieve form data
@@ -970,15 +971,12 @@ def book_telemedicine_appointment():
 # --------------------------------- Patient Book Home Visit -------------------------------------------------------
 @app.route('/patient/home_visit', methods=['GET', 'POST'])
 def book_home_visit_appointment():
-    if 'id' not in session:
-        return redirect(url_for('login'))
     
     username = session.get('username')
     role = session.get('role')
     current_date = datetime.now().strftime('%Y-%m-%d')
     
-
-# Retrieve the user based on role
+    # Retrieve the user based on role
     user = None
     if role == 'admin' and username == admin['username']:
         user = admin
@@ -989,10 +987,20 @@ def book_home_visit_appointment():
     elif role == 'patient':
         user = next((pat for pat in patients if pat['username'] == username), None)
 
+    # Check if the user has an address
+    if role == 'patient' and (not user or not user.get('address')): 
+        flash("Please update your address before booking a home visit appointment.", "error")
+        return render_template('Profile/view_profile.html',
+                               username=username,
+                               user=user,
+                               role=role,
+                               current_date=current_date,
+                               doctors=doctors,
+                               nurses=nurses,
+                               error_message="Please update your address before booking a home visit appointment.")
+    
     if request.method == 'POST':
         patient_id = session.get('id')
-        if not patient_id:
-            return redirect(url_for('login'))
         
         try:
             selected_role = request.form.get('role')
@@ -1048,6 +1056,7 @@ def book_home_visit_appointment():
                           nurses=nurses,
                           appointments=appointments)
 
+
 # --------------------------------- Patient View Appointment -------------------------------------------------
 @app.route('/patient/appointments')
 def patient_appointments():
@@ -1063,6 +1072,7 @@ def patient_appointments():
     current_date = datetime.now().strftime('%Y-%m-%d')
     username = session.get('username')
     role = session.get('role')
+    search_date = request.args.get('search_date')  
 
     # Ensure time format consistency by stripping leading/trailing spaces
     for app in patient_appointments:
@@ -1074,6 +1084,12 @@ def patient_appointments():
         convert_to_24hr_format(x['time'].split(' - ')[0])  # Get the start time and convert to 24-hour format
     ))
     
+    # If a search date is provided, filter appointments by the date
+    if search_date:
+        appointments_sorted = [appt for appt in appointments_sorted if appt['date'] == search_date]
+
+    no_appointments_found = len(appointments_sorted) == 0
+
     # Retrieve the user based on role
     user = None
     if role == 'admin' and username == admin['username']:
@@ -1093,7 +1109,9 @@ def patient_appointments():
         appointments=appointments_sorted,
         current_date=current_date,
         doctors=doctors,
-        nurses=nurses
+        nurses=nurses,
+        search_date=search_date,
+        no_appointments_found=no_appointments_found
     )
 
 # Delete Appointment
@@ -1110,8 +1128,9 @@ def delete_appointment(appointment_id):
 def patient_view_prescription():
     username = session.get('username')
     role = session.get('role')
+    search_date = request.args.get('search_date')  # Get the search date from query params
 
-# Retrieve the user based on role
+    # Retrieve the user based on role
     user = None
     if role == 'admin' and username == admin['username']:
         user = admin
@@ -1123,10 +1142,39 @@ def patient_view_prescription():
         user = next((pat for pat in patients if pat['username'] == username), None)
 
     if role not in ['patient']:
-        return redirect(url_for('index'))  # Redirect if not a doctor or nurse
+        return redirect(url_for('index'))  # Redirect if not a patient
 
-    user_prescriptions = [pres for pres in prescriptions]
-    return render_template('Patient/patient_prescription.html', user=user, username=username, prescriptions=user_prescriptions, role=role)
+    # Get prescriptions for the logged-in patient
+    patient_prescriptions = [
+        pres for pres in prescriptions
+        if pres['patient_username'] == username
+    ]
+
+    # Filter prescriptions by search date if provided
+    if search_date:
+        patient_prescriptions = [
+            pres for pres in patient_prescriptions if pres['date'] == search_date
+        ]
+
+    # Sort prescriptions by date (latest to earliest)
+    patient_prescriptions = sorted(
+        patient_prescriptions,
+        key=lambda x: datetime.strptime(x['date'], '%Y-%m-%d'),
+        reverse=True
+    )
+
+    # Check if no prescriptions are found
+    no_prescriptions_found = len(patient_prescriptions) == 0
+
+    return render_template(
+        'Patient/patient_prescription.html',
+        user=user,
+        username=username,
+        prescriptions=patient_prescriptions,
+        role=role,
+        search_date=search_date,
+        no_prescriptions_found=no_prescriptions_found
+    )
 # -------------------------------------------------------------------------------------------------------------
 
 # ----------------------------------- Get Doctors & Nurses Information ----------------------------------------
@@ -1145,49 +1193,74 @@ def get_nurses():
 # -----------------------------------------------------------------------------------------------------------------
 
 # ---------------------------------- Prescription -----------------------------------------------------------------
-# Doctor & Nurse Write Prescription
 @app.route('/write_prescription', methods=['GET', 'POST'])
 def write_prescription():
     username = session.get('username')
     role = session.get('role')
 
-# Retrieve the user based on role
+    # Check if user is logged in and authorized
+    if role not in ['doctor', 'nurse']:
+        return redirect(url_for('index'))  # Redirect unauthorized users
+
+    # Get the logged-in user
     user = None
-    if role == 'admin' and username == admin['username']:
-        user = admin
-    elif role == 'doctor':
+    if role == 'doctor':
         user = next((doc for doc in doctors if doc['username'] == username), None)
     elif role == 'nurse':
         user = next((nurse for nurse in nurses if nurse['username'] == username), None)
-    elif role == 'patient':
-        user = next((pat for pat in patients if pat['username'] == username), None)
 
-    if not role or role not in ['doctor', 'nurse']:
-        return redirect(url_for('index'))  # Redirect if not a doctor or nurse
+    # Redirect if user not found
+    if not user:
+        return redirect(url_for('index'))
 
     if request.method == 'POST':
+        # Retrieve form data
         patient_id = int(request.form['patient_id'])
-        medication = request.form['medication']
-        dosage = request.form['dosage']
-        instructions = request.form['instructions']
+        medication_ids = request.form.getlist('medication_id[]')
+        dosages = request.form.getlist('dosage[]')
+        instructions_list = request.form.getlist('instructions[]')
 
+        # Validate form data consistency
+        if not (len(medication_ids) == len(dosages) == len(instructions_list)):
+            return render_template(
+                'Prescription/write_prescription.html',
+                patients=patients,
+                role=role,
+                username=username,
+                user=user,
+                medications=medications,
+                error="Please ensure each medication entry includes dosage and instructions."
+            )
 
-        new_prescription = {
-            'id': len(prescriptions) + 1,
-            'author_username': username,
-            'author_role': role,
-            'patient_id': patient_id,
-            'medication': medication,
-            'dosage': dosage,
-            'instructions': instructions,
-            'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        }
+         # Create a single prescription entry with multiple medications
+        prescription_id = len(prescriptions) + 1
+        for med_id, dosage, instructions in zip(medication_ids, dosages, instructions_list):
+            selected_medication = next((med for med in medications if str(med['id']) == med_id), None)
+            if selected_medication:
+                prescriptions.append({
+                    'id': prescription_id,
+                    'author_username': username,
+                    'author_role': role,
+                    'patient_id': patient_id,
+                    'patient_username': next((pat['username'] for pat in patients if pat['id'] == patient_id), None),
+                    'medication': selected_medication['name'],
+                    'dosage': dosage,
+                    'instructions': instructions,
+                    'date': datetime.now().strftime('%Y-%m-%d')
+                })
 
-        prescriptions.append(new_prescription)
         return redirect(url_for('view_prescriptions'))
 
-    patient_list = [pat for pat in patients]
-    return render_template('Prescription/write_prescription.html', patients=patient_list, role=role, username=username, nurse=nurse, doctor=doctor, user=user)
+    # GET: Render the prescription form
+    return render_template(
+        'Prescription/write_prescription.html',
+        patients=patients,
+        role=role,
+        username=username,
+        user=user,
+        medications=medications
+    )
+
 
 # Doctor & Nurse View Prescription
 @app.route('/view_prescriptions')
@@ -1195,44 +1268,157 @@ def view_prescriptions():
     username = session.get('username')
     role = session.get('role')
 
-# Retrieve the user based on role
+    # Check if user is logged in and authorized
+    if role not in ['doctor', 'nurse']:
+        return redirect(url_for('index'))  # Redirect unauthorized users
+
+    # Get the logged-in user
     user = None
-    if role == 'admin' and username == admin['username']:
-        user = admin
-    elif role == 'doctor':
+    if role == 'doctor':
         user = next((doc for doc in doctors if doc['username'] == username), None)
     elif role == 'nurse':
         user = next((nurse for nurse in nurses if nurse['username'] == username), None)
-    elif role == 'patient':
-        user = next((pat for pat in patients if pat['username'] == username), None)
 
-    if role not in ['doctor', 'nurse']:
-        return redirect(url_for('index'))  # Redirect if not a doctor or nurse
+    # Redirect if user not found
+    if not user:
+        return redirect(url_for('index'))
 
-    user_prescriptions = [pres for pres in prescriptions]
-    return render_template('Prescription/view_prescriptions.html', prescriptions=user_prescriptions,role=role, username=username, nurse=nurse, doctor=doctor, user=user)
+    # Retrieve prescriptions written by the logged-in user
+    user_prescriptions = [
+        pres for pres in prescriptions
+        if pres.get('author_username') == username  # Assuming 'author' stores the username of the creator
+    ]
 
-# Prescription Page
-@app.route('/prescription',methods=['GET'])
-def prescription_options():
+    # Render the prescriptions page
+    return render_template(
+        'Prescription/view_prescriptions.html',
+        patients=patients,
+        prescriptions=user_prescriptions,
+        role=role,
+        username=username,
+        user=user,
+        medications=medications,
+        prescription=None  # Add a default `prescription`
+    )
+
+# PRES SEARCH FUNCTION
+@app.route('/search_prescriptions', methods=['GET', 'POST'])
+def search_prescriptions():
     username = session.get('username')
     role = session.get('role')
-    
-    # Retrieve the user based on role
+
+    # Check if user is logged in and authorized
+    if role not in ['doctor', 'nurse']:
+        return redirect(url_for('index'))
+
+    # Get the logged-in user
     user = None
-    if role == 'admin' and username == admin['username']:
-        user = admin
-    elif role == 'doctor':
+    if role == 'doctor':
         user = next((doc for doc in doctors if doc['username'] == username), None)
     elif role == 'nurse':
         user = next((nurse for nurse in nurses if nurse['username'] == username), None)
-    elif role == 'patient':
-        user = next((pat for pat in patients if pat['username'] == username), None)
 
-    if not username:
-        return redirect(url_for('login'))
-    
-    return render_template('Prescription/prescription.html', username=username, role=role, user=user)
+    if not user:
+        return redirect(url_for('index'))
+
+    search_results = []
+    search_query = None
+
+    if request.method == 'POST':
+        search_query = request.form.get('search_username', '').strip()
+
+        # Filter prescriptions by patient username
+        if search_query:
+            search_results = [
+                pres for pres in prescriptions
+                if pres.get('patient_username') and search_query.lower() in pres['patient_username'].lower()
+                and pres.get('author_username') == username  # Ensure logged-in user only sees their authored prescriptions
+            ]
+
+    return render_template(
+        'Prescription/view_prescriptions.html',
+        search_results=search_results,
+        search_query=search_query,
+        role=role,
+        username=username,
+        user=user
+    )
+
+# EDIT PRESCRIPTION FUNCTION
+@app.route('/edit_prescription/<int:prescription_id>', methods=['GET', 'POST'])
+def edit_prescription(prescription_id):
+    username = session.get('username')
+    role = session.get('role')
+
+    # Restrict access to doctors only
+    if role != 'doctor' and role != 'nurse':
+        return redirect(url_for('index'))
+
+    # Find the logged-in user
+    user = None
+    if role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+    elif role == 'nurse':
+        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
+
+    # Find the prescription to edit
+    prescription = next((pres for pres in prescriptions if pres['id'] == prescription_id), None)
+    if not prescription:
+        return "Prescription not found", 404
+
+    if request.method == 'POST':
+        # Update prescription details
+        prescription['medication'] = request.form['medication']
+        prescription['dosage'] = request.form['dosage']
+        prescription['instructions'] = request.form['instructions']
+        prescription['date'] = datetime.now().strftime('%Y-%m-%d')  # Optionally update the date
+
+        return redirect(url_for('view_prescriptions'))
+
+    # Render the edit form with existing prescription details
+    return render_template(
+        'Prescription/edit_prescription.html',
+        prescription=prescription,
+        medications=medications,  # Pass all medications for dropdown
+        username=username,
+        role=role
+    )
+
+@app.route('/get_prescription/<int:prescription_id>', methods=['GET'])
+def get_prescription(prescription_id):
+    # Find the prescription by ID
+    prescription = next((pres for pres in prescriptions if pres['id'] == prescription_id), None)
+    if not prescription:
+        return jsonify({'error': 'Prescription not found'}), 404
+
+    # Return prescription details as JSON
+    return jsonify({
+        'medication': prescription['medication'],
+        'dosage': prescription['dosage'],
+        'instructions': prescription['instructions'],
+        'date': prescription['date'],
+    })
+
+# DELETE PRESCRIPTION FUNCTION
+@app.route('/delete_prescription/<int:prescription_id>', methods=['POST'])
+def delete_prescription(prescription_id):
+    username = session.get('username')
+    role = session.get('role')
+
+    # Restrict access to doctors only
+    if role != 'doctor' and role != 'nurse':
+        return redirect(url_for('index'))
+
+    # Find the prescription to delete
+    prescription = next((pres for pres in prescriptions if pres['id'] == prescription_id), None)
+    if not prescription:
+        return "Prescription not found", 404
+
+    # Remove the prescription
+    prescriptions.remove(prescription)
+
+    return redirect(url_for('view_prescriptions'))
+
 # -----------------------------------------------------------------------------------------------------------------
 
 # ----------------------------- Doctor -----------------------------------------------------------------------

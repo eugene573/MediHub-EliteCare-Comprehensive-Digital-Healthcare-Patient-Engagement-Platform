@@ -42,6 +42,25 @@
             line-height: 1.6;
             margin: 1rem 0;
         }
+
+        .section-heading {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-heading::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background-color: #0565c5;
+        }
     </style>
 {% endblock %}  
 
@@ -49,9 +68,9 @@
 
 <body>
     <br><br><br>
-    <center><h1>Our Specialist</h1></center>
-    <div class="container">
+    <h2 class="section-heading text-center">Our Specialist</h2>
 
+    <div class="container">
         <div class="specialist-section">
             <img src="/static\uploads\gen.jpg" alt="General Practice" class="specialist-img"> <br>
             <h2 class="section-title">General Practice</h2> 

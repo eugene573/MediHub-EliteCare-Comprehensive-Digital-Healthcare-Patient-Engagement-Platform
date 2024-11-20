@@ -195,19 +195,21 @@ button[name="search_button"]:hover {
 }
 
 .m-btn {
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #0073e6; /* Green color */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    text-align: center;
-    display: inline-block;
-    text-decoration: none; /* Remove underline */
+    text-decoration: none; /* Removes the underline */
+  background-color: #0073e6; /* Adds a button-like background */
+  color: white; /* Ensures the text is visible */
+  padding: 10px 20px; /* Adds padding for a button look */
+  border-radius: 5px; /* Rounds the edges */
+  display: inline-block; /* Ensures proper button shape */
+  font-size: 16px; /* Adjusts font size */
+  text-align: center; /* Centers the text */
+
 }
 
 .m-btn:hover {
-    background-color: #2081ff;
+  background-color: #2081ff; /* Changes color on hover */
+  text-decoration: none; /* Ensures no underline on hover */
+  color: white; /* Ensures the text is visible */
 }
 
 .join-button-container {
@@ -239,7 +241,7 @@ button[name="search_button"]:hover {
 {% endwith %}
 
 <form method="get" action="/doctor/appointments">
-    <input type="date" name="search_date" value="{{ search_date }}" />
+    <input type="date" name="search_date" onkeydown="return false;" value="{{ search_date }}" />
     <button type="submit" name="search_button">Search</button>
     {% if search_date %}
     <a href="/doctor/appointments" class="btn-clear">Clear</a>
@@ -296,9 +298,9 @@ button[name="search_button"]:hover {
                             <h3>{% set patient = patients | selectattr('id', 'equalto', appointment['patient_id']) | first %}
                                 {{ patient.username if patient else 'Patient not found' }}</h3>
                            {% if patient %}
-                           <h5>{{ patient.address }}<button class="copy-btn" onclick="copyAddress('{{ patient.address }}')">
+                           <p>{{ patient.address }}<button class="copy-btn" onclick="copyAddress('{{ patient.address }}')">
                             <i class="fas fa-copy"></i> <!-- Font Awesome Clipboard Icon -->
-                        </button></h5>
+                        </button></p>
                            {% else %}
                                <h5>Address not available</h5>
                            {% endif %} 
@@ -349,9 +351,9 @@ button[name="search_button"]:hover {
                             <h3>{% set patient = patients | selectattr('id', 'equalto', appointment['patient_id']) | first %}
                                 {{ patient.username if patient else 'Patient not found' }}</h3>
                            {% if patient %}
-                           <h5>{{ patient.address }}<button class="copy-btn" onclick="copyAddress('{{ patient.address }}')">
+                           <p>{{ patient.address }}<button class="copy-btn" onclick="copyAddress('{{ patient.address }}')">
                             <i class="fas fa-copy"></i> <!-- Font Awesome Clipboard Icon -->
-                        </button></h5>
+                        </button></p>
                            {% else %}
                                <h5>Address not available</h5>
                            {% endif %} 

@@ -247,11 +247,7 @@ main {
                 <span>View Prescriptions</span>
                 <div class="shortcut">VP</div>
             </a>
-            <!--<a href="/meeting" class="menu-item" class="menu-item {% if request.path == '/meeting' %}active{% endif %}">
-                <i class="fas fa-desktop"></i>
-                <span>Create Meeting</span>
-                <div class="shortcut">CM</div>
-            </a> -->
+    
             <a href="/doctor/appointments" class="menu-item {% if request.path == '/doctor/appointments' %}active{% endif %}">
                 <i class="fas fa-briefcase-medical"></i>
                 <span>My Appointment</span>
@@ -282,6 +278,8 @@ main {
         <i class="fas fa-bars"></i>
     </button>
 
+
+     {% block extra_js %}{% endblock %}
     <script>
         const sidebar = document.getElementById('sidebar');
         const toggleBtn = document.getElementById('toggle-btn');

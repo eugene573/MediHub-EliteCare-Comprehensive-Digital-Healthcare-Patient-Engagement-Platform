@@ -1,0 +1,164 @@
+{% extends "layout.html" %} 
+
+{% block title %}Contact Us{% endblock %} 
+
+{% block extra_css %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .page-section {
+            padding: 60px 0;
+        }
+
+        .section-heading {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-heading::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background-color: #0565c5;
+        }
+
+        .section-description {
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .feedback-form {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #0565c5;
+            box-shadow: 0 0 0 2px rgba(5, 101, 197, 0.1);
+        }
+
+        .send-btn {
+            background-color: #0073e6;
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .send-btn:hover {
+            background-color: #045098;
+            transform: translateY(-1px);
+        }
+
+        .social-links {
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            margin: 0 10px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .social-links a:hover {
+            transform: translateY(-3px);
+        }
+
+        .social-links i {
+            font-size: 48px;
+        }
+
+        .fa-facebook { color: #1877F2; }
+        .fa-whatsapp { color: #25D366; }
+        .fa-envelope { color: #0565c5; }
+    </style>
+{% endblock %}  
+
+{% block content %}
+ <br>
+<body>
+    <div class="page-section">
+        <div class="container">
+            <h2 class="section-heading text-center">Feedback</h2>
+            <p class="section-description text-center">
+                Please include any details that might help us understand your feedback better, specific issues you encountered or suggestions for improvement.
+            </p>
+
+            <form action="/submit-feedback" method="post" class="feedback-form">
+                <input type="hidden" name="pimage" value="{{ user.pimage }}">
+                <input type="hidden" id="name" name="name" value="{{ user.username }}">
+                
+                <textarea 
+                    id="message" 
+                    name="message" 
+                    placeholder="Share your thoughts with us..."
+                    required
+                ></textarea>
+                
+                    <button type="submit" class="send-btn" onClick="return confirm('Are you sure you want to submit?')">
+                        Send 
+                    </button>
+            </form>
+
+            <div class="social-links">
+                <h2 class="section-heading text-center">Contact Us</h2>
+                <div>
+                    <a href="https://facebook.com" target="_blank" aria-label="Facebook">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                    &nbsp;  &nbsp;
+                    <a href="https://wa.me/012-2358761" target="_blank" aria-label="WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    &nbsp;  &nbsp;
+                    <a href="mailto:admin@example.com" aria-label="Email">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}

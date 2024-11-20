@@ -216,7 +216,7 @@ button[name="search_button"]:hover {
 {% endwith %}
 
 <form method="get" action="/nurse/appointments">
-    <input type="date" name="search_date" value="{{ search_date }}" />
+    <input type="date" name="search_date" onkeydown="return false;" value="{{ search_date }}" />
     <button type="submit" name="search_button">Search</button>
     {% if search_date %}
     <a href="/nurse/appointments" class="btn-clear">Clear</a>
@@ -250,9 +250,9 @@ button[name="search_button"]:hover {
                         <h3>{% set patient = patients | selectattr('id', 'equalto', appointment['patient_id']) | first %}
                             {{ patient.username if patient else 'Patient not found' }}</h3>
                        {% if patient %}
-                       <h5>{{ patient.address }}<button class="copy-btn" onclick="copyAddress('{{ patient.address }}')">
+                       <p>{{ patient.address }}<button class="copy-btn" onclick="copyAddress('{{ patient.address }}')">
                         <i class="fas fa-copy"></i> <!-- Font Awesome Clipboard Icon -->
-                    </button></h5>
+                    </button></p>
                        {% else %}
                            <h5>Address not available</h5>
                        {% endif %} 
@@ -286,9 +286,9 @@ button[name="search_button"]:hover {
                         <h3>{% set patient = patients | selectattr('id', 'equalto', appointment['patient_id']) | first %}
                             {{ patient.username if patient else 'Patient not found' }}</h3>
                        {% if patient %}
-                          <h5>{{ patient.address }}<button class="copy-btn" onclick="copyAddress('{{ patient.address }}')">
+                          <p>{{ patient.address }}<button class="copy-btn" onclick="copyAddress('{{ patient.address }}')">
                             <i class="fas fa-copy"></i> <!-- Font Awesome Clipboard Icon -->
-                        </button></h5>
+                        </button></p>
                           
                        {% else %}
                            <h5>Address not available</h5>

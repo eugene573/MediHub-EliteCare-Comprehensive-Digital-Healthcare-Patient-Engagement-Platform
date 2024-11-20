@@ -5,101 +5,177 @@
 {% block extra_css %}
 <head>
     <!-- Bootstrap core CSS -->
- <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
- <link rel="icon" href="/static/uploads/MediHubq.png" type="image/x-icon" sizes="512x512">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" href="/static/uploads/MediHubq.png" type="image/x-icon" sizes="512x512">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-table {
-    width: 90%;
-    border-collapse: collapse;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 20px;
-    font-family: Arial, sans-serif;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px auto;
+            font-family: Arial, sans-serif;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #3489c2;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        caption {
+            caption-side: top;
+            font-size: 1.5em;
+            margin: 10px 0;
+            text-align: left;
+        }
+
+        @media (max-width: 768px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            tr {
+                border: 1px solid #ccc;
+                margin-bottom: 10px;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            td {
+                border: none;
+                position: relative;
+                padding-left: 50%;
+                white-space: nowrap;
+            }
+
+            td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 0;
+                width: 45%;
+                padding-left: 10px;
+                font-weight: bold;
+                white-space: nowrap;
+            }
+        }
+
+        /* Form container */
+form {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Added to center items horizontally */
+    gap: 1rem;
+    padding: 1.5rem;
+    width: 100%; /* Ensures form takes full width */
 }
 
-
-th, td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-    vertical-align: middle;
+/* Rest of the styles remain the same */
+input[type="date"] {
+    padding: 0.5rem 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 1rem;
+    color: #495057;
+    background-color: white;
+    transition: border-color 0.2s ease-in-out;
 }
 
-th {
-    background-color: #3489c2;
+input[type="date"]:focus {
+    outline: none;
+    border-color: #4dabf7;
+    box-shadow: 0 0 0 2px rgba(77, 171, 247, 0.2);
+}
+
+button[name="search_button"] {
+    padding: 0.5rem 0.8rem;
+    background-color: #228be6;
     color: white;
-    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
 }
 
-tr:nth-child(even) {
-    background-color: #f9f9f9;
+button[name="search_button"]:hover {
+    background-color: #1c7ed6;
 }
 
-tr:hover {
-    background-color: #f1f1f1;
+.btn-clear {
+    padding: 0.5rem 0.8rem;
+    background-color: #e9ecef;
+    color: inherit; /* Ensures the color matches the text color */
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: all 0.2s ease-in-out;
 }
 
-caption {
-    caption-side: top;
-    font-size: 1.5em;
-    margin: 10px 0;
+.btn-clear:hover {
+    background-color: #dee2e6;
+    color: #212529;
 }
 
-@media (max-width: 768px) {
-    table, thead, tbody, th, td, tr {
-        display: block;
-    }
-
-    thead tr {
-        position: absolute;
-        top: -9999px;
-        left: -9999px;
-    }
-
-    tr {
-        border: 1px solid #ccc;
-        margin-bottom: 10px;
-        display: flex;
+/* Updated responsive adjustments */
+@media (max-width: 480px) {
+    form {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center; /* Changed from stretch to center */
+        padding: 1rem;
     }
-
-    td {
-        border: none;
-        position: relative;
-        padding-left: 50%;
-        white-space: nowrap;
-    }
-
-    td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 0;
-        width: 45%;
-        padding-left: 10px;
-        font-weight: bold;
-        white-space: nowrap;
+    
+    input[type="date"],
+    button[type="submit"],
+    .btn-clear {
+        width: 80%; /* Changed from 100% to 80% for better mobile appearance */
+        margin-bottom: 0.5rem;
     }
 }
-</style>
-
+    </style>
 </head>
 {% endblock %}
 
 {% block content %}
 <br><br><br>
-<body>
-    <div class="container">
-       <center><h1>My Prescriptions</h1></center> 
+<form method="get" action="/patient_view_prescription">
+    <input type="date" name="search_date" onkeydown="return false;" value="{{ search_date }}" />
+    <button type="submit" name="search_button">Search</button>
+    {% if search_date %}
+    <button type="button" class="btn-clear" onclick="window.location.href='/patient_view_prescription'">Clear</button>
+    {% endif %}   
+</form>
+
+<div class="container">
+    {% for prescription_id, items in prescriptions|groupby('id') %}
         <table>
+            <caption>Prescription ID: {{ prescription_id }}</caption>
             <thead>
                 <tr>
-                    <th>No.</th>
-                    <th>Role</th>
-                    <th>Name</th>
+                    <th>Author</th>
                     <th>Medication</th>
                     <th>Dosage</th>
                     <th>Instructions</th>
@@ -107,21 +183,22 @@ caption {
                 </tr>
             </thead>
             <tbody>
-               
+                {% for prescription in items %}
                     <tr>
-                        <td>1</td>
-                        <td>Doctor</td>
-                        <td>John</td>
-                        <td>Aplharism</td>
-                        <td>one day three times</td>
-                        <td>Rest Well and Drink Plenty of Water</td>
-                        <td>9/3/2024</td>
+                        <td>{{ prescription.author_username }}</td>
+                        <td>{{ prescription.medication }}</td>
+                        <td>{{ prescription.dosage }}</td>
+                        <td>{{ prescription.instructions }}</td>
+                        <td>{{ prescription.date }}</td>
                     </tr>
-              
+                {% endfor %}
             </tbody>
         </table>
-    </div>
-</body>
+    {% else %}
+        <center><p>No prescriptions found.</p></center>
+    {% endfor %}
+</div>
 <br>
 {% endblock %}
 
+{% block footer %}{% endblock %}

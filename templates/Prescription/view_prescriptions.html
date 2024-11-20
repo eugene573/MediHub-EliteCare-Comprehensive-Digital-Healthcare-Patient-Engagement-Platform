@@ -1,125 +1,319 @@
-{% if role == 'doctor' %}
-    {% extends 'Doctor/base.html' %}
-{% elif role == 'nurse' %}
-    {% extends 'Nurse/base.html' %}
-{% endif %}
-
-{% block title %}View Prescriptions{% endblock %}
-
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="/static/uploads/MediHubq.png" type="image/x-icon" sizes="512x512">
+    <link rel="icon" href="/static/uploads/MediHubq.png" type="image/x-icon" sizes="512x512"> 
     <style>
-        table {
-            width: 90%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            margin-left: auto;
-            margin-right: auto;
+        body {
             font-family: Arial, sans-serif;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
         }
-
-        th, td {
+        .prescription-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .prescription-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .prescription-table th {
+            background-color: #3498db;
+            color: white;
             padding: 12px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
-            vertical-align: middle;
+        }
+        .prescription-table td {
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .prescription-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .prescription-table tr:hover {
+            background-color: #e6f2ff;
+        }
+        .prescription-section {
+            margin-bottom: 30px;
+        }
+        a {
+            transition: background-color 0.3s ease;
+        }
+        a:hover {
+            background-color: #2980b9;
         }
 
-        th {
-            background-color: #006edc;
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .modal-content label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .modal-content input, .modal-content select, .modal-content textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .modal-content button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .modal-content button:hover {
+            background-color: #2980b9;
+        }
+        .modal-content .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* Rest of the styles remain the same */
+input[type="text"] {
+    padding: 0.5rem 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 1rem;
+    color: #495057;
+    background-color: white;
+    transition: border-color 0.2s ease-in-out;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: #4dabf7;
+    box-shadow: 0 0 0 2px rgba(77, 171, 247, 0.2);
+}
+
+button[name="search_button"] {
+    padding: 0.5rem 0.8rem;
+    background-color: #228be6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+button[name="search_button"]:hover {
+    background-color: #1c7ed6;
+}
+
+.btn-clear {
+    padding: 0.5rem 0.8rem;
+    background-color: #e9ecef;
+    color: #495057;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-clear:hover {
+    background-color: #dee2e6;
+    color: #212529;
+}
+
+th {
+            background-color: #3489c2;
             color: white;
             font-weight: bold;
         }
-
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        caption {
-            caption-side: top;
-            font-size: 1.5em;
-            margin: 10px 0;
-        }
-
-        @media (max-width: 768px) {
-            table, thead, tbody, th, td, tr {
-                display: block;
-            }
-
-            thead tr {
-                position: absolute;
-                top: -9999px;
-                left: -9999px;
-            }
-
-            tr {
-                border: 1px solid #ccc;
-                margin-bottom: 10px;
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            td {
-                border: none;
-                position: relative;
-                padding-left: 50%;
-                white-space: nowrap;
-            }
-
-            td::before {
-                content: attr(data-label);
-                position: absolute;
-                left: 0;
-                width: 45%;
-                padding-left: 10px;
-                font-weight: bold;
-                white-space: nowrap;
-            }
-        }
+        
+/* Updated responsive adjustments */
+@media (max-width: 480px) {
+    form {
+        flex-direction: column;
+        align-items: center; /* Changed from stretch to center */
+        padding: 1rem;
+    }
+    
+    input[type="text"],
+    button[type="submit"],
+    .btn-clear {
+        width: 80%; /* Changed from 100% to 80% for better mobile appearance */
+        margin-bottom: 0.5rem;
+    }
+}
     </style>
 </head>
-
-<br><br>
 <body>
-    <div class="container">
-        <center><h1>Prescriptions List</h1></center> 
-        <table>
-            <thead>
-                <tr>
-                    <th>No.</th>
-                    <th>Patient ID</th>
-                    <th>Patient Name</th>
-                    <th>Medication</th>
-                    <th>Dosage</th>
-                    <th>Instructions</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for pres in prescriptions %}
+    {% if role == 'doctor' %}
+        {% extends 'Doctor/base.html' %}
+    {% elif role == 'nurse' %}
+        {% extends 'Nurse/base.html' %}
+    {% endif %}
+
+    {% block title %}View Prescriptions{% endblock %}
+
+    {% block content %}
+    <br><br>
+    <div class="search-container">
+        <center> <form method="GET" action="{{ url_for('view_prescriptions') }}">
+            <input
+                type="text"
+                name="search_query"
+                placeholder="Patient Name"
+                value="{{ request.args.get('search_query', '') }}"
+            >
+            <button type="submit" name="search_button">Search</button>
+            {% if request.args.get('search_query') %}
+            <a href="{{ url_for('view_prescriptions') }}" class="btn-clear">Clear</a>
+            {% endif %}
+        </form></center>
+    </div>
+<br>    
+    <div class="prescription-container">
+    {% if prescriptions %}
+        {% for group in prescriptions | groupby('patient_username') %}
+            {% if request.args.get('search_query') and request.args.get('search_query').lower() not in group.grouper.lower() %}
+                
+            {% else %}
+            <h3>{{ group.grouper }}</h3>
+            <table class="prescription-table">
+                <thead>
+                    <tr>
+                        <th>Pres ID.</th>
+                        <th>Medication</th>
+                        <th>Dosage</th>
+                        <th>Instructions</th>
+                        <th>Added Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pres in group.list %}
                     <tr>
                         <td>{{ pres.id }}</td>
-                        <td>{{ pres.patient_id }}</td>
-                        <td>{{ pres.patient_name }}</td>
                         <td>{{ pres.medication }}</td>
                         <td>{{ pres.dosage }}</td>
                         <td>{{ pres.instructions }}</td>
                         <td>{{ pres.date }}</td>
+                        <td>
+                            <button onclick="openModal('{{ pres.id }}')" 
+                                    style="background-color: #fee032; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer;">
+                                    <i class="fas fa-pen"></i>
+                            </button>
+                            <form action="{{ url_for('delete_prescription', prescription_id=pres.id) }}" method="POST" style="display: inline;">
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this prescription?');"  style="background-color: #fe3232; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer;">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <p>No prescriptions found.</p>
+    {% endif %}
     </div>
+
+    <!-- Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <button class="close" onclick="closeModal()">&times;</button>
+            <h2>Edit Prescription</h2>
+            <form method="POST" id="editForm">
+                <label for="medication">Medication</label>
+                <select name="medication" id="medication" required>
+                    {% for med in medications %}
+                        <option value="{{ med.name }}" {% if med.name == prescription.medication %}selected{% endif %}>
+                            {{ med.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <label for="dosage">Dosage</label>
+                <input type="text" name="dosage" id="dosage" value="" required>
+
+                <label for="instructions">Instructions</label>
+                <textarea name="instructions" id="instructions" rows="4" required></textarea>
+
+                <button type="submit">Update</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('editModal');
+        const form = document.getElementById('editForm');
+
+        function openModal(prescriptionId) {
+            fetch(`/get_prescription/${prescriptionId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Prescription not found');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Set modal fields with fetched data
+                    document.getElementById('medication').value = data.medication;
+                    document.getElementById('dosage').value = data.dosage;
+                    document.getElementById('instructions').value = data.instructions;
+
+                    // Set form action for editing
+                    form.action = `/edit_prescription/${prescriptionId}`;
+
+                    // Display the modal
+                    modal.style.display = 'flex';
+                })
+                .catch(error => {
+                    console.error('Error fetching prescription data:', error);
+                    alert('Failed to load prescription data');
+                });
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+    </script>
+    {% endblock %}
 </body>
-<br>
-{% endblock %}
- 
+</html>

@@ -193,7 +193,7 @@ button[name="search_button"]:hover {
 {% endwith %}
 
 <form method="get" action="/admin/appointments" >
-    <input type="date" name="search_date" value="{{ search_date }}" />
+    <input type="date" name="search_date" onkeydown="return false;" value="{{ search_date }}" />
     <button type="submit" name="search_button">Search</button>
     {% if search_date %}
     <a href="/admin/appointments" class="btn-clear">Clear</a>
