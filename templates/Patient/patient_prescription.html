@@ -9,6 +9,8 @@
     <link rel="icon" href="/static/uploads/MediHubq.png" type="image/x-icon" sizes="512x512">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         table {
             width: 100%;
@@ -26,7 +28,7 @@
         }
 
         th {
-            background-color: #3489c2;
+            background-color: #3498db;
             color: white;
             font-weight: bold;
         }
@@ -127,8 +129,8 @@ button[name="search_button"]:hover {
 
 .btn-clear {
     padding: 0.5rem 0.8rem;
-    background-color: #e9ecef;
-    color: inherit; /* Ensures the color matches the text color */
+    background-color: red;
+    color: white; /* Ensures the color matches the text color */
     text-decoration: none;
     border-radius: 4px;
     font-size: 1rem;
@@ -136,7 +138,7 @@ button[name="search_button"]:hover {
 }
 
 .btn-clear:hover {
-    background-color: #dee2e6;
+    background-color: #dc0a0a;
     color: #212529;
 }
 
@@ -155,50 +157,176 @@ button[name="search_button"]:hover {
         margin-bottom: 0.5rem;
     }
 }
+
+button {
+    background-color: #007BFF; /* Bright blue background */
+    color: white; /* White text */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px 20px; /* Padding inside the button */
+    font-size: 16px; /* Text size */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition for hover effect */
+}
+
+button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    transform: scale(1.05); /* Slightly larger on hover */
+}
+
+button:active {
+    background-color: #003f7f; /* Even darker blue when clicked */
+    transform: scale(0.95); /* Slightly smaller when clicked */
+}
+
+a button {
+    text-decoration: none; /* No underline for button inside <a> tag */
+    display: inline-block; /* Proper button display */
+}
+
+.flash-message-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050; /* Ensure it's above other content */
+    width: 300px; /* Adjust width as needed */
+    pointer-events: none; /* Prevent interaction with underlying elements */
+}
+
+.custom-alert {
+    background-color: #28a745; /* Green background for success */
+    color: white; /* Text color */
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 10px; /* Space between messages */
+    pointer-events: auto; /* Enable interaction with the alert */
+    position: relative; /* For positioning the close button */
+}
+
+.custom-alert .btn-close {
+    background-color: transparent; /* Ensure no background */
+    border: none; /* Remove default border */
+    color: white; /* Set text/icon color to white */
+    opacity: 1; /* Make the button fully visible */
+    font-size: 1.25rem; /* Adjust size for better visibility */
+    position: absolute; /* Ensure proper positioning */
+}
     </style>
 </head>
 {% endblock %}
 
 {% block content %}
 <br><br><br>
-<form method="get" action="/patient_view_prescription">
-    <input type="date" name="search_date" onkeydown="return false;" value="{{ search_date }}" />
-    <button type="submit" name="search_button">Search</button>
-    {% if search_date %}
-    <button type="button" class="btn-clear" onclick="window.location.href='/patient_view_prescription'">Clear</button>
-    {% endif %}   
-</form>
-
-<div class="container">
-    {% for prescription_id, items in prescriptions|groupby('id') %}
-        <table>
-            <caption>Prescription ID: {{ prescription_id }}</caption>
+ <!-- Flash Messages -->
+ <div class="flash-message-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} custom-alert alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+    {% endwith %}
+  </div> 
+  
+  <div class="container">
+    <form method="get" action="/patient_view_prescription">
+        <input type="date" name="search_date" onkeydown="return false;" value="{{ search_date }}" />
+        <button type="submit" name="search_button"><i class="fa fa-search"></i></button>
+        {% if search_date %}
+            <button type="button" class="btn-clear" onclick="window.location.href='/patient_view_prescription'"><i class="fa fa-close"></i></button>
+        {% endif %}
+    </form>
+    
+    {% if prescriptions %}
+    {% for prescription_date, items in prescriptions|groupby('date')|sort(reverse=true) %}
+        <table style="border-collapse: collapse; width: 100%; border: 1px solid #ddd;">
+            <h3>{{ prescription_date }}</h3>
             <thead>
+                {% if items|selectattr('is_paid', 'equalto', true)|list %}
                 <tr>
-                    <th>Author</th>
-                    <th>Medication</th>
-                    <th>Dosage</th>
-                    <th>Instructions</th>
-                    <th>Date</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">No.</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Medication Image</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Medication Name</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Qty</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Instructions</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">SubTotal<br>(Included Consultation Fee)</th>
                 </tr>
+                {% else %}
+                <tr>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Please complete your payment to view your prescriptions</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">SubTotal<br>(Included Consultation Fee)</th>
+                </tr>
+                {% endif %}
             </thead>
             <tbody>
                 {% for prescription in items %}
-                    <tr>
-                        <td>{{ prescription.author_username }}</td>
-                        <td>{{ prescription.medication }}</td>
-                        <td>{{ prescription.dosage }}</td>
-                        <td>{{ prescription.instructions }}</td>
-                        <td>{{ prescription.date }}</td>
-                    </tr>
+                    {% if prescription.is_paid %}
+                        <!-- Full details for paid prescriptions -->
+                        {% for medication in prescription.medications %}
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 8px;">{{ loop.index }}.</td>
+                            <td style="border: 1px solid #ddd; padding: 8px;">
+                                {% if medication.image_url %}
+                                    <img src="{{ medication.image_url }}" alt="{{ medication.medication }} Image" style="max-width: 100px; height: auto;">
+                                {% else %}
+                                    <p>No image available</p>
+                                {% endif %}
+                            </td>
+                            <td style="border: 1px solid #ddd; padding: 8px;">{{ medication.medication }}</td>
+                            <td style="border: 1px solid #ddd; padding: 8px;"><center>x{{ medication.dosage }}</center></td>
+                            <td style="border: 1px solid #ddd; padding: 8px;">{{ medication.instructions }}</td>
+                            {% if loop.last %}
+                            <td style="border: 1px solid #ddd; padding: 8px;"><center><b>RM {{ prescription.total_price }}0</b></center></td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <!-- Render payment row for unpaid prescriptions -->
+                        {% if loop.first %}
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 8px;">
+                                <a href="/direct_payment?prescription_id={{ prescription.id }}" style="text-decoration: none;">
+                                    <center><button name="pay_button" style="cursor: pointer;">Pay Here</button></center>
+                                </a>
+                            </td>
+                            <td style="border: 1px solid #ddd; padding: 8px;">
+                                <center><b>RM {{ prescription.total_price }}0</b></center>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    {% endif %}
                 {% endfor %}
             </tbody>
         </table>
-    {% else %}
-        <center><p>No prescriptions found.</p></center>
+        <br>
     {% endfor %}
+{% else %}
+    <center><p>No prescriptions found.</p></center>
+{% endif %}
+
+
+
+
 </div>
-<br>
+
+
+<script>
+     document.addEventListener('DOMContentLoaded', function () {
+        // Find all alerts and set them to disappear after 5 seconds
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.transition = "opacity 0.3s"; // Add smooth fade-out
+                alert.style.opacity = "0"; // Start fading out
+                setTimeout(() => alert.remove(), 300); // Remove alert after fade-out completes
+            }, 3000); // 5-second duration before starting fade-out
+        });
+    });
+</script>
 {% endblock %}
 
 {% block footer %}{% endblock %}

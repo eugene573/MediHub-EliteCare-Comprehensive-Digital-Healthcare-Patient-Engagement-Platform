@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> 
-    <link rel="icon" href="/static/uploads/MediHubq.png" type="image/x-icon" sizes="512x512">
+    
+    <link rel="icon" href="/static/uploads/MediHubq.png" type="image/x-icon" sizes="512x512"> 
     <style>
         .tabs {
             display: flex;
@@ -165,8 +167,8 @@ button[name="search_button"]:hover {
 
 .btn-clear {
     padding: 0.5rem 0.8rem;
-    background-color: #e9ecef;
-    color: #495057;
+    background-color: red;
+    color: white; /* Ensures the color matches the text color */
     text-decoration: none;
     border-radius: 4px;
     font-size: 1rem;
@@ -174,7 +176,7 @@ button[name="search_button"]:hover {
 }
 
 .btn-clear:hover {
-    background-color: #dee2e6;
+    background-color: #dc0a0a;
     color: #212529;
 }
 
@@ -218,6 +220,81 @@ button[name="search_button"]:hover {
         top: 50%;          /* Added */
         transform: translateY(-50%);  /* Added */
     }
+
+    .flash-message-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050; /* Ensure it's above other content */
+    width: 300px; /* Adjust width as needed */
+    pointer-events: none; /* Prevent interaction with underlying elements */
+}
+
+.custom-alert {
+    background-color: #28a745; /* Green background for success */
+    color: white; /* Text color */
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 10px; /* Space between messages */
+    pointer-events: auto; /* Enable interaction with the alert */
+    position: relative; /* For positioning the close button */
+}
+
+.custom-alert .btn-close {
+    background-color: transparent; /* Ensure no background */
+    border: none; /* Remove default border */
+    color: white; /* Set text/icon color to white */
+    opacity: 1; /* Make the button fully visible */
+    font-size: 1.25rem; /* Adjust size for better visibility */
+    position: absolute; /* Ensure proper positioning */
+}
+/* General Styles for the Timetable */
+.timetable-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    margin-top: 20px;
+}
+
+.timetable-table th, .timetable-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+.timetable-table th {
+    background-color: #f4f4f4;
+    color: #333;
+    font-weight: bold;
+}
+
+.timetable-table thead th {
+    background: linear-gradient(to right, #f9d423, #ff4e50, #f97373, #9b59b6, #6a9ee3);
+    color: white;
+}
+
+.timetable-table tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.timetable-table tbody tr:nth-child(even) {
+    background-color: #ffffff;
+}
+
+/* Center the timetable */
+#timetableView {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+h2 {
+    font-size: 24px;
+    color: #333;
+}
+
     </style>
 </head>
 <body>
@@ -227,32 +304,82 @@ button[name="search_button"]:hover {
     
     {% block content %} 
 
-    <div class="container">
- <!-- Flash Messages -->
- {% with messages = get_flashed_messages(with_categories=true) %}
- {% if messages %}
-   {% for category, message in messages %}
-     <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-       {{ message }}
-       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-     </div>
-   {% endfor %}
- {% endif %}
-{% endwith %}
+<!-- Flash Messages -->
+<div class="flash-message-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} custom-alert alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+    {% endwith %}
+  </div> 
 
+    <div class="container">
 <form method="get" action="/doctor/appointments">
     <input type="date" name="search_date" onkeydown="return false;" value="{{ search_date }}" />
-    <button type="submit" name="search_button">Search</button>
+    <button type="submit" name="search_button"><i class="fa fa-search"></i></button>
     {% if search_date %}
-    <a href="/doctor/appointments" class="btn-clear">Clear</a>
+    <a href="/doctor/appointments" class="btn-clear"><i class="fa fa-close"></i></a>
     {% endif %}   
 </form>
+
+{% for time in time_slots %}
+<tr>
+    <td>{{ time }}</td>
+    {% for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] %}
+    <td>
+        {% set appointments_for_time_day = appointments | selectattr('time', 'equalto', time) | selectattr('day', 'equalto', day) %}
+        {% for appointment in appointments_for_time_day %}
+        <div class="appointment">
+            {{ appointment.patient_name }}<br>
+            {{ appointment.type }}
+        </div>
+        {% endfor %}
+    </td>
+    {% endfor %}
+</tr>
+{% endfor %}
+<!-- Timetable View -->
+<div id="timetableView" class="d-none">
+    <h2 class="text-center mb-4">Doctor's Timetable</h2>
+    <table class="timetable-table">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Example Time Slots -->
+            {% set time_slots = ['07:30 - 08:30', '08:30 - 09:30', '09:30 - 10:30', '10:30 - 11:30', '11:30 - 12:30', '12:30 - 13:30', '13:30 - 14:30', '14:30 - 15:30', '15:30 - 16:30'] %}
+            {% for time in time_slots %}
+            <tr>
+                <td>{{ time }}</td>
+                <td><!-- Monday Slot --></td>
+                <td><!-- Tuesday Slot --></td>
+                <td><!-- Wednesday Slot --></td>
+                <td><!-- Thursday Slot --></td>
+                <td><!-- Friday Slot --></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
         <div class="tabs">
             <button class="tab active" onclick="showTab('upcoming')">Upcoming</button>
             <button class="tab" onclick="showTab('completed')">Completed</button>
         </div>
         {% if no_appointments_found %}
-        <p>No appointments found for the selected date.</p>
+        <center><p>No appointments found for the selected date.</p></center>
     {% else %}
 
         <!-- Upcoming Appointments -->
@@ -406,8 +533,19 @@ button[name="search_button"]:hover {
         // Alert to show the user that the address has been copied
         alert("Address copied to clipboard!");
     }
-    </script>
-    
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Find all alerts and set them to disappear after 5 seconds
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.transition = "opacity 0.3s"; // Add smooth fade-out
+                alert.style.opacity = "0"; // Start fading out
+                setTimeout(() => alert.remove(), 300); // Remove alert after fade-out completes
+            }, 3000); // 5-second duration before starting fade-out
+        });
+    });
+</script>
     
 </body>
 </html>

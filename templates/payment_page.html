@@ -1,0 +1,119 @@
+{% extends "layout.html" %}
+
+{% block title %}My Prescriptions{% endblock %}
+
+{% block extra_css %}
+<head>
+     <!-- Bootstrap core CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" href="/static/uploads/MediHubq.png" type="image/x-icon" sizes="512x512">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Reset some basic styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    /* Body style */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    
+    /* Payment container */
+    .payment-container {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 600px;
+        max-width: 600px;
+        text-align: center;
+    }
+    
+    .payment-container h1 {
+        margin-bottom: 20px;
+        font-size: 24px;
+        color: #0056b3;
+    }
+    
+    /* Form styles */
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+        text-align: left;
+    }
+    
+    .form-group label {
+        font-size: 14px;
+        margin-bottom: 5px;
+        display: block;
+    }
+    
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    
+    .form-group input:focus {
+        outline-color: #0056b3;
+    }
+    
+    /* Button style */
+    button.pay-now {
+        background-color: #28a745;
+        color: #fff;
+        padding: 12px;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    
+    button.pay-now:hover {
+        background-color: #218838;
+    }
+    
+    </style>
+</head>
+{% endblock %}
+
+{% block content %}
+<br> <br><br>
+
+<body>
+    <div class="payment-container">
+        <h1>Complete Your Payment</h1>
+        <form action="{{ url_for('process_payment') }}" method="POST">
+            <div class="form-group">
+                <label for="name">Full Name:</label>
+                <input type="text" id="name" name="name" required placeholder="Please enter your full name">
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required placeholder="Please enter your email">
+            </div>
+            <div class="form-group">
+                <label for="amount">Amount to Pay (RM)</label>
+                <input type="number" id="amount" name="amount" required placeholder="Please enter payment amount">
+            </div>
+            <button type="submit" class="pay-now">Pay Now</button>
+        </form>
+    </div>
+</body>
+{% endblock %}

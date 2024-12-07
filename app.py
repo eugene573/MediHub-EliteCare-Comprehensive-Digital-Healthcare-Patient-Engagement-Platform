@@ -1,12 +1,16 @@
 import os
 import random
+import paypalrestsdk
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
 from werkzeug.exceptions import BadRequestKeyError
-from datetime import datetime
+from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
-from flask_pymongo import PyMongo
-from pymongo import MongoClient
+#from flask_pymongo import PyMongo
+#from pymongo import MongoClient
 from flask_cors import CORS
+from flask_mail import Mail, Message
+from dotenv import load_dotenv
+from collections import defaultdict
 
 # Connect to MongoDB (use your URI here)
 #client = MongoClient("mongodb+srv://eugenefong2002:fong55668921@cluster0.5mjroyf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
@@ -23,6 +27,13 @@ from flask_cors import CORS
 #prescriptions_collection = db['prescriptions']
 #medications_collection = db['medications']
 
+# Configure PayPal SDK
+paypalrestsdk.configure({
+    "mode": "sandbox",  # Change to 'live' for production
+    "client_id": "AfwdTxdUXUNswokDBXNY1kNjYp0VZaqzk4HpED704rAbg8IWu7WAlXE0Q1DP10yiwoODHEWF7I4CUZnF",
+    "client_secret": "ENsvIkGLuNzNz-D6msKZvqDWInyxABpdppH2QnztpJ2dIwVLxlYDplPMjwMo1b9y6PXZsHkiA_Kpmhex"
+})
+
 # Set up the upload folder and allowed extensions
 UPLOAD_FOLDER = 'static/uploads'  # Ensure this folder exists or create it
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}  # Allowed file types
@@ -30,7 +41,17 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}  # Allowed file types
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# Load environment variables (if using .env for storing sensitive info)
+load_dotenv()
+
 app = Flask(__name__)
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Replace with your SMTP server (e.g., Gmail)
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'eugenefong2002@gmail.com'  # Replace with your email address
+app.config['MAIL_PASSWORD'] = 'ygvn kand nwit apdg'  # Replace with your email password
+app.config['MAIL_DEFAULT_SENDER'] = 'eugenefong2002@gmail.com'  # Default sender (your email)
+mail = Mail(app)
 app.secret_key = 'your_secret_key'  # Change this to a random secret key for security
 #app.config["MONGO_URI"] = "mongodb+srv://eugenefong2002:fong55668921@cluster0.5mjroyf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 #mongo = PyMongo(app)
@@ -47,7 +68,7 @@ admin = {'username': 'Admin', 'password': '9999', 'email': 'admin@example.com', 
 
 # Dummy data for patients
 patients = [
-    {'id': 1, 'username': 'Alice', 'password': '1234', 'email': 'alice@example.com', 'contactNumber': '016-7165348', 'role': 'Patient', 'address': '420 Jalan Kota Iskandar, 79200 Iskandar Puteri, Johor, Malaysia.', 'pimage':'https://www.perfocal.com/blog/content/images/2021/01/Perfocal_17-11-2019_TYWFAQ_100_standard-3.jpg'},
+    {'id': 1, 'username': 'Alice', 'password': '1234', 'email': 'eugenefong2002@gmail.com', 'contactNumber': '016-7165348', 'role': 'Patient', 'address': '420 Jalan Kota Iskandar, 79200 Iskandar Puteri, Johor, Malaysia.', 'pimage':'https://www.perfocal.com/blog/content/images/2021/01/Perfocal_17-11-2019_TYWFAQ_100_standard-3.jpg'},
     {'id': 2, 'username': 'Bob', 'password': '1234', 'email': 'bob@example.com', 'contactNumber': '012-2894590', 'role':'Patient', 'address': '708 Jalan Rahmat,83000 Batu Pahat, Johor, Malaysia.', 'pimage':'https://plus.unsplash.com/premium_photo-1689977968861-9c91dbb16049?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZSUyMHBpY3R1cmV8ZW58MHx8MHx8fDA%3D'},
     {'id': 3, 'username': 'Lily', 'password': '1234', 'email': 'lily@example.com', 'contactNumber': '012-2894569', 'role':'Patient', 'address': '271 Jalan Renggam, 86000 Kluang, Johor, Malaysia.', 'pimage':'https://www.profilebakery.com/wp-content/uploads/2023/04/AI-Profile-Picture.jpg'},
     {'id': 4, 'username': 'Ray', 'password': '1234', 'email': 'ray@example.com', 'contactNumber': '012-1127338', 'role':'Patient', 'address': '101 Jalan Skudai, 81300 Skudai, Johor, Malaysia.', 'pimage':'https://i.pinimg.com/474x/98/51/1e/98511ee98a1930b8938e42caf0904d2d.jpg'},
@@ -56,28 +77,28 @@ patients = [
 
 # Dummy data for nurses
 nurses = [
-    {'id': 1, 'username': 'Joy', 'password': '3456', 'role': 'Nurse', 'email': 'joy@example.com', 'contactNumber': '016-7234429', 'specialization': 'Pediatrics', 'intro': 'Miss Joy graduated with an MBBS from Manipal Academy of Higher Education (MAHE). She is a General Practitioner with experience in treating medical conditions of any age group.', 'pimage':'https://media.istockphoto.com/id/1329569957/photo/happy-young-female-doctor-looking-at-camera.jpg?s=612x612&w=0&k=20&c=7Wq_Y2cl0T4op6Wg_3DFc-xtZfCqTTDvfaXkPGyrHDM='},
-    {'id': 2, 'username': 'Kate', 'password': '3456', 'role': 'Nurse', 'email': 'kate@example.com', 'contactNumber': '012-6234675', 'specialization': 'Cardiology', 'intro': 'Miss Kate graduated with an MBBS from International Islamic University Malaysia. She has over 7 years of experience as a practicing doctor.', 'pimage':'https://media.istockphoto.com/id/1330046035/photo/headshot-portrait-of-smiling-female-doctor-in-hospital.jpg?s=612x612&w=0&k=20&c=fsNQPbmFIxoKA-PXl3G745zj7Cvr_cFIGsYknSbz_Tg='},
-    {'id': 3, 'username': 'Kim', 'password': '3456', 'role': 'Nurse', 'email': 'kim@example.com', 'contactNumber': '012-3324699', 'specialization': 'Ophthalmology', 'intro': 'Miss Kim graduated with an MBBS from Jawaharlal Nehru Medical College - KLE University (Belgaum) INDIA. She has 9 years of experience as a practicing doctor.', 'pimage':'https://www.shutterstock.com/image-photo/head-shot-woman-wearing-white-600nw-1529466836.jpg'},
-    {'id': 4, 'username': 'Ryan', 'password': '3456', 'role': 'Nurse', 'email': 'ryan@example.com', 'contactNumber': '012-2595432', 'specialization': 'General Practice', 'intro': 'Mr Ryan graduated with an MBBS from Jawaharlal Nehru Medical College - KLE University (Belgaum) INDIA. She has 9 years of experience as a practicing doctor.', 'pimage':'https://media.istockphoto.com/id/1468678624/photo/nurse-hospital-employee-and-portrait-of-black-man-in-a-healthcare-wellness-and-clinic-feeling.jpg?s=612x612&w=0&k=20&c=AGQPyeEitUPVm3ud_h5_yVX4NKY9mVyXbFf50ZIEtQI='},
-    {'id': 5, 'username': 'Tim', 'password': '3456', 'role': 'Nurse', 'email': 'tim@example.com', 'contactNumber': '012-2595887', 'specialization': 'Dermatology', 'intro': 'Mr Tim graduated with an MBBS from Jawaharlal Nehru Medical College - KLE University (Belgaum) INDIA. She has 9 years of experience as a practicing doctor.', 'pimage':'https://img.freepik.com/free-photo/front-view-male-nurse-studio_23-2150796762.jpg?semt=ais_hybrid'},
-    {'id': 6, 'username': 'Yasmin', 'password': '3456', 'role': 'Nurse', 'email': 'yasmin@example.com', 'contactNumber': '012-2441178', 'specialization': 'Family Medicine', 'intro': 'Miss Yasmin graduated with an MBBS from Jawaharlal Nehru Medical College - KLE University (Belgaum) INDIA. She has 9 years of experience as a practicing doctor.', 'pimage':'https://plus.unsplash.com/premium_photo-1682141165192-7b4678fe96c8?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8bnVyc2VzfGVufDB8fDB8fHww'},
-    {'id': 7, 'username': 'Shanice', 'password': '3456', 'role': 'Nurse', 'email': 'shanice@example.com', 'contactNumber': '012-9544321', 'specialization': 'Obstetrics and Gynecology', 'intro': 'Miss Shanice graduated with an MBBS from Jawaharlal Nehru Medical College - KLE University (Belgaum) INDIA. She has 9 years of experience as a practicing doctor.', 'pimage':'https://media.istockphoto.com/id/1406698322/photo/young-female-nurse-with-folded-arms-standing-in-hospital.jpg?s=612x612&w=0&k=20&c=e9m9bHOguGXk84VrW5Kc-wPdb876ofLn_F27iRY8gGU='},
-    {'id': 8, 'username': 'Corinne', 'password': '3456', 'role': 'Nurse', 'email': 'corinne@example.com', 'contactNumber': '012-1237640', 'specialization': 'Obstetrics and Gynecology', 'intro': 'Miss Corinne graduated with an MBBS from Jawaharlal Nehru Medical College - KLE University (Belgaum) INDIA. She has 9 years of experience as a practicing doctor.', 'pimage':'https://yt3.googleusercontent.com/o7Ve1CElx13g5hFN_cD-dAIKelIw2UJ4J9dcwg03PCkZQwFExLY7oNU6Vh6i_GA4MufKyYGZaA=s900-c-k-c0x00ffffff-no-rj'}
+    {'id': 1, 'username': 'Joy', 'password': '3456', 'role': 'Nurse', 'fee': '80', 'email': 'joy@example.com', 'contactNumber': '016-7234429', 'specialization': 'Pediatrics', 'intro': 'Miss Joy graduated with an MBBS from Manipal Academy of Higher Education (MAHE). She is a General Practitioner with experience in treating medical conditions of any age group.', 'pimage':'https://media.istockphoto.com/id/1329569957/photo/happy-young-female-doctor-looking-at-camera.jpg?s=612x612&w=0&k=20&c=7Wq_Y2cl0T4op6Wg_3DFc-xtZfCqTTDvfaXkPGyrHDM='},
+    {'id': 2, 'username': 'Kate', 'password': '3456', 'role': 'Nurse', 'fee': '80', 'email': 'kate@example.com', 'contactNumber': '012-6234675', 'specialization': 'Cardiology', 'intro': 'Miss Kate graduated with an MBBS from International Islamic University Malaysia. She has over 7 years of experience as a practicing doctor.', 'pimage':'https://media.istockphoto.com/id/1330046035/photo/headshot-portrait-of-smiling-female-doctor-in-hospital.jpg?s=612x612&w=0&k=20&c=fsNQPbmFIxoKA-PXl3G745zj7Cvr_cFIGsYknSbz_Tg='},
+    {'id': 3, 'username': 'Kim', 'password': '3456', 'role': 'Nurse', 'fee': '80', 'email': 'kim@example.com', 'contactNumber': '012-3324699', 'specialization': 'Ophthalmology', 'intro': 'Miss Kim graduated with an MBBS from Jawaharlal Nehru Medical College - KLE University (Belgaum) INDIA. She has 9 years of experience as a practicing doctor.', 'pimage':'https://www.shutterstock.com/image-photo/head-shot-woman-wearing-white-600nw-1529466836.jpg'},
+    {'id': 4, 'username': 'Ryan', 'password': '3456', 'role': 'Nurse', 'fee': '80', 'email': 'ryan@example.com', 'contactNumber': '012-2595432', 'specialization': 'General Practice', 'intro': 'Mr Ryan graduated with an MBBS from Jawaharlal Nehru Medical College - KLE University (Belgaum) INDIA. She has 9 years of experience as a practicing doctor.', 'pimage':'https://media.istockphoto.com/id/1468678624/photo/nurse-hospital-employee-and-portrait-of-black-man-in-a-healthcare-wellness-and-clinic-feeling.jpg?s=612x612&w=0&k=20&c=AGQPyeEitUPVm3ud_h5_yVX4NKY9mVyXbFf50ZIEtQI='},
+    {'id': 5, 'username': 'Tim', 'password': '3456', 'role': 'Nurse', 'fee': '80', 'email': 'tim@example.com', 'contactNumber': '012-2595887', 'specialization': 'Dermatology', 'intro': 'Mr Tim graduated with an MBBS from Jawaharlal Nehru Medical College - KLE University (Belgaum) INDIA. She has 9 years of experience as a practicing doctor.', 'pimage':'https://img.freepik.com/free-photo/front-view-male-nurse-studio_23-2150796762.jpg?semt=ais_hybrid'},
+    {'id': 6, 'username': 'Yasmin', 'password': '3456', 'role': 'Nurse', 'fee': '80', 'email': 'yasmin@example.com', 'contactNumber': '012-2441178', 'specialization': 'Family Medicine', 'intro': 'Miss Yasmin graduated with an MBBS from Jawaharlal Nehru Medical College - KLE University (Belgaum) INDIA. She has 9 years of experience as a practicing doctor.', 'pimage':'https://plus.unsplash.com/premium_photo-1682141165192-7b4678fe96c8?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8bnVyc2VzfGVufDB8fDB8fHww'},
+    {'id': 7, 'username': 'Shanice', 'password': '3456', 'role': 'Nurse', 'fee': '80', 'email': 'shanice@example.com', 'contactNumber': '012-9544321', 'specialization': 'Obstetrics and Gynecology', 'intro': 'Miss Shanice graduated with an MBBS from Jawaharlal Nehru Medical College - KLE University (Belgaum) INDIA. She has 9 years of experience as a practicing doctor.', 'pimage':'https://media.istockphoto.com/id/1406698322/photo/young-female-nurse-with-folded-arms-standing-in-hospital.jpg?s=612x612&w=0&k=20&c=e9m9bHOguGXk84VrW5Kc-wPdb876ofLn_F27iRY8gGU='},
+    {'id': 8, 'username': 'Corinne', 'password': '3456', 'role': 'Nurse', 'fee': '80', 'email': 'corinne@example.com', 'contactNumber': '012-1237640', 'specialization': 'Obstetrics and Gynecology', 'intro': 'Miss Corinne graduated with an MBBS from Jawaharlal Nehru Medical College - KLE University (Belgaum) INDIA. She has 9 years of experience as a practicing doctor.', 'pimage':'https://yt3.googleusercontent.com/o7Ve1CElx13g5hFN_cD-dAIKelIw2UJ4J9dcwg03PCkZQwFExLY7oNU6Vh6i_GA4MufKyYGZaA=s900-c-k-c0x00ffffff-no-rj'}
 ]
 
 # Dummy data for doctors
 doctors = [
-    {'id': 1, 'username': 'John', 'password': '2345', 'role': 'Doctor', 'email': 'john@example.com', 'contactNumber': '018-4987676', 'specialization': 'Cardiology', 'intro': 'Dr John graduated with an MBBS from Melaka Manipal Medical College. He has over 10 years of experience as a practicing doctor and is currently running her own clinic in the heart of Kuala Lumpur.', 'pimage':'https://img.freepik.com/free-photo/doctor-offering-medical-teleconsultation_23-2149329007.jpg'},
-    {'id': 2, 'username': 'Smith', 'password': '2345', 'role': 'Doctor', 'email': 'smith@example.com', 'contactNumber': '016-1652679', 'specialization': 'Orthopedics', 'intro': 'Dr Smith graduated from Universitas Padjadjaran of Indonesia in 2008, and has 12 years of experience as a practising doctor in Malaysia.', 'pimage':'https://www.smhbhopal.com/upload/doctors/1694428861.jpg'},
-    {'id': 3, 'username': 'Jim', 'password': '2345', 'role': 'Doctor', 'email': 'jim@example.com', 'specialization': 'Dermatology', 'contactNumber': '012-1322428', 'intro': 'Dr Jim graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://www.hjhospitals.org/photos/doctors/_MG_1170t.jpg'},
-    {'id': 4, 'username': 'Amy', 'password': '2345', 'role': 'Doctor', 'email': 'amy@example.com', 'specialization': 'Ophthalmology', 'contactNumber': '012-1322428', 'intro': 'Dr Amy graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://img.freepik.com/premium-photo/smiling-korean-young-female-doctor-profile-photo_1279815-42632.jpg'},
-    {'id': 5, 'username': 'Chris', 'password': '2345', 'role': 'Doctor', 'email': 'chris@example.com', 'specialization': 'Neurology', 'contactNumber': '012-1322428', 'intro': 'Dr Chris graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://images.pexels.com/photos/8460090/pexels-photo-8460090.jpeg?cs=srgb&dl=pexels-cristian-rojas-8460090.jpg&fm=jpg'},
-    {'id': 6, 'username': 'Bily', 'password': '2345', 'role': 'Doctor', 'email': 'bily@example.com', 'specialization': 'Pediatrics', 'contactNumber': '012-1322428', 'intro': 'Dr Bily graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://st4.depositphotos.com/3776273/39461/i/450/depositphotos_394613312-stock-photo-covid-19-preventing-virus-healthcare.jpg'},
-    {'id': 7, 'username': 'Ariana', 'password': '2345', 'role': 'Doctor', 'email': 'ariana@example.com', 'specialization': 'Orthopedics', 'contactNumber': '012-1322428', 'intro': 'Dr Ariana graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://plus.unsplash.com/premium_photo-1664474647299-7ef90322be6c?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8d29tZW4lMjBkb2N0b3J8ZW58MHx8MHx8fDA%3D'},
-    {'id': 8, 'username': 'Estelle', 'password': '2345', 'role': 'Doctor', 'email': 'estelle@example.com', 'specialization': 'Family Medicine', 'contactNumber': '012-1322428', 'intro': 'Dr Estelle graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://img.freepik.com/premium-photo/expert-female-doctor-clinic-environment_993044-4525.jpg'},
-    {'id': 9, 'username': 'Patrick', 'password': '2345', 'role': 'Doctor', 'email': 'patrick@example.com', 'specialization': 'Obstetrics and Gynecology', 'contactNumber': '012-1763321', 'intro': 'Dr Patrick graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://img.freepik.com/free-photo/annoyed-young-male-doctor-wearing-medical-robe-stethoscope-around-his-neck-putting-hand-belly-with-closed-eyes-isolated-white-with-copy-space_141793-76538.jpg?size=626&ext=jpg&ga=GA1.1.2008272138.1723334400&semt=ais_hybrid'},
-    {'id': 10, 'username': 'Natalia', 'password': '2345', 'role': 'Doctor', 'email': 'natalia@example.com', 'specialization': 'General Practice', 'contactNumber': '012-6653199', 'intro': 'Dr Natalia graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://images.pexels.com/photos/5215024/pexels-photo-5215024.jpeg?cs=srgb&dl=pexels-shkrabaanthony-5215024.jpg&fm=jpg'}
+    {'id': 1, 'username': 'John', 'password': '2345', 'role': 'Doctor', 'fee': '80', 'email': 'john@example.com', 'contactNumber': '018-4987676', 'specialization': 'Cardiology', 'intro': 'Dr John graduated with an MBBS from Melaka Manipal Medical College. He has over 10 years of experience as a practicing doctor and is currently running her own clinic in the heart of Kuala Lumpur.', 'pimage':'https://img.freepik.com/free-photo/doctor-offering-medical-teleconsultation_23-2149329007.jpg'},
+    {'id': 2, 'username': 'Smith', 'password': '2345', 'role': 'Doctor', 'fee': '80', 'email': 'smith@example.com', 'contactNumber': '016-1652679', 'specialization': 'Orthopedics', 'intro': 'Dr Smith graduated from Universitas Padjadjaran of Indonesia in 2008, and has 12 years of experience as a practising doctor in Malaysia.', 'pimage':'https://www.smhbhopal.com/upload/doctors/1694428861.jpg'},
+    {'id': 3, 'username': 'Jim', 'password': '2345', 'role': 'Doctor', 'fee': '80', 'email': 'jim@example.com', 'specialization': 'Dermatology', 'contactNumber': '012-1322428', 'intro': 'Dr Jim graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://www.hjhospitals.org/photos/doctors/_MG_1170t.jpg'},
+    {'id': 4, 'username': 'Amy', 'password': '2345', 'role': 'Doctor', 'fee': '80', 'email': 'amy@example.com', 'specialization': 'Ophthalmology', 'contactNumber': '012-1322428', 'intro': 'Dr Amy graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://img.freepik.com/premium-photo/smiling-korean-young-female-doctor-profile-photo_1279815-42632.jpg'},
+    {'id': 5, 'username': 'Chris', 'password': '2345', 'role': 'Doctor', 'fee': '80', 'email': 'chris@example.com', 'specialization': 'Neurology', 'contactNumber': '012-1322428', 'intro': 'Dr Chris graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://images.pexels.com/photos/8460090/pexels-photo-8460090.jpeg?cs=srgb&dl=pexels-cristian-rojas-8460090.jpg&fm=jpg'},
+    {'id': 6, 'username': 'Bily', 'password': '2345', 'role': 'Doctor', 'fee': '80', 'email': 'bily@example.com', 'specialization': 'Pediatrics', 'contactNumber': '012-1322428', 'intro': 'Dr Bily graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://st4.depositphotos.com/3776273/39461/i/450/depositphotos_394613312-stock-photo-covid-19-preventing-virus-healthcare.jpg'},
+    {'id': 7, 'username': 'Ariana', 'password': '2345', 'role': 'Doctor', 'fee': '80', 'email': 'ariana@example.com', 'specialization': 'Orthopedics', 'contactNumber': '012-1322428', 'intro': 'Dr Ariana graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://plus.unsplash.com/premium_photo-1664474647299-7ef90322be6c?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8d29tZW4lMjBkb2N0b3J8ZW58MHx8MHx8fDA%3D'},
+    {'id': 8, 'username': 'Estelle', 'password': '2345', 'role': 'Doctor', 'fee': '80', 'email': 'estelle@example.com', 'specialization': 'Family Medicine', 'contactNumber': '012-1322428', 'intro': 'Dr Estelle graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://img.freepik.com/premium-photo/expert-female-doctor-clinic-environment_993044-4525.jpg'},
+    {'id': 9, 'username': 'Patrick', 'password': '2345', 'role': 'Doctor', 'fee': '80', 'email': 'patrick@example.com', 'specialization': 'Obstetrics and Gynecology', 'contactNumber': '012-1763321', 'intro': 'Dr Patrick graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://thumbs.dreamstime.com/b/young-doctor-work-10916012.jpg'},
+    {'id': 10, 'username': 'Natalia', 'password': '2345', 'role': 'Doctor', 'fee': '80', 'email': 'natalia@example.com', 'specialization': 'General Practice', 'contactNumber': '012-6653199', 'intro': 'Dr Natalia graduated with a Medical Degree from Crimea State University in 2010. He has over 10 years of experience as a general practitioner and provided consultation for various medical conditions.', 'pimage':'https://images.pexels.com/photos/5215024/pexels-photo-5215024.jpeg?cs=srgb&dl=pexels-shkrabaanthony-5215024.jpg&fm=jpg'}
 ]
 
 # Sample timeslot data
@@ -104,7 +125,7 @@ appointments = [
     {'id': 1, 'patient_id': 1, 'doctor_id': 5, 'date': '2024-08-12', 'time': '9:00 am - 10:00 am', 'type': 'telemedicine', 'meeting_room_code':'543230'},
     {'id': 2, 'patient_id': 3, 'doctor_id': 3, 'date': '2024-12-28', 'time': '1:00 pm - 2:00 pm', 'type': 'telemedicine', 'meeting_room_code':'987647'},
     {'id': 3, 'patient_id': 1, 'doctor_id': 1, 'date': '2024-08-25', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine', 'meeting_room_code':'392146'},
-    {'id': 4, 'patient_id': 1, 'nurse_id': 2, 'date': '2024-12-16', 'time': '3:00 pm - 4:00 pm', 'type': 'home visit'},
+    {'id': 4, 'patient_id': 1, 'nurse_id': 3, 'date': '2024-12-16', 'time': '3:00 pm - 4:00 pm', 'type': 'home visit'},
 
     {'id': 5, 'patient_id': 1, 'doctor_id': 1, 'date': '2025-01-06', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine', 'meeting_room_code':'642187'},
     {'id': 6, 'patient_id': 3, 'doctor_id': 3, 'date': '2025-01-13', 'time': '1:00 pm - 2:00 pm', 'type': 'home visit'},
@@ -112,6 +133,7 @@ appointments = [
     {'id': 8, 'patient_id': 4, 'doctor_id': 4, 'date': '2024-11-13', 'time': '11:00 am - 12:00 pm', 'type': 'home visit'},
     {'id': 9, 'patient_id': 5, 'doctor_id': 5, 'date': '2024-11-13', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine', 'meeting_room_code':'912042'},
     {'id': 10, 'patient_id': 1, 'doctor_id': 2, 'date': '2024-11-13', 'time': '1:00 pm - 2:00 pm', 'type': 'telemedicine', 'meeting_room_code':'492741'},
+    {'id': 11, 'patient_id': 1, 'nurse_id': 1, 'date': '2024-12-17', 'time': '11:00 am - 12:00 pm', 'type': 'home visit'},
 ]
 
 # Dummy feedback data
@@ -124,55 +146,121 @@ feedback_list = [
 
 # Dummy data for prescriptions
 prescriptions = [
+     
     {
-        "id": 1,
-        "author_username":"John",
+     "id": 1,
+        "author_username": "John",
         "patient_id": "2",
         "patient_username": "Bob",
-        "medication": "Lisinopril",
-        "dosage": "10 mg",
-        "instructions": "Take once daily with food",
-        "date": "2024-08-01"
+        "medications": [
+            {
+                "medication": "Ibuprofen",
+                "dosage": "3",
+                "instructions": "Take two after meals",
+                "price": "60.0",
+                "image_url": "https://5.imimg.com/data5/SELLER/Default/2023/9/344827499/TG/YT/FY/192270567/ibuprofen-tablet-400mg.png"
+            },
+            {
+                "medication": "Ciprofloxacin",
+                "dosage": "2",
+                "instructions": "Take one every 6 hours as needed",
+                "price": "80.0",
+                "image_url": "https://cdn.shopify.com/s/files/1/1290/8299/products/Ciprofloxacin500mgboxcopy.png?v=1603264196"
+            },
+            {
+                "medication": "Lisinopril",
+                "dosage": "1",
+                "instructions": "Take one after breakfast and lunch",
+                "price": "50.0",
+                "image_url": "https://5.imimg.com/data5/SELLER/Default/2023/1/JR/YJ/LF/29824675/lisinopril-20-mg-tablet.jpg"
+            }
+        ],
+        "total_price": "250.0",
+        "date": "2024-11-23",
+        "is_paid": True
     },
+
     {
-        "id": 2,
-        "author_username":"John",
-        "patient_id": "1",
-        "patient_username": "Alice",
-        "medication": "Metformin",
-        "dosage": "500 mg",
-        "instructions": "Take twice daily with meals",
-        "date": "2024-08-05"
-    },
-    {
+    "id": 2,
+    "author_username": "John",
+    "patient_id": "1",
+    "patient_username": "Alice",
+    "medications": [
+        {
+            "medication": "Ibuprofen",
+            "dosage": "2",
+            "instructions": "Take one every 6 hours as needed",
+            "price": "40.0",
+            "image_url": "https://5.imimg.com/data5/SELLER/Default/2023/9/344827499/TG/YT/FY/192270567/ibuprofen-tablet-400mg.png"
+        },
+        {
+            "medication": "Paracetamol",
+            "dosage": "1",
+            "instructions": "Take two after meals",
+            "price": "10.0",
+            "image_url": "https://guardian.com.my/media/catalog/product/1/2/121115012_axcel_pcm_500mg_tab_10sx10.jpg?auto=webp&format=pjpg&width=640&height=800&fit=cover"
+        }
+    ],
+    "total_price": "120.0",
+    "date": "2024-11-24",
+    "is_paid": True
+},
+
+
+{
         "id": 3,
-        "author_username":"John",
+        "author_username": "John",
         "patient_id": "5",
         "patient_username": "Cael",
-        "medication": "Atorvastatin",
-        "dosage": "20 mg",
-        "instructions": "Take once daily in the evening",
-        "date": "2024-08-13"
+        "medications": [
+            {
+                "medication": "Paracetamol",
+                "dosage": "1",
+                "instructions": "Take two after meals",
+                "price": "10.0",
+                "image_url": "https://guardian.com.my/media/catalog/product/1/2/121115012_axcel_pcm_500mg_tab_10sx10.jpg?auto=webp&format=pjpg&width=640&height=800&fit=cover"
+            }
+        ],
+        "total_price": "90.0",
+        "date": "2024-08-13",
+        "is_paid": True
     },
-    {
+
+      {
         "id": 4,
-        "author_username":"John",
+        "author_username": "John",
         "patient_id": "3",
         "patient_username": "Lily",
-        "medication": "Amlodipine",
-        "dosage": "5 mg",
-        "instructions": "Take once daily in the morning",
-        "date": "2024-08-15"
+        "medications": [
+            {
+                "medication": "Paracetamol",
+                "dosage": "1",
+                "instructions": "Take two after meals",
+                "price": "10.0",
+                "image_url": "https://guardian.com.my/media/catalog/product/1/2/121115012_axcel_pcm_500mg_tab_10sx10.jpg?auto=webp&format=pjpg&width=640&height=800&fit=cover"
+            }
+        ],
+        "total_price": "100.0",
+        "date": "2024-08-15",
+        "is_paid": True
     },
-    {
+     {
         "id": 5,
-        "author_username":"Smith",
+        "author_username": "Smith",
         "patient_id": "4",
         "patient_username": "Ray",
-        "medication": "Omeprazole",
-        "dosage": "20 mg",
-        "instructions": "Take once daily before breakfast",
-        "date": "2024-08-20"
+        "medications": [
+            {
+                "medication": "Paracetamol",
+                "dosage": "1",
+                "instructions": "Take two after meals",
+                "price": "10.0",
+                "image_url": "https://guardian.com.my/media/catalog/product/1/2/121115012_axcel_pcm_500mg_tab_10sx10.jpg?auto=webp&format=pjpg&width=640&height=800&fit=cover"
+            }
+        ],
+        "total_price": "80.0",
+        "date": "2024-08-20",
+        "is_paid": True
     }
 ]
 
@@ -183,50 +271,50 @@ medications = [
         'name': 'Paracetamol',
         'description': 'Used for pain relief and fever reduction.',
         'quantity': 100,
-        'price': 0.10,  # Price per unit
+        'price': 10.00,  # Price per unit
         'expiry_date': '2025-12-31',
         'supplier': 'PharmaCorp',
-        'image_url': 'https://guardian.com.my/media/catalog/product/1/2/121115012_axcel_pcm_500mg_tab_10sx10.jpg?auto=webp&format=pjpg&width=640&height=800&fit=cover'
+        'image': 'https://guardian.com.my/media/catalog/product/1/2/121115012_axcel_pcm_500mg_tab_10sx10.jpg?auto=webp&format=pjpg&width=640&height=800&fit=cover'
     },
     {
         'id': 2,
         'name': 'Amoxicillin',
         'description': 'An antibiotic used to treat various infections.',
         'quantity': 200,
-        'price': 0.50,  # Price per unit
+        'price': 20.00,  # Price per unit
         'expiry_date': '2024-08-15',
         'supplier': 'MedSupply Co.',
-        'image_url': 'https://5.imimg.com/data5/ANDROID/Default/2023/4/302037696/HU/JI/VN/116627000/product-jpeg-500x500.jpg'
+        'image': 'https://5.imimg.com/data5/ANDROID/Default/2023/4/302037696/HU/JI/VN/116627000/product-jpeg-500x500.jpg'
     },
     {
         'id': 3,
         'name': 'Ibuprofen',
         'description': 'Nonsteroidal anti-inflammatory drug used for pain, fever, and inflammation.',
         'quantity': 150,
-        'price': 0.20,  # Price per unit
+        'price': 30.00,  # Price per unit
         'expiry_date': '2026-03-21',
         'supplier': 'HealthPharma',
-        'image_url': 'https://5.imimg.com/data5/SELLER/Default/2023/9/344827499/TG/YT/FY/192270567/ibuprofen-tablet-400mg.png'
+        'image': 'https://5.imimg.com/data5/SELLER/Default/2023/9/344827499/TG/YT/FY/192270567/ibuprofen-tablet-400mg.png'
     },
     {
         'id': 4,
         'name': 'Ciprofloxacin',
         'description': 'Antibiotic used to treat a variety of bacterial infections.',
         'quantity': 75,
-        'price': 1.00,  # Price per unit
+        'price': 40.00,  # Price per unit
         'expiry_date': '2023-11-30',
         'supplier': 'Global Meds Inc.',
-        'image_url': 'https://cdn.shopify.com/s/files/1/1290/8299/products/Ciprofloxacin500mgboxcopy.png?v=1603264196'
+        'image': 'https://cdn.shopify.com/s/files/1/1290/8299/products/Ciprofloxacin500mgboxcopy.png?v=1603264196'
     },
     {
         'id': 5,
         'name': 'Lisinopril',
         'description': 'Medication used to treat high blood pressure and heart failure.',
         'quantity': 120,
-        'price': 0.15,  # Price per unit
+        'price': 50.00,  # Price per unit
         'expiry_date': '2027-07-12',
         'supplier': 'CardioMeds',
-        'image_url': 'https://5.imimg.com/data5/SELLER/Default/2023/1/JR/YJ/LF/29824675/lisinopril-20-mg-tablet.jpg'
+        'image': 'https://5.imimg.com/data5/SELLER/Default/2023/1/JR/YJ/LF/29824675/lisinopril-20-mg-tablet.jpg'
     }
 ]
 
@@ -605,6 +693,7 @@ def register():
         except BadRequestKeyError:
             return render_template('Auth/register.html', message="Bad request. Please try again.", error=True)
 
+    flash("You have been registered successfully!", "success")
     return render_template('Auth/register.html')
 
 # Login Function
@@ -632,8 +721,9 @@ def login():
 
                 if remember_me:
                     session.permanent = True
-
-                return render_template('Admin/admin_dashboard.html', username=username, doctors=doctors, user=user, nurses=nurses)
+                
+                flash("Welcome back to MediHub!", "success")
+                return redirect(url_for('admin_dashboard'))
 
               # Check if the user is a DOCTOR
             for user in doctors:
@@ -652,9 +742,8 @@ def login():
                     if remember_me:
                         session.permanent = True
 
-                    # Debugging: print session doctor_id after login
-                    print(f"Session doctor_id after login: {session.get('id')}")
-                    return render_template('Doctor/doctor_dashboard.html', role=role, username=username, user=user)
+                    flash("Welcome back to MediHub!", "success")
+                    return redirect(url_for('doctor_appointments'))
 
             # Check if the user is a NURSE
             for user in nurses:
@@ -674,9 +763,8 @@ def login():
                         if remember_me:
                             session.permanent = True
 
-                        # Debugging: print session doctor_id after login
-                        print(f"Session nurse_id after login: {session.get('id')}")
-                        return render_template('Nurse/nurse_dashboard.html', role=role,username=username,user=user)
+                        flash("Welcome back to MediHub!", "success")
+                        return redirect(url_for('nurse_appointments'))
 
             # Check if the user is a PATIENT
             for patient in patients:
@@ -693,13 +781,15 @@ def login():
 
                     if remember_me:
                         session.permanent = True
-                    return render_template('index.html', role=role,username=username,user=user)
+                    flash("Welcome back to MediHub!", "success")
+                    return redirect(url_for('index'))
 
             # Failed login
             return render_template('Auth/login.html', message="Invalid username or password.", error=True)
         except BadRequestKeyError:
             return render_template('Auth/login.html', message="Bad request. Please try again.", error=True)
-
+        
+    flash("Login successfully!", "success")
     return render_template('Auth/login.html')
 
 # Logout Function
@@ -708,6 +798,8 @@ def logout():
     session.pop('username', None)
     session.pop('role', None)
     session.clear()  # Clears all session data
+
+    flash("You have been logout successfully!", "success")
     return redirect(url_for('index'))
 
 # Forgot Password
@@ -757,7 +849,8 @@ def upload_file():
             
             # Redirect back to the profile page
             return redirect(url_for('view_profile'))
-    
+        
+    flash("Profile image has been updated successfully!", "success")
     return redirect(url_for('view_profile'))
 
 # View Profile
@@ -846,6 +939,7 @@ def edit_profile():
 
         return redirect(url_for('view_profile'))
 
+    flash("Profile has been updated successfully!", "success")
     return render_template('Profile/view_profile.html', user=user, role=role, username=username)
 # ---------------------------------------------------------------------------------------------------
 
@@ -895,7 +989,7 @@ def book_telemedicine_appointment():
 
         try:
             # Retrieve form data
-            selected_doctor_id = request.form.get('person')
+            selected_doctor_id = request.form.get('doctor')
             appointment_date = request.form.get('date')
             appointment_time = request.form.get('time')
 
@@ -928,9 +1022,12 @@ def book_telemedicine_appointment():
             }
             appointments.append(new_appointment)
 
+            # Send email reminder to the patient
+            patient_email = user.get('email')  # Assuming the patient has an 'email' key
+            send_email_reminder(patient_email, appointment_date, appointment_time)
 
             # Flash success message
-            flash(f"Appointment has been made successfully!", "success")
+            flash(f"Appointment has been made successfully! A reminder email has been sent to you.", "success")
             return redirect(url_for('patient_appointments'))
 
         except Exception as e:
@@ -951,6 +1048,22 @@ def book_telemedicine_appointment():
                            doctors=doctors,
                            appointments=appointments)
 
+# Function to send email reminder
+def send_email_reminder(patient_email, appointment_date, appointment_time):
+    subject = "Telemedicine Appointment Reminder"
+    body = f"Dear patient,\n\nThis is a reminder for your upcoming telemedicine appointment on {appointment_date} at {appointment_time}.\n\n" \
+           f"Please be ready at the scheduled time.\n\nBest regards,\nMediHub Healthcare Team"
+
+    # Explicitly set the sender (use the email address from your config)
+    sender_email = app.config['MAIL_DEFAULT_SENDER']  # Ensure this is correctly set in your config
+    msg = Message(subject, recipients=[patient_email], body=body, sender=sender_email)
+
+    try:
+        print(f"Sending email to {patient_email}...")
+        mail.send(msg)
+        print(f"Email sent successfully to {patient_email}")
+    except Exception as e:
+        print(f"Error sending email: {e}")
 
 # --------------------------------- Patient Book Home Visit -------------------------------------------------------
 @app.route('/patient/home_visit', methods=['GET', 'POST'])
@@ -979,7 +1092,6 @@ def book_home_visit_appointment():
                                user=user,
                                role=role,
                                current_date=current_date,
-                               doctors=doctors,
                                nurses=nurses,
                                error_message="Please update your address before booking a home visit appointment.")
     
@@ -987,37 +1099,40 @@ def book_home_visit_appointment():
         patient_id = session.get('id')
         
         try:
-            selected_role = request.form.get('role')
-            selected_id = int(request.form.get('person'))
+            selected_nurse_id = request.form.get('nurse')
             appointment_date = request.form.get('date')
             appointment_time = request.form.get('time')
 
-            if not selected_role or not selected_id or not appointment_date or not appointment_time:
+            if not selected_nurse_id or not appointment_date or not appointment_time:
                 error_message = "All fields are required."
                 return render_template('Patient/home_visit.html',
                                       username=username,
                                       user=user,
                                       role=role,
                                       current_date=current_date,
-                                      doctors=doctors,
                                       nurses=nurses,
                                       error_message=error_message)
             
+             # Convert nurse_id to integer
+            nurse_id = int(selected_nurse_id)
+
             new_appointment = {
                 'id': len(appointments) + 1,
                 'patient_id': patient_id,
-                'person_id': selected_id,
-                'role': selected_role,
+                'nurse_id': nurse_id,
+                'person_id': nurse_id,
                 'date': appointment_date,
                 'time': appointment_time,
-                'type': 'home visit',
-                'doctor_id': selected_id if selected_role == 'doctor' else None,  # Add doctor_id if applicable
-                'nurse_id': selected_id if selected_role == 'nurse' else None    # Add nurse_id if applicable
+                'type': 'home visit'
             }
             appointments.append(new_appointment)
-                    
+
+            # Send email reminder to the patient
+            patient_email = user.get('email')  # Assuming the patient has an 'email' key
+            send_home_visit_email_reminder(patient_email, appointment_date, appointment_time)
+
             # Flash success message
-            flash("Appointment has been made successfully!", "success")
+            flash("Appointment has been made successfully! A reminder email has been sent to you.", "success")
             return redirect(url_for('patient_appointments'))
 
         except Exception as e:
@@ -1027,7 +1142,6 @@ def book_home_visit_appointment():
                                   user=user,
                                   role=role,
                                   current_date=current_date,
-                                  doctors=doctors,
                                   nurses=nurses,
                                   error_message="Failed to book the appointment. Please try again.")
     
@@ -1036,10 +1150,25 @@ def book_home_visit_appointment():
                           user=user,
                           role=role,
                           current_date=current_date,
-                          doctors=doctors,
                           nurses=nurses,
                           appointments=appointments)
 
+# Function to send home visit email reminder
+def send_home_visit_email_reminder(patient_email, appointment_date, appointment_time):
+    subject = "Home Visit Appointment Reminder"
+    body = f"Dear patient,\n\nThis is a reminder for your upcoming home visit appointment on {appointment_date} at {appointment_time}.\n\n" \
+           f"Please be ready at the scheduled time.\n\nBest regards,\nMediHub Healthcare Team"
+
+    # Explicitly set the sender (use the email address from your config)
+    sender_email = app.config['MAIL_DEFAULT_SENDER']  # Ensure this is correctly set in your config
+    msg = Message(subject, recipients=[patient_email], body=body, sender=sender_email)
+
+    try:
+        print(f"Sending email to {patient_email}...")
+        mail.send(msg)
+        print(f"Email sent successfully to {patient_email}")
+    except Exception as e:
+        print(f"Error sending email: {e}")
 
 # --------------------------------- Patient View Appointment -------------------------------------------------
 @app.route('/patient/appointments')
@@ -1048,10 +1177,6 @@ def patient_appointments():
     
     # Fetch appointments for the current patient
     patient_appointments = [app for app in appointments if app['patient_id'] == patient_id]
-
-    # Print to debug appointment data
-    for appointment in patient_appointments:
-        print(f"Appointment: {appointment}")
  
     current_date = datetime.now().strftime('%Y-%m-%d')
     username = session.get('username')
@@ -1107,7 +1232,67 @@ def delete_appointment(appointment_id):
     
     flash("Appointment has been deleted successfully!", "success")
     return redirect(url_for('patient_appointments'))
-# ------------------------- Patient View Prescription ------------------------------------------------------------
+
+# ----------------------------- PAYPAL ----------------------------------------------------------------------------
+@app.route('/direct_payment')
+def direct_payment():
+    prescription_id = request.args.get('prescription_id')  # Get prescription ID from query params
+
+    # Find the prescription in the dummy data
+    prescription = next((pres for pres in prescriptions if str(pres['id']) == prescription_id), None)
+
+    if not prescription:
+        flash("Prescription not found.", "error")
+        return redirect(url_for('patient_view_prescription'))
+
+    # Extract details from the prescription for payment
+    name = prescription['patient_username']
+    email = session.get('email', 'patient_email')  # Replace with the user's email logic
+    amount = prescription['total_price']
+
+    # Create a PayPal payment
+    payment = paypalrestsdk.Payment({
+        "intent": "sale",
+        "payer": {"payment_method": "paypal"},
+        "redirect_urls": {
+            "return_url": url_for('payment_success', prescription_id=prescription_id, _external=True),
+            "cancel_url": url_for('payment_cancelled', prescription_id=prescription_id, _external=True)
+        },
+        "transactions": [{
+            "amount": {"total": amount, "currency": "MYR"},
+            "description": f"Payment for prescription {prescription_id}"
+        }]
+    })
+
+    if payment.create():
+        for link in payment.links:
+            if link.rel == "approval_url":
+                approval_url = link.href
+                return redirect(approval_url)
+    else:
+        app.logger.error(f"PayPal payment creation failed: {payment.error}")
+        flash("Payment failed. Please try again.", "error")
+        return redirect(url_for('patient_view_prescription'))
+
+@app.route('/payment_success')
+def payment_success():
+    prescription_id = request.args.get('prescription_id')  # Get prescription ID from query params
+    patient_username = session.get('username')
+
+    # Mark the prescription as paid in the dummy data
+    for pres in prescriptions:
+        if str(pres['id']) == prescription_id:
+            pres['is_paid'] = True
+            app.logger.info(f"Prescription {prescription_id} marked as paid.")
+            break
+
+    flash("Thank you! Payment was successful.", "success")
+    return redirect(url_for('patient_view_prescription'))
+
+@app.route('/payment_cancelled')
+def payment_cancelled():
+    return "Payment was cancelled. Please try again."
+
 @app.route('/patient_view_prescription')
 def patient_view_prescription():
     username = session.get('username')
@@ -1150,6 +1335,11 @@ def patient_view_prescription():
     # Check if no prescriptions are found
     no_prescriptions_found = len(patient_prescriptions) == 0
 
+    # Pass the prescription image URL or filename to the template (assuming it's stored in 'static/uploads')
+    for pres in patient_prescriptions:
+        if pres.get('image'):
+            pres['image_url'] = url_for('static', filename='uploads/' + pres['image'])  # Create the URL for the image
+
     return render_template(
         'Patient/patient_prescription.html',
         user=user,
@@ -1157,8 +1347,25 @@ def patient_view_prescription():
         prescriptions=patient_prescriptions,
         role=role,
         search_date=search_date,
-        no_prescriptions_found=no_prescriptions_found
+        no_prescriptions_found=no_prescriptions_found,
+        has_paid=session.get('has_paid')  # Pass the payment status to the template
     )
+
+
+@app.route('/toggle_payment_status', methods=['POST'])
+def toggle_payment_status():
+    prescription_id = request.form.get('prescription_id')
+    prescription = next((pres for pres in prescriptions if str(pres['id']) == prescription_id), None)
+
+    if not prescription:
+        flash("Prescription not found.", "error")
+        return redirect(url_for('view_prescriptions'))
+
+    # Toggle the payment status
+    prescription['is_paid'] = not prescription['is_paid']
+
+    flash("Payment status updated successfully.", "success")
+    return redirect(url_for('view_prescriptions'))
 # -------------------------------------------------------------------------------------------------------------
 
 # ----------------------------------- Get Doctors & Nurses Information ----------------------------------------
@@ -1203,9 +1410,11 @@ def write_prescription():
         medication_ids = request.form.getlist('medication_id[]')
         dosages = request.form.getlist('dosage[]')
         instructions_list = request.form.getlist('instructions[]')
+        prices = request.form.getlist('price[]')
+        total_price = float(request.form.get('total_price', '0'))
 
         # Validate form data consistency
-        if not (len(medication_ids) == len(dosages) == len(instructions_list)):
+        if not (len(medication_ids) == len(dosages) == len(instructions_list) == len(prices)):
             return render_template(
                 'Prescription/write_prescription.html',
                 patients=patients,
@@ -1213,27 +1422,54 @@ def write_prescription():
                 username=username,
                 user=user,
                 medications=medications,
-                error="Please ensure each medication entry includes dosage and instructions."
+                error="Please ensure each medication entry includes dosage, price, and instructions."
             )
 
-         # Create a single prescription entry with multiple medications
+        # Create a single prescription entry with multiple medications
         prescription_id = len(prescriptions) + 1
-        for med_id, dosage, instructions in zip(medication_ids, dosages, instructions_list):
+        medications_list = []  # To hold added prescriptions for display
+
+        for med_id, dosage, instructions, price in zip(medication_ids, dosages, instructions_list, prices):
             selected_medication = next((med for med in medications if str(med['id']) == med_id), None)
             if selected_medication:
-                prescriptions.append({
+                # Handle medication image upload
+                file = request.files.get(f'image_{med_id}')  # Get the image for the specific medication
+                image_filename = None
+                if file and allowed_file(file.filename):
+                    image_filename = secure_filename(file.filename)
+                    image_filepath = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+                    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)  # Ensure the directory exists
+                    file.save(image_filepath)  # Save the uploaded image
+
+                medication_entry = {
+                    'medication': selected_medication['name'],
+                    'dosage': dosage,
+                    'instructions': instructions,
+                    'price': float(price),
+                    'image_url': image_filename if image_filename else selected_medication['image']
+                }
+                medications_list.append(medication_entry)
+                
+                print("Before prescription creation")
+                prescription = {
                     'id': prescription_id,
                     'author_username': username,
                     'author_role': role,
                     'patient_id': patient_id,
                     'patient_username': next((pat['username'] for pat in patients if pat['id'] == patient_id), None),
-                    'medication': selected_medication['name'],
-                    'dosage': dosage,
-                    'instructions': instructions,
-                    'date': datetime.now().strftime('%Y-%m-%d')
-                })
-
-        return redirect(url_for('view_prescriptions'))
+                    'medications': medications_list,
+                    'total_price': total_price,
+                    'date': datetime.now().strftime('%Y-%m-%d'),
+                    'is_paid': False,
+                    'image_url': selected_medication['image']  # Save the image filename or URL in the prescription
+                }
+                print(f"Prescription: {prescription}")
+                prescriptions.append(prescription)
+  
+        flash("Prescription has been added successfully!", "success")        
+        # Redirect to view the specific patient's prescriptions
+        patient_username = next((pat['username'] for pat in patients if pat['id'] == patient_id), None)
+        return redirect(url_for('view_prescriptions', patient_username=patient_username))
 
     # GET: Render the prescription form
     return render_template(
@@ -1245,8 +1481,7 @@ def write_prescription():
         medications=medications
     )
 
-
-# Doctor & Nurse View Prescription
+# DOCTOR NURSE VIEW PRESCRIPTION
 @app.route('/view_prescriptions')
 def view_prescriptions():
     username = session.get('username')
@@ -1267,11 +1502,59 @@ def view_prescriptions():
     if not user:
         return redirect(url_for('index'))
 
-    # Retrieve prescriptions written by the logged-in user
-    user_prescriptions = [
-        pres for pres in prescriptions
-        if pres.get('author_username') == username  # Assuming 'author' stores the username of the creator
-    ]
+    # Get today's date
+    today = datetime.now()
+    today_str = today.strftime('%Y-%m-%d')
+    
+    # Get yesterday's date
+    yesterday = today - timedelta(days=1)
+    yesterday_str = yesterday.strftime('%Y-%m-%d')
+    
+    # Get the date for 7 days ago
+    last_7_days = today - timedelta(days=7)
+    last_7_days_str = last_7_days.strftime('%Y-%m-%d')
+
+    # Determine if we're filtering for today, yesterday, or last 7 days
+    filter_today = request.args.get('filter_today') == 'true'
+    filter_yesterday = request.args.get('filter_yesterday') == 'true'
+    filter_last_7_days = request.args.get('filter_last_7_days') == 'true'
+    
+    # Retrieve the patient's username from the query parameter (if provided)
+    patient_username = request.args.get('patient_username')
+
+    def matches_date_filter(date):
+        """Check if the date matches any active filter."""
+        return (
+            (filter_today and date == today_str) or
+            (filter_yesterday and date == yesterday_str) or
+            (filter_last_7_days and date >= last_7_days_str)
+        )
+
+    # If no filters are selected, show all prescriptions
+    if not (filter_today or filter_yesterday or filter_last_7_days):
+        if patient_username:
+            user_prescriptions = [
+                pres for pres in prescriptions
+                if pres.get('author_username') == username and pres.get('patient_username') == patient_username
+            ]
+        else:
+            user_prescriptions = [
+                pres for pres in prescriptions
+                if pres.get('author_username') == username
+            ]
+    else:
+        # Apply filters
+        if patient_username:
+            user_prescriptions = [
+                pres for pres in prescriptions
+                if pres.get('author_username') == username and pres.get('patient_username') == patient_username
+                and matches_date_filter(pres.get('date'))
+            ]
+        else:
+            user_prescriptions = [
+                pres for pres in prescriptions
+                if pres.get('author_username') == username and matches_date_filter(pres.get('date'))
+            ]
 
     # Render the prescriptions page
     return render_template(
@@ -1282,11 +1565,15 @@ def view_prescriptions():
         username=username,
         user=user,
         medications=medications,
-        prescription=None  # Add a default `prescription`
+        prescription=None,
+        selected_patient=patient_username,
+        filter_today=filter_today,
+        filter_yesterday=filter_yesterday,
+        filter_last_7_days=filter_last_7_days  
     )
 
 # PRES SEARCH FUNCTION
-@app.route('/search_prescriptions', methods=['GET', 'POST'])
+@app.route('/search_prescriptions', methods=['GET'])
 def search_prescriptions():
     username = session.get('username')
     role = session.get('role')
@@ -1305,28 +1592,33 @@ def search_prescriptions():
     if not user:
         return redirect(url_for('index'))
 
+    # Retrieve the search query from the URL parameters
+    search_query = request.args.get('search_query', '').strip()
     search_results = []
-    search_query = None
 
-    if request.method == 'POST':
-        search_query = request.form.get('search_username', '').strip()
+    # Filter prescriptions by patient username
+    if search_query:
+        search_results = [
+            pres for pres in prescriptions
+            if pres.get('patient_username') and search_query.lower() in pres['patient_username'].lower()
+            and pres.get('author_username') == username
+        ]
+        
+    print(f"Search query: {search_query}")
+    print(f"Prescriptions before filtering: {prescriptions}")
 
-        # Filter prescriptions by patient username
-        if search_query:
-            search_results = [
-                pres for pres in prescriptions
-                if pres.get('patient_username') and search_query.lower() in pres['patient_username'].lower()
-                and pres.get('author_username') == username  # Ensure logged-in user only sees their authored prescriptions
-            ]
-
+    # Render the template with the search results
     return render_template(
         'Prescription/view_prescriptions.html',
         search_results=search_results,
         search_query=search_query,
         role=role,
         username=username,
-        user=user
+        user=user,
+        patients=patients,  # Pass additional required data
+        prescriptions=[]  # Avoid template errors; no default prescriptions shown during search
     )
+
 
 # EDIT PRESCRIPTION FUNCTION
 @app.route('/edit_prescription/<int:prescription_id>', methods=['GET', 'POST'])
@@ -1357,6 +1649,7 @@ def edit_prescription(prescription_id):
         prescription['instructions'] = request.form['instructions']
         prescription['date'] = datetime.now().strftime('%Y-%m-%d')  # Optionally update the date
 
+        flash("Prescription has been updated successfully!", "success")
         return redirect(url_for('view_prescriptions'))
 
     # Render the edit form with existing prescription details
@@ -1401,6 +1694,7 @@ def delete_prescription(prescription_id):
     # Remove the prescription
     prescriptions.remove(prescription)
 
+    flash("Prescription has been deleted successfully!", "success")
     return redirect(url_for('view_prescriptions'))
 
 # -----------------------------------------------------------------------------------------------------------------
@@ -1423,7 +1717,7 @@ def doctor_dashboard():
         user = next((nurse for nurse in nurses if nurse['username'] == username), None)
     elif role == 'patient':
         user = next((pat for pat in patients if pat['username'] == username), None)
-    return render_template('Doctor/doctor_dashboard.html', user=user, role=role, username=username, appointments=appointments)
+    return render_template('Doctor/doctor_dashboard.html', user=user, doctor=doctors, role=role, username=username, appointments=appointments)
 
 # Doctor MY Appointment
 # --------------------------------- Doctor View Appointments -------------------------------------------------
@@ -1440,6 +1734,11 @@ def doctor_appointments():
 
     doctor_id = int(doctor_id)
     
+    # Fetch user based on role
+    user = None
+    if role == 'doctor':
+        user = next((doc for doc in doctors if doc['username'] == username), None)
+ 
     # Filter appointments for the logged-in doctor
     filtered_appointments = [app for app in appointments if app.get('doctor_id') == doctor_id]
 
@@ -1483,25 +1782,6 @@ def doctor_appointments():
 # -------------------------------------------------------------------------------------------------------------------------
 
 # --------------------------------- Nurse --------------------------------------------------------------------------
-# Route for the Nurse dashboard
-@app.route('/nurse/dashboard')
-def nurse_dashboard():
-    username = session.get('username')
-    role = session.get('role')  # Ensure role is stored in session or retrieved from the database
-    if role != 'nurse':
-        return redirect(url_for('index'))  # Redirect to the index page if not logged in as nurse
-    
-    user = None
-    if role == 'admin' and username == admin.get('username'):
-        user = admin
-    elif role == 'doctor':
-        user = next((doc for doc in doctors if doc['username'] == username), None)
-    elif role == 'nurse':
-        user = next((nurse for nurse in nurses if nurse['username'] == username), None)
-    elif role == 'patient':
-        user = next((pat for pat in patients if pat['username'] == username), None)
-    return render_template('Nurse/nurse_dashboard.html', role=role, nurses=nurses, user=user, username=username, appointments=appointments)
-
 # Nurse MY Appointment
 @app.route('/nurse/appointments', methods=['GET', 'POST'])
 def nurse_appointments():
@@ -1880,6 +2160,8 @@ def view_medication():
         try:
             # Convert price to float and format it to two decimal places
             med['price'] = "{:.2f}".format(float(med['price']))
+            if 'image' not in med or not med['image']:
+                med['image'] = 'default.jpg'  # Assign default image if missing
         except (ValueError, TypeError) as e:
             print(f"Error formatting price {med['price']}: {e}")
             med['price'] = "0.00"  # Default value in case of error
@@ -1901,6 +2183,7 @@ def add_medication():
     username = session.get('username')
     role = session.get('role')
 
+    # Identify the logged-in user
     user = None
     if role == 'admin' and username == admin.get('username'):
         user = admin
@@ -1912,27 +2195,43 @@ def add_medication():
         user = next((pat for pat in patients if pat['username'] == username), None)
 
     if request.method == 'POST':
-        # Handle file upload
-        file = request.files['image']
-        if file:
-            filename = secure_filename(file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
+        # Process form data
+        name = request.form['name']
+        description = request.form['description']
+        quantity = int(request.form['quantity'])
+        price = float(request.form['price'])
+        expiry_date = request.form['expiry_date']
+        supplier = request.form['supplier']
 
+        # Handle file upload
+        file = request.files.get('image')  # Get the file from the form
+        filename = None
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)  # Ensure the directory exists
+            file.save(file_path)  # Save the file to the upload folder
+        else:
+            flash("Invalid file type! Please upload a valid image (png, jpg, jpeg, gif).", "error")
+
+        # Add new medication to the list (or database)
         new_medication = {
             'id': len(medications) + 1,
-            'medication_name': request.form['medication_name'],
-            'description': request.form['description'],
-            'quantity': int(request.form['quantity']),
-            'price': float(request.form['price']),
-            'expiry_date': request.form['expiry_date'],
-            'supplier': request.form['supplier'],
-            'image': filename if file else None
+            'name': name,
+            'description': description,
+            'quantity': quantity,
+            'price': price,
+            'expiry_date': expiry_date,
+            'supplier': supplier,
+            'image': filename,  # Store the filename for the uploaded image
         }
         medications.append(new_medication)
-        flash('Medication added successfully!')
+
+        flash("Medication has been added successfully!", "success")
         return redirect(url_for('view_medication'))
+
     return render_template('Medication/add_stock.html', medications=medications, user=user, username=username, role=role)
+
 
 # Edit Medical Stock
 @app.route('/medication/edit/<int:id>', methods=['GET', 'POST'])
@@ -1964,13 +2263,14 @@ def edit_medication(id):
             file.save(filepath)
             medication['image'] = filename
 
-        medication['medication_name'] = request.form['medication_name']
+        medication['name'] = request.form['name']
         medication['description'] = request.form['description']
         medication['quantity'] = int(request.form['quantity'])
         medication['price'] = float(request.form['price']) # Price Per Unit
         medication['expiry_date'] = request.form['expiry_date']
         medication['supplier'] = request.form['supplier']
-        flash('Medication updated successfully!')
+
+        flash("Medication has been updated successfully!", "success")
         return redirect(url_for('view_medication'))
 
     return render_template('Medication/edit_stock.html', medication=medication, user=user, username=username, role=role)
@@ -1983,7 +2283,8 @@ def delete_medication(id):
 
     global medications
     medications = [med for med in medications if med['id'] != id]
-    flash('Medication deleted successfully!')
+    
+    flash("Medication has been deleted successfully!", "success")
     return redirect(url_for('view_medication'))
 
 # Admin/Nurse/Doctor View Patients List
@@ -2018,7 +2319,6 @@ def view_address(patient_id):
     if patient:
         return jsonify({'address': patient['address']})
     return jsonify({'error': 'Patient not found'}), 404
-
 # ------------------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':

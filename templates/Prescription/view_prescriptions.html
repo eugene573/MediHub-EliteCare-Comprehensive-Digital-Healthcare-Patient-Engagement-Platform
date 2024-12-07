@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> 
     <link rel="icon" href="/static/uploads/MediHubq.png" type="image/x-icon" sizes="512x512"> 
     <style>
         body {
@@ -11,37 +14,61 @@
             padding: 20px;
             background-color: #f4f4f4;
         }
-        .prescription-container {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-        .prescription-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        .prescription-table th {
-            background-color: #3498db;
-            color: white;
-            padding: 12px;
-            text-align: left;
-        }
-        .prescription-table td {
-            padding: 10px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        .prescription-table tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        .prescription-table tr:hover {
-            background-color: #e6f2ff;
-        }
-        .prescription-section {
-            margin-bottom: 30px;
-        }
+        .patient-section {
+    background-color: #ffffff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.patient-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.date-section {
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.prescription-date {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #000000;
+    margin-bottom: 10px;
+}
+
+.prescription-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+}
+
+.prescription-table th, .prescription-table td {
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    text-align: left;
+}
+
+.prescription-table th {
+    background-color: #3498db;
+    color: white;
+}
+
+.prescription-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.prescription-table tr:hover {
+    background-color: #e6f2ff;
+}
+
         a {
             transition: background-color 0.3s ease;
         }
@@ -138,8 +165,8 @@ button[name="search_button"]:hover {
 
 .btn-clear {
     padding: 0.5rem 0.8rem;
-    background-color: #e9ecef;
-    color: #495057;
+    background-color: red;
+    color: white; /* Ensures the color matches the text color */
     text-decoration: none;
     border-radius: 4px;
     font-size: 1rem;
@@ -147,16 +174,10 @@ button[name="search_button"]:hover {
 }
 
 .btn-clear:hover {
-    background-color: #dee2e6;
+    background-color: #dc0a0a;
     color: #212529;
 }
-
-th {
-            background-color: #3489c2;
-            color: white;
-            font-weight: bold;
-        }
-        
+    
 /* Updated responsive adjustments */
 @media (max-width: 480px) {
     form {
@@ -172,6 +193,57 @@ th {
         margin-bottom: 0.5rem;
     }
 }
+
+.flash-message-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050; /* Ensure it's above other content */
+    width: 300px; /* Adjust width as needed */
+    pointer-events: none; /* Prevent interaction with underlying elements */
+}
+
+.custom-alert {
+    background-color: #28a745; /* Green background for success */
+    color: white; /* Text color */
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 10px; /* Space between messages */
+    pointer-events: auto; /* Enable interaction with the alert */
+    position: relative; /* For positioning the close button */
+}
+
+.custom-alert .btn-close {
+    background-color: transparent; /* Ensure no background */
+    border: none; /* Remove default border */
+    color: white; /* Set text/icon color to white */
+    opacity: 1; /* Make the button fully visible */
+    font-size: 1.25rem; /* Adjust size for better visibility */
+    position: absolute; /* Ensure proper positioning */
+}
+
+.btn-success:hover {
+    background-color: #218838 !important;
+    border-color: #1e7e34 !important;
+}
+
+.btn-danger:hover {
+    background-color: #c82333 !important;
+    border-color: #bd2130 !important;
+}
+
+ .btn-success {
+        background-color: #28a745 !important;
+        border-color: #28a745 !important;
+        color: white !important;
+    }
+
+    .btn-danger {
+        background-color: #dc3545 !important;
+        border-color: #dc3545 !important;
+        color: white !important;
+    }
     </style>
 </head>
 <body>
@@ -185,68 +257,133 @@ th {
 
     {% block content %}
     <br><br>
-    <div class="search-container">
-        <center> <form method="GET" action="{{ url_for('view_prescriptions') }}">
-            <input
-                type="text"
-                name="search_query"
-                placeholder="Patient Name"
-                value="{{ request.args.get('search_query', '') }}"
-            >
-            <button type="submit" name="search_button">Search</button>
-            {% if request.args.get('search_query') %}
-            <a href="{{ url_for('view_prescriptions') }}" class="btn-clear">Clear</a>
+        <!-- Flash Messages -->
+<div class="flash-message-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} custom-alert alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+    {% endwith %}
+  </div> 
+   
+  <div class="search-container">
+    <center>
+        <form action="{{ url_for('search_prescriptions') }}" method="GET">
+            <input type="text" name="search_query" placeholder="Patient Name">
+            <button type="submit" name="search_button"><i class="fa fa-search"></i></button>
+            {% if search_query %}
+            <a href="{{ url_for('view_prescriptions') }}" class="btn-clear"><i class="fa fa-close"></i></a>
             {% endif %}
-        </form></center>
-    </div>
-<br>    
-    <div class="prescription-container">
+        </form>
+    </center>
+</div>
+<br>
+<center>
+    <!-- Buttons to filter prescriptions by specific dates -->
+    <form method="get" action="{{ url_for('view_prescriptions') }}">
+        <button type="submit" class="btn btn-primary" name="view_prescriptions" value="true">All</button>
+        <button type="submit" class="btn btn-primary" name="filter_today" value="true">Today</button>
+        <button type="submit" class="btn btn-primary" name="filter_yesterday" value="true">Yesterday</button>
+        <button type="submit" class="btn btn-primary" name="filter_last_7_days" value="true">Last 7 Days</button>
+    </form>
+</center>
+<br>
+
+<div class="prescription-container">
+    {% if search_query %}
+        <!-- Handle search query filtering here -->
+        {% set prescriptions = search_results %}
+    {% elif filter_today %}
+        <!-- Handle today's filter here -->
+    {% elif filter_yesterday %}
+        <!-- Handle yesterday's filter here -->
+    {% elif filter_last_7_days %}
+        <!-- Handle last 7 days filter here -->
+    {% else %}
+        <!-- Handle default view here -->
+    {% endif %}
+
     {% if prescriptions %}
-        {% for group in prescriptions | groupby('patient_username') %}
-            {% if request.args.get('search_query') and request.args.get('search_query').lower() not in group.grouper.lower() %}
-                
-            {% else %}
-            <h3>{{ group.grouper }}</h3>
-            <table class="prescription-table">
-                <thead>
-                    <tr>
-                        <th>Pres ID.</th>
-                        <th>Medication</th>
-                        <th>Dosage</th>
-                        <th>Instructions</th>
-                        <th>Added Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for pres in group.list %}
-                    <tr>
-                        <td>{{ pres.id }}</td>
-                        <td>{{ pres.medication }}</td>
-                        <td>{{ pres.dosage }}</td>
-                        <td>{{ pres.instructions }}</td>
-                        <td>{{ pres.date }}</td>
-                        <td>
-                            <button onclick="openModal('{{ pres.id }}')" 
-                                    style="background-color: #fee032; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer;">
-                                    <i class="fas fa-pen"></i>
-                            </button>
-                            <form action="{{ url_for('delete_prescription', prescription_id=pres.id) }}" method="POST" style="display: inline;">
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this prescription?');"  style="background-color: #fe3232; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer;">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% endif %}
+        {% for group_by_user in prescriptions | groupby('patient_username') %}
+            <div class="patient-section">
+                <h3 class="patient-name">{{ group_by_user.grouper }}</h3>
+                {% for group_by_id in group_by_user.list | groupby('id') | sort(attribute='grouper', reverse=true) %}
+                    <div class="date-section">
+                        <h4 class="prescription-date">{{ group_by_id.list[0].date }}</h4>
+                        <table class="prescription-table">
+                            <thead>
+                                <tr>
+                                    <th>No.</th>
+                                    <th>Medication</th>
+                                    <th>Instructions</th>
+                                    <th>Qty</th>
+                                    <th>Price For Medication</th>
+                                    <th>SubTotal<br>(Included Consultation Fee)</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% set total_price = 0 %}
+                                {% for pres in group_by_id.list[0].medications %}
+                                    {% if pres['price'] is not none %}
+                                        {% set price = pres['price'] | float %}
+                                        <tr>
+                                            <td>{{ loop.index }}.</td>
+                                            <td>{{ pres.medication }}</td>
+                                            <td>{{ pres.instructions }}</td>
+                                            <td><center>x{{ pres.dosage }}</center></td>
+                                            <td>RM {{ pres['price'] | default(0) | float }}0</td>
+                                            {% set total_price = total_price + price %}
+                                        </tr>
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="5">Error: Medication price missing</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                                <tr>
+                                    <td colspan="5" style="text-align:right;"><b>Total:</b></td>
+                                    <td><b>RM {{ group_by_id.list[0].total_price if group_by_id.list[0].total_price else "0.00" }}0</b></td>
+                                    <td>
+                                        <form action="{{ url_for('toggle_payment_status') }}" method="POST" style="display: inline;">
+                                            <input type="hidden" name="prescription_id" value="{{ group_by_id.grouper }}">
+                                            <button type="submit" class="btn {% if group_by_id.list[0].is_paid %}btn-success{% else %}btn-danger{% endif %}">
+                                                {% if group_by_id.list[0].is_paid %}
+                                                    Paid
+                                                {% else %}
+                                                    UnPaid
+                                                {% endif %}
+                                            </button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <button onclick="openModal('{{ group_by_id.grouper }}')" class="btn btn-warning">
+                                            <i class="fas fa-pen"></i>
+                                        </button>
+                                        <form action="{{ url_for('delete_prescription', prescription_id=group_by_id.grouper) }}" method="POST" style="display: inline;">
+                                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this prescription?');">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                {% endfor %}
+            </div>
         {% endfor %}
     {% else %}
-        <p>No prescriptions found.</p>
+        <center><p>No prescriptions found.</p></center>
     {% endif %}
-    </div>
+</div>
+
 
     <!-- Modal -->
     <div id="editModal" class="modal">
@@ -313,6 +450,35 @@ th {
                 closeModal();
             }
         };
+
+        document.addEventListener('DOMContentLoaded', function () {
+        // Find all alerts and set them to disappear after 5 seconds
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.transition = "opacity 0.3s"; // Add smooth fade-out
+                alert.style.opacity = "0"; // Start fading out
+                setTimeout(() => alert.remove(), 300); // Remove alert after fade-out completes
+            }, 3000); // 5-second duration before starting fade-out
+        });
+    });
+
+    // Add an event listener to handle form submission
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('form[action="{{ url_for("toggle_payment_status") }}"]').forEach(form => {
+            form.addEventListener('submit', function (event) {
+                // Show a confirmation alert
+                const isPaid = form.querySelector('button').textContent.trim() === 'Paid';
+                const confirmationMessage = isPaid
+                    ? "You are about to mark this prescription as Unpaid. Do you want to continue?"
+                    : "You are about to mark this prescription as Paid. Do you want to continue?";
+                if (!confirm(confirmationMessage)) {
+                    // Prevent form submission if user cancels
+                    event.preventDefault();
+                }
+            });
+        });
+    });
     </script>
     {% endblock %}
 </body>

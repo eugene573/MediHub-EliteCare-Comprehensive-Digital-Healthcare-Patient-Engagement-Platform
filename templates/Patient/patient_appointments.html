@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Appointments</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> 
     <!-- Bootstrap core CSS -->
  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">  
@@ -122,20 +123,6 @@
         background-color: #e60000;
     }
 
-    .flash-message-container {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1050; /* Ensure it's above other content */
-    width: 300px; /* Adjust width as needed */
-    pointer-events: none;
-}
-
-.alert {
-    margin-top: 10px;
-    pointer-events: auto;
-}
-
 .m-btn {
     text-decoration: none; /* Removes the underline */
   background-color: #0073e6; /* Adds a button-like background */
@@ -212,8 +199,8 @@ button[name="search_button"]:hover {
 
 .btn-clear {
     padding: 0.5rem 0.8rem;
-    background-color: #e9ecef;
-    color: inherit; /* Ensures the color matches the text color */
+    background-color: red;
+    color: white; /* Ensures the color matches the text color */
     text-decoration: none;
     border-radius: 4px;
     font-size: 1rem;
@@ -221,7 +208,7 @@ button[name="search_button"]:hover {
 }
 
 .btn-clear:hover {
-    background-color: #dee2e6;
+    background-color: #dc0a0a;
     color: #212529;
 }
 
@@ -240,6 +227,37 @@ button[name="search_button"]:hover {
         margin-bottom: 0.5rem;
     }
 }
+
+.flash-message-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050; /* Ensure it's above other content */
+    width: 300px; /* Adjust width as needed */
+    pointer-events: none; /* Prevent interaction with underlying elements */
+}
+
+.custom-alert {
+    background-color: #28a745; /* Green background for success */
+    color: white; /* Text color */
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 10px; /* Space between messages */
+    pointer-events: auto; /* Enable interaction with the alert */
+    position: relative; /* For positioning the close button */
+}
+
+.custom-alert .btn-close {
+    background-color: transparent; /* Ensure no background */
+    border: none; /* Remove default border */
+    color: white; /* Set text/icon color to white */
+    opacity: 1; /* Make the button fully visible */
+    font-size: 1.25rem; /* Adjust size for better visibility */
+    position: absolute; /* Ensure proper positioning */
+    top: 8px; /* Adjust as needed */
+    right: 8px; /* Adjust as needed */
+}
     </style>
 </head>
 <body>
@@ -247,24 +265,28 @@ button[name="search_button"]:hover {
 
     {% block content %}
     <br><br>
+
+    <!-- Flash Messages -->
+<div class="flash-message-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} custom-alert alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+    {% endwith %}
+  </div> 
+
     <div class="container">
- <!-- Flash Messages -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-  {% for category, message in messages %}
-    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-      {{ message }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-  {% endfor %}
-{% endif %}
-{% endwith %}
 
 <form method="get" action="/patient/appointments">
     <input type="date" name="search_date" onkeydown="return false;" value="{{ search_date }}" />
-    <button type="submit" name="search_button">Search</button>
+    <button type="submit" name="search_button"><i class="fa fa-search"></i></button>
     {% if search_date %}
-    <button type="button" class="btn-clear" onclick="window.location.href='/patient/appointments'">Clear</button>
+    <button type="button" class="btn-clear" onclick="window.location.href='/patient/appointments'"><i class="fa fa-close"></i></button>
     {% endif %}   
 </form>
 
@@ -275,6 +297,7 @@ button[name="search_button"]:hover {
         {% if no_appointments_found %}
         <p>No appointments found for the selected date.</p>
     {% else %}
+    
       <!-- Upcoming Appointments -->
 <div id="upcoming" class="task-list">
     {% for date, date_appointments in appointments | groupby('date') %}
@@ -308,21 +331,12 @@ button[name="search_button"]:hover {
                                     <p>Doctor information not available for this telemedicine appointment.</p>
                                 {% endif %}
                                 
-
                             {% elif appointment.type == 'home visit' %}
-                                {% if appointment.role == 'doctor' %}
-                                    {% if appointment.doctor_id is defined and appointment.doctor_id - 1 < doctors|length %}
-                                        <h3>Dr. {{ doctors[appointment.doctor_id - 1].username }}</h3>
-                                    {% else %}
-                                        <p>Doctor information not available for this home visit.</p>
-                                    {% endif %}
-                                {% elif appointment.role == 'nurse' %}
                                     {% if appointment.nurse_id is defined and appointment.nurse_id - 1 < nurses|length %}
                                         <h3>Nurse {{ nurses[appointment.nurse_id - 1].username }}</h3>
                                     {% else %}
                                         <p>Nurse information not available for this home visit.</p>
                                     {% endif %}
-                                {% endif %}
                             {% endif %}
                             <p>Scheduled at {{ appointment.time | format_time }}</p>
                              <!-- Delete Button Container -->
@@ -376,19 +390,11 @@ button[name="search_button"]:hover {
                                     <p>Doctor information not available for this telemedicine appointment.</p>
                                 {% endif %}
                             {% elif appointment.type == 'home visit' %}
-                                {% if appointment.role == 'doctor' %}
-                                    {% if appointment.doctor_id is defined and appointment.doctor_id - 1 < doctors|length %}
-                                        <h3>Dr. {{ doctors[appointment.doctor_id - 1].username }}</h3>
-                                    {% else %}
-                                        <p>Doctor information not available for this home visit.</p>
-                                    {% endif %}
-                                {% elif appointment.role == 'nurse' %}
                                     {% if appointment.nurse_id is defined and appointment.nurse_id - 1 < nurses|length %}
                                         <h3>Nurse {{ nurses[appointment.nurse_id - 1].username }}</h3>
                                     {% else %}
                                         <p>Nurse information not available for this home visit.</p>
                                     {% endif %}
-                                {% endif %}
                             {% endif %}
                             <p>Scheduled at {{ appointment.time | format_time }}</p>
                         </div>
@@ -422,14 +428,18 @@ button[name="search_button"]:hover {
         // Initialize first tab to be shown
         showTab('upcoming');
 
-          // Automatically hide alerts after 5 seconds
-  setTimeout(() => {
-    const alerts = document.querySelectorAll('.alert');
-    alerts.forEach(alert => {
-      alert.classList.remove('show');  // Hides the alert
-      alert.classList.add('fade');  // Optional: adds fade effect when disappearing
+          
+        document.addEventListener('DOMContentLoaded', function () {
+        // Find all alerts and set them to disappear after 5 seconds
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.transition = "opacity 0.3s"; // Add smooth fade-out
+                alert.style.opacity = "0"; // Start fading out
+                setTimeout(() => alert.remove(), 300); // Remove alert after fade-out completes
+            }, 3000); // 5-second duration before starting fade-out
+        });
     });
-  }, 2000);
     </script>    
 </body>
 </html>

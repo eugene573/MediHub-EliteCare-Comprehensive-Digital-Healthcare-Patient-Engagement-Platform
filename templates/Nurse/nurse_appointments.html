@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Appointments</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> 
     <link rel="icon" href="/static/uploads/MediHubq.png" type="image/x-icon" sizes="512x512">
     <style>
@@ -165,8 +165,8 @@ button[name="search_button"]:hover {
 
 .btn-clear {
     padding: 0.5rem 0.8rem;
-    background-color: #e9ecef;
-    color: #495057;
+    background-color: red;
+    color: white; /* Ensures the color matches the text color */
     text-decoration: none;
     border-radius: 4px;
     font-size: 1rem;
@@ -174,7 +174,7 @@ button[name="search_button"]:hover {
 }
 
 .btn-clear:hover {
-    background-color: #dee2e6;
+    background-color: #dc0a0a;
     color: #212529;
 }
 
@@ -193,33 +193,64 @@ button[name="search_button"]:hover {
         margin-bottom: 0.5rem;
     }
 }
+
+.flash-message-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050; /* Ensure it's above other content */
+    width: 300px; /* Adjust width as needed */
+    pointer-events: none; /* Prevent interaction with underlying elements */
+}
+
+.custom-alert {
+    background-color: #28a745; /* Green background for success */
+    color: white; /* Text color */
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 10px; /* Space between messages */
+    pointer-events: auto; /* Enable interaction with the alert */
+    position: relative; /* For positioning the close button */
+}
+
+.custom-alert .btn-close {
+    background-color: transparent; /* Ensure no background */
+    border: none; /* Remove default border */
+    color: white; /* Set text/icon color to white */
+    opacity: 1; /* Make the button fully visible */
+    font-size: 1.25rem; /* Adjust size for better visibility */
+    position: absolute; /* Ensure proper positioning */
+}
     </style>
 </head>
 <body>
     {% extends 'Nurse/base.html' %}
 
-    {% block title %}Dashboard{% endblock %}
+    {% block title %}My Appointment{% endblock %}
     
     {% block content %} 
    
-    <div class="container">
- <!-- Flash Messages -->
- {% with messages = get_flashed_messages(with_categories=true) %}
- {% if messages %}
-   {% for category, message in messages %}
-     <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-       {{ message }}
-       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-     </div>
-   {% endfor %}
- {% endif %}
-{% endwith %}
+    <!-- Flash Messages -->
+<div class="flash-message-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} custom-alert alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+    {% endwith %}
+  </div> 
 
+    <div class="container">
 <form method="get" action="/nurse/appointments">
     <input type="date" name="search_date" onkeydown="return false;" value="{{ search_date }}" />
-    <button type="submit" name="search_button">Search</button>
+    <button type="submit" name="search_button"><i class="fa fa-search"></i></button>
     {% if search_date %}
-    <a href="/nurse/appointments" class="btn-clear">Clear</a>
+    <a href="/nurse/appointments" class="btn-clear"><i class="fa fa-close"></i></a>
     {% endif %}   
 </form>
         <div class="tabs">

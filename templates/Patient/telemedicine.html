@@ -156,6 +156,65 @@
         pointer-events: none; /* Make past times unclickable */
     }
     .timepicker-option.taken { background-color: red; cursor: not-allowed; }
+
+    .custom-dropdown {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.dropdown-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-align: left;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    z-index: 10;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.dropdown-menu .dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.dropdown-menu .dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.doctor-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+}
+
+.doctor-name {
+    font-weight: bold;
+}
+
+.dropdown-item:hover {
+    background-color: #f1f1f1;
+}
 </style>
 {% endblock %}
 
@@ -167,29 +226,49 @@
         <img src="https://img.freepik.com/premium-photo/young-man-protective-face-mask-talking-collegue-by-video-call_425904-3849.jpg?semt=ais_hybrid" alt="Doctor Telehealth">
     </div>
     <div class="telemedicine-form-container">
-        <h1 class="telemedicine-title">Telemedicine Consultation</h1> 
+        <h1 class="telemedicine-title">Telemedicine Consultation</h1>
         <h4 class="telemedicine-title">Let's schedule your consultation now!</h4>
-       <form action="/patient/telemedicine" method="post">
-        <div>
-            <label class="telemedicine-label" for="person">Doctor:</label>
-            <select class="telemedicine-input" id="person" name="person" required aria-label="Select Doctor">
-                {% for doctor in doctors %}
-                <option value="{{ doctor.id }}">{{ doctor.username }} ({{ doctor.specialization }})</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <input class="telemedicine-input" id="datepicker" name="date" required aria-label="Select Date" type="text" placeholder="mm/dd/yyyy" onkeydown="return false;" readonly>
-
-        <div class="timepicker-container">
-            <input class="telemedicine-input" id="time" type="text" name="time" readonly required aria-label="Select Time" placeholder="Select Time">
-            <div id="timepicker-dropdown" class="timepicker-dropdown"></div>
-        </div>
-
-        <br><br>
-        <button class="telemedicine-submit" type="submit" onClick="return confirm('Are you sure you want to book the appointment?')">Confirm</button>
-    </form>
-    </div> 
+        <form action="/patient/telemedicine" method="post">
+            
+            <div>
+                <!-- Dropdown for selecting specialization -->
+                <select class="telemedicine-input" id="specialization" name="specialization" required aria-label="Select Specialization">
+                    <option value="" disabled selected>Select Specialization</option>
+                    {% for doctor in doctors|unique(attribute='specialization') %}
+                    <option value="{{ doctor.specialization }}">{{ doctor.specialization }}</option>
+                    {% endfor %}
+                </select>
+            
+                <!-- Custom dropdown for selecting doctor -->
+                <div class="custom-dropdown">
+                    <button type="button" class="dropdown-btn" id="doctorDropdownBtn" aria-haspopup="true" aria-expanded="false">
+                        Select Doctor
+                    </button>
+            
+                    <ul class="dropdown-menu" id="doctorDropdownMenu">
+                        {% for doctor in doctors %}
+                        <li class="dropdown-item" data-value="{{ doctor.id }}" data-specialization="{{ doctor.specialization }}">
+                            <img src="{{ doctor.pimage }}" alt="{{ doctor.username }}'s Profile Image" class="doctor-image">
+                            <span class="doctor-name">{{ doctor.username }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <input type="hidden" id="doctor" name="doctor" value="" required>
+                </div>
+            </div>
+            <br>
+    
+            <input class="telemedicine-input" id="datepicker" name="date" required aria-label="Select Date" type="text" placeholder="mm/dd/yyyy" onkeydown="return false;" readonly>
+    
+            <div class="timepicker-container">
+                <input class="telemedicine-input" id="time" type="text" name="time" readonly required aria-label="Select Time" placeholder="Select an available time">
+                <div id="timepicker-dropdown" class="timepicker-dropdown"></div>
+            </div>
+    
+            <br><br>
+            <button class="telemedicine-submit" type="submit" onClick="return confirm('Are you sure you want to book the appointment?')">Confirm</button>
+        </form>
+    </div>
 </div>
 
 <div class="telemedicine-intro">
@@ -221,24 +300,32 @@
     document.addEventListener('DOMContentLoaded', function () {
     const dropdown = document.getElementById('timepicker-dropdown');
     const times = [
-        "9:00 am - 10:00 am",
-        "11:00 am - 12:00 pm",
-        "1:00 pm - 2:00 pm",
-        "3:00 pm - 4:00 pm"
+        "9:00 am - 9:30 am",
+        "9:30 am - 10:00 am",
+        "10:00 am - 10:30 am",
+        "10:30 am - 11:00 am",
+        "11:00 am - 11:30 am",
+        "11:30 am - 12:00 pm",
+        "1:00 pm - 1:30 pm",
+        "1:30 pm - 2:00 pm",
+        "2:00 pm - 2:30 pm",
+        "2:30 pm - 3:00 pm",
+        "3:00 pm - 3:30 pm",
+        "3:30 pm - 4:00 pm"
     ];
 
     // Dummy data for appointments
     const appointments = [
-        {'id': 1, 'patient_id': 1, 'doctor_id': 5, 'date': '2024-08-12', 'time': '9:00 am - 10:00 am', 'type': 'telemedicine'},
-        {'id': 2, 'patient_id': 3, 'doctor_id': 1, 'date': '2024-12-30', 'time': '1:00 pm - 2:00 pm', 'type': 'telemedicine'},
-        {'id': 3, 'patient_id': 1, 'doctor_id': 1, 'date': '2024-08-25', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine'},
+        {'id': 1, 'patient_id': 1, 'doctor_id': 5, 'date': '2024-08-12', 'time': '9:00 am - 9:30 am', 'type': 'telemedicine'},
+        {'id': 2, 'patient_id': 3, 'doctor_id': 1, 'date': '2024-12-30', 'time': '1:00 pm - 1:30 pm', 'type': 'telemedicine'},
+        {'id': 3, 'patient_id': 1, 'doctor_id': 1, 'date': '2024-08-25', 'time': '3:00 pm - 3:30 pm', 'type': 'telemedicine'},
         {'id': 4, 'patient_id': 1, 'nurse_id': 2, 'date': '2024-12-16', 'time': '3:00 pm - 4:00 pm', 'type': 'home visit'},
-        {'id': 5, 'patient_id': 1, 'doctor_id': 1, 'date': '2025-01-06', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine'},
+        {'id': 5, 'patient_id': 1, 'doctor_id': 1, 'date': '2025-01-06', 'time': '3:30 pm - 4:00 pm', 'type': 'telemedicine'},
         {'id': 6, 'patient_id': 3, 'doctor_id': 3, 'date': '2024-01-13', 'time': '1:00 pm - 2:00 pm', 'type': 'home visit'},
-        {'id': 7, 'patient_id': 2, 'doctor_id': 2, 'date': '2024-01-09', 'time': '9:00 am - 10:00 am', 'type': 'telemedicine'},
+        {'id': 7, 'patient_id': 2, 'doctor_id': 2, 'date': '2024-01-09', 'time': '9:00 am - 9:30 am', 'type': 'telemedicine'},
         {'id': 8, 'patient_id': 4, 'doctor_id': 4, 'date': '2024-11-13', 'time': '11:00 am - 12:00 pm', 'type': 'home visit'},
-        {'id': 9, 'patient_id': 5, 'doctor_id': 5, 'date': '2024-11-13', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine'},
-        {'id': 10, 'patient_id': 1, 'doctor_id': 2, 'date': '2024-11-13', 'time': '1:00 pm - 2:00 pm', 'type': 'telemedicine'}
+        {'id': 9, 'patient_id': 5, 'doctor_id': 5, 'date': '2024-11-13', 'time': '10:00 am - 10:30 am', 'type': 'telemedicine'},
+        {'id': 10, 'patient_id': 1, 'doctor_id': 2, 'date': '2024-11-13', 'time': '10:30 am - 11:00 am', 'type': 'telemedicine'}
     ];
 
     let takenTimes = []; // Holds taken times for the selected date
@@ -265,33 +352,28 @@ function updateTimeOptions() {
     const currentTime = new Date();
 
     times.forEach(time => {
-        const option = document.createElement('div');
-        option.className = 'timepicker-option';
-        option.innerText = time;
-
         const timeSlot = parseTime(time);
 
-        if (takenTimes.includes(time)) {
-            option.classList.add('taken'); // Add 'taken' class for styling
-            option.style.backgroundColor = 'red'; // Style taken slots in red
-            option.style.pointerEvents = 'none'; // Disable click on taken slots
-        } else if (timeSlot < currentTime) {
-            option.classList.add('past'); // Mark past times
-            option.style.pointerEvents = 'none';
-        } else {
+        // Only show available times that are not taken and not in the past
+        if (!takenTimes.includes(time) && timeSlot >= currentTime) {
+            const option = document.createElement('div');
+            option.className = 'timepicker-option';
+            option.innerText = time;
+
             option.classList.add('available');
             option.addEventListener('click', function () {
                 document.getElementById('time').value = time;
                 markAsTaken(time); // Mark the selected time slot as taken
                 dropdown.style.display = 'none'; // Hide dropdown after selection
             });
-        }
 
-        dropdown.appendChild(option);
+            dropdown.appendChild(option); // Add option to the dropdown
+        }
     });
 
     dropdown.style.display = 'flex'; // Show dropdown
 }
+
 
     $('#datepicker').datepicker({
         dateFormat: 'yy-mm-dd',
@@ -314,6 +396,73 @@ function updateTimeOptions() {
     });
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+    const specializationDropdown = document.getElementById('specialization');
+    const doctorDropdownBtn = document.getElementById('doctorDropdownBtn');
+    const doctorDropdownMenu = document.getElementById('doctorDropdownMenu');
+    const doctorInput = document.getElementById('doctor');
+
+    // Function to filter doctors by specialization
+    function filterDoctorsBySpecialization(selectedSpecialization) {
+        const dropdownItems = Array.from(doctorDropdownMenu.children);
+        
+        // Show or hide doctors based on specialization selection
+        dropdownItems.forEach(item => {
+            const specialization = item.getAttribute('data-specialization');
+            if (specialization === selectedSpecialization || selectedSpecialization === "") {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        // Reset doctor selection and button text
+        doctorInput.value = "";
+        doctorDropdownBtn.textContent = "Select Doctor";
+    }
+
+    // Listen for changes on the specialization dropdown
+    specializationDropdown.addEventListener('change', function () {
+        const selectedSpecialization = this.value;
+        filterDoctorsBySpecialization(selectedSpecialization);
+
+        // Automatically open the doctor dropdown when specialization is selected
+        doctorDropdownMenu.style.display = 'block'; // Show the dropdown
+        doctorDropdownBtn.setAttribute("aria-expanded", "true");
+    });
+
+    // Handle doctor dropdown interactions (clicking the dropdown button)
+    doctorDropdownBtn.addEventListener('click', function (event) {
+        event.preventDefault(); // Prevent default behavior
+        const isExpanded = doctorDropdownBtn.getAttribute("aria-expanded") === "true";
+        doctorDropdownMenu.style.display = isExpanded ? "none" : "block"; // Toggle the dropdown visibility
+        doctorDropdownBtn.setAttribute("aria-expanded", !isExpanded);
+    });
+
+    // Handle selecting a doctor from the dropdown
+    doctorDropdownMenu.addEventListener('click', function (event) {
+        const selectedItem = event.target.closest(".dropdown-item");
+        if (selectedItem) {
+            const selectedValue = selectedItem.getAttribute("data-value");
+            const selectedText = selectedItem.querySelector(".doctor-name").textContent;
+
+            // Set the selected doctor in the hidden input and update the button text
+            doctorInput.value = selectedValue;
+            doctorDropdownBtn.textContent = selectedText;
+
+            doctorDropdownMenu.style.display = "none"; // Hide the dropdown after selection
+            doctorDropdownBtn.setAttribute("aria-expanded", "false");
+        }
+    });
+
+    // Close the dropdown if clicked outside
+    document.addEventListener('click', function (event) {
+        if (!doctorDropdownBtn.contains(event.target) && !doctorDropdownMenu.contains(event.target)) {
+            doctorDropdownMenu.style.display = "none"; // Hide the dropdown
+            doctorDropdownBtn.setAttribute("aria-expanded", "false");
+        }
+    });
+});
 </script>
 
 

@@ -155,6 +155,65 @@
     background-color: grey;
         pointer-events: none; /* Make past times unclickable */
     }
+
+    .custom-dropdown {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.dropdown-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-align: left;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    z-index: 10;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.dropdown-menu .dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.dropdown-menu .dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.nurse-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+}
+
+.nurse-name {
+    font-weight: bold;
+}
+
+.dropdown-item:hover {
+    background-color: #f1f1f1;
+}
 </style>
 {% endblock %}
 
@@ -168,21 +227,36 @@
         <h1 class="home-visit-title">Home Visit</h1> 
         <h4 class="home-visit-title">Let's schedule the home visit service now!</h4>
         <form action="/patient/home_visit" method="post">
-               
-            <select class="home-visit-input" id="role" name="role" required aria-label="Select Role">
-                <option value="" disabled selected>Select Role</option>
-                <option value="doctor">Doctor</option>
-                <option value="nurse">Nurse</option>
-            </select>
-
-            <div id="person-container">
-                <!-- Person options will be populated here based on selected role -->
-            </div>
-
+            <div>
+                <select class="home-visit-input" id="specialization" name="specialization" required aria-label="Select Specialization">
+                    <option value="" disabled selected>Select Specialization</option>
+                    {% for nurse in nurses|unique(attribute='specialization') %}
+                        <option value="{{ nurse.specialization }}">{{ nurse.specialization }}</option>
+                    {% endfor %}
+                </select>
+                
+                <!-- Custom dropdown for selecting Nurse -->
+                <div class="custom-dropdown">
+                    <button type="button" class="dropdown-btn" id="nurseDropdownBtn" aria-haspopup="true" aria-expanded="false">
+                        Select Nurse
+                    </button>
+                
+                    <ul class="dropdown-menu" id="nurseDropdownMenu">
+                        {% for nurse in nurses %}
+                            <li class="dropdown-item" data-value="{{ nurse.id }}" data-specialization="{{ nurse.specialization }}">
+                                <img src="{{ nurse.pimage }}" alt="{{ nurse.username }}'s Profile Image" class="nurse-image">
+                                <span class="nurse-name">{{ nurse.username }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <input type="hidden" id="nurse" name="nurse" value="" required>
+                </div>        
+    </div>
+    <br>
             <input class="home-visit-input" id="datepicker" name="date" required aria-label="Select Date" type="text" placeholder="mm/dd/yyyy" onkeydown="return false;" readonly> 
     
             <div class="timepicker-container">
-               <input class="home-visit-input" id="time" type="text" name="time" readonly required aria-label="Select Time" placeholder="Select Time">
+               <input class="home-visit-input" id="time" type="text" name="time" readonly required aria-label="Select Time" placeholder="Select an available time">
                 <div id="timepicker-dropdown" class="timepicker-dropdown">
                     <!-- Time options will be inserted here dynamically -->
                 </div>
@@ -217,34 +291,9 @@
 
 {% block extra_js %}
 <script>
-    document.getElementById('role').addEventListener('change', function() {
-        const role = this.value;
-        const personContainer = document.getElementById('person-container');
-
-        if (role === 'doctor') {
-            personContainer.innerHTML = `
-                <label class="home-visit-label" for="person">Doctor:</label>
-                <select class="home-visit-input" id="person" name="person" required aria-label="Select Doctor">
-                    {% for doctor in doctors %}
-                    <option value="{{ doctor.id }}">{{ doctor.username }} ({{ doctor.specialization }})</option>
-                    {% endfor %}
-                </select>
-            `;
-        } else if (role === 'nurse') {
-            personContainer.innerHTML = `
-                <label class="home-visit-label" for="person">Nurse:</label>
-                <select class="home-visit-input" id="person" name="person" required aria-label="Select Nurse">
-                    {% for nurse in nurses %}
-                    <option value="{{ nurse.id }}">{{ nurse.username }} ({{ nurse.specialization }})</option>
-                    {% endfor %}
-                </select>
-            `;
-        } else {
-            personContainer.innerHTML = '';
-        }
-    });
-    
-    document.addEventListener('DOMContentLoaded', function () {
+ 
+    //--------------------------- TIME -------------------------------
+        document.addEventListener('DOMContentLoaded', function () {
         const dropdown = document.getElementById('timepicker-dropdown');
         const times = [
             "9:00 am - 10:00 am",
@@ -252,9 +301,24 @@
             "1:00 pm - 2:00 pm",
             "3:00 pm - 4:00 pm"
         ];
-
+    
+        // Dummy data for appointments
+        const appointments = [
+            {'id': 1, 'patient_id': 1, 'doctor_id': 5, 'date': '2024-08-12', 'time': '9:00 am - 10:00 am', 'type': 'telemedicine'},
+            {'id': 2, 'patient_id': 3, 'doctor_id': 1, 'date': '2024-12-30', 'time': '1:00 pm - 2:00 pm', 'type': 'telemedicine'},
+            {'id': 3, 'patient_id': 1, 'doctor_id': 1, 'date': '2024-08-25', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine'},
+            {'id': 4, 'patient_id': 1, 'nurse_id': 2, 'date': '2024-12-16', 'time': '3:00 pm - 4:00 pm', 'type': 'home visit'},
+            {'id': 5, 'patient_id': 1, 'doctor_id': 1, 'date': '2025-01-06', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine'},
+            {'id': 6, 'patient_id': 3, 'doctor_id': 3, 'date': '2024-01-13', 'time': '1:00 pm - 2:00 pm', 'type': 'home visit'},
+            {'id': 7, 'patient_id': 2, 'doctor_id': 2, 'date': '2024-01-09', 'time': '9:00 am - 10:00 am', 'type': 'telemedicine'},
+            {'id': 8, 'patient_id': 4, 'doctor_id': 4, 'date': '2024-11-13', 'time': '11:00 am - 12:00 pm', 'type': 'home visit'},
+            {'id': 9, 'patient_id': 5, 'doctor_id': 5, 'date': '2024-11-13', 'time': '3:00 pm - 4:00 pm', 'type': 'telemedicine'},
+            {'id': 10, 'patient_id': 1, 'doctor_id': 2, 'date': '2024-11-13', 'time': '1:00 pm - 2:00 pm', 'type': 'telemedicine'}
+        ];
+    
+        let takenTimes = []; // Holds taken times for the selected date
         let selectedDate;
-
+    
         function parseTime(timeString) {
             const [time, period] = timeString.split(' ');
             const [hours, minutes] = time.split(':').map(num => parseInt(num));
@@ -262,42 +326,42 @@
             let adjustedMinutes = minutes || 0;
             return new Date(selectedDate.setHours(adjustedHours, adjustedMinutes, 0, 0));
         }
-
-        function updateTimeOptions() {
-            console.log("Selected date:", selectedDate);  // Check the selected date
-            console.log("Available time slots:", times);  // Check the time slots
-
-            dropdown.innerHTML = ''; // Clear existing options
-
-            const currentTime = new Date();
-
-            times.forEach(time => {
+    
+        function markAsTaken(time) {
+        if (!takenTimes.includes(time)) {
+            takenTimes.push(time); // Add the selected time to takenTimes
+            console.log("Marked as taken:", time); // Debugging output
+            updateTimeOptions(); // Refresh the dropdown to show the updated status
+        }
+    }
+    
+    function updateTimeOptions() {
+        dropdown.innerHTML = ''; // Clear existing options
+        const currentTime = new Date();
+    
+        times.forEach(time => {
+            const timeSlot = parseTime(time);
+    
+            // Only show available times that are not taken and not in the past
+            if (!takenTimes.includes(time) && timeSlot >= currentTime) {
                 const option = document.createElement('div');
                 option.className = 'timepicker-option';
                 option.innerText = time;
-
-                // Apply available class
+    
                 option.classList.add('available');
-
-                // Parse the time slot
-                const timeSlot = parseTime(time);
-
-                // Check if the time slot is in the past
-                if (timeSlot < currentTime) {
-                    option.classList.add('past'); // Add a class to indicate it's a past time
-                }
-
                 option.addEventListener('click', function () {
                     document.getElementById('time').value = time;
+                    markAsTaken(time); // Mark the selected time slot as taken
                     dropdown.style.display = 'none'; // Hide dropdown after selection
                 });
-
-                dropdown.appendChild(option);
-            });
-
-            dropdown.style.display = 'flex'; // Show dropdown
-        }
-
+    
+                dropdown.appendChild(option); // Add option to the dropdown
+            }
+        });
+    
+        dropdown.style.display = 'flex'; // Show dropdown
+    }
+    
         $('#datepicker').datepicker({
             dateFormat: 'yy-mm-dd',
             minDate: 0,
@@ -307,15 +371,85 @@
             },
             onSelect: function(dateText) {
                 selectedDate = new Date(dateText);
+    
+                // Filter taken times from appointments based on selected date
+                takenTimes = appointments
+                    .filter(appointment => appointment.date === dateText)
+                    .map(appointment => appointment.time);
+    
+                console.log("Taken times for selected date:", takenTimes); // Debugging output
                 updateTimeOptions();
             }
         });
     });
+    
+   document.addEventListener('DOMContentLoaded', function () {
+    const specializationDropdown = document.getElementById('specialization');
+    const nurseDropdownBtn = document.getElementById('nurseDropdownBtn');
+    const nurseDropdownMenu = document.getElementById('nurseDropdownMenu');
+    const nurseInput = document.getElementById('nurse');
 
-    $(document).ready(function() {
-        $('#datepicker').datepicker({
-            dateFormat: 'yy-mm-dd'
+    // Function to filter nurses by specialization
+    function filterNursesBySpecialization(selectedSpecialization) {
+        const dropdownItems = Array.from(nurseDropdownMenu.children);
+        
+        // Show or hide nurses based on specialization selection
+        dropdownItems.forEach(item => {
+            const specialization = item.getAttribute('data-specialization');
+            if (specialization === selectedSpecialization || selectedSpecialization === "") {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
         });
+
+        // Reset nurse selection and button text
+        nurseInput.value = "";
+        nurseDropdownBtn.textContent = "Select Nurse";
+    }
+
+    // Listen for changes on the specialization dropdown
+    specializationDropdown.addEventListener('change', function () {
+        const selectedSpecialization = this.value;
+        filterNursesBySpecialization(selectedSpecialization);
+
+        // Automatically open the nurse dropdown when specialization is selected
+        nurseDropdownMenu.style.display = 'block'; // Show the dropdown
+        nurseDropdownBtn.setAttribute("aria-expanded", "true");
     });
-</script>
+
+    // Handle nurse dropdown interactions (clicking the dropdown button)
+    nurseDropdownBtn.addEventListener('click', function (event) {
+        event.preventDefault(); // Prevent default behavior
+        const isExpanded = nurseDropdownBtn.getAttribute("aria-expanded") === "true";
+        nurseDropdownMenu.style.display = isExpanded ? "none" : "block"; // Toggle the dropdown visibility
+        nurseDropdownBtn.setAttribute("aria-expanded", !isExpanded);
+    });
+
+    // Handle selecting a nurse from the dropdown
+    nurseDropdownMenu.addEventListener('click', function (event) {
+        const selectedItem = event.target.closest(".dropdown-item");
+        if (selectedItem) {
+            const selectedValue = selectedItem.getAttribute("data-value");
+            const selectedText = selectedItem.querySelector(".nurse-name").textContent;
+
+            // Set the selected nurse in the hidden input and update the button text
+            nurseInput.value = selectedValue;
+            nurseDropdownBtn.textContent = selectedText;
+
+            nurseDropdownMenu.style.display = "none"; // Hide the dropdown after selection
+            nurseDropdownBtn.setAttribute("aria-expanded", "false");
+        }
+    });
+
+    // Close the dropdown if clicked outside
+    document.addEventListener('click', function (event) {
+        if (!nurseDropdownBtn.contains(event.target) && !nurseDropdownMenu.contains(event.target)) {
+            nurseDropdownMenu.style.display = "none"; // Hide the dropdown
+            nurseDropdownBtn.setAttribute("aria-expanded", "false");
+        }
+    });
+});
+
+    </script>
 {% endblock %}

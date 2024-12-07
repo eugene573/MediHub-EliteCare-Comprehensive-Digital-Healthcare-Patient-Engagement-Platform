@@ -225,15 +225,10 @@ main {
             </div>
         </div>
         <div class="menu">
-            <a href="{{ url_for('nurse_dashboard') }}" class="menu-item {% if request.path == url_for('nurse_dashboard') %}active{% endif %}">
-                <i class="fas fa-clinic-medical"></i>
-                <span>Dashboard</span>
-                <div class="shortcut">D</div>
-            </a>
-            <a href="{{ url_for('view_patients') }}" class="menu-item {% if request.path == url_for('view_patients') %}active{% endif %}">
-                <i class="fas fa-users"></i>
-                <span>Patient</span>
-                <div class="shortcut">P</div>
+            <a href="/nurse/appointments" class="menu-item {% if request.path == '/nurse/appointments' %}active{% endif %}">
+                <i class="fas fa-briefcase-medical"></i>
+                <span>My Appointment</span>
+                <div class="shortcut">MA</div>
             </a>
             <a href="/write_prescription" class="menu-item {% if request.path == '/write_prescription' %}active{% endif %}">
                 <i class="fas fa-file-prescription"></i>  
@@ -245,15 +240,10 @@ main {
                 <span>View Prescriptions</span>
                 <div class="shortcut">VP</div>
             </a>
-          <!--  <a href="/meeting" class="menu-item {% if request.path == '/meeting' %}active{% endif %}">
-                <i class="fas fa-desktop"></i>
-                <span>Create Meeting</span>
-                <div class="shortcut">CM</div>
-            </a> -->
-            <a href="/nurse/appointments" class="menu-item {% if request.path == '/nurse/appointments' %}active{% endif %}">
-                <i class="fas fa-briefcase-medical"></i>
-                <span>My Appointment</span>
-                <div class="shortcut">MA</div>
+            <a href="{{ url_for('view_patients') }}" class="menu-item {% if request.path == url_for('view_patients') %}active{% endif %}">
+                <i class="fas fa-users"></i>
+                <span>Patient</span>
+                <div class="shortcut">P</div>
             </a>
             <a href="/medication" class="menu-item {% if request.path == '/medication' %}active{% endif %}">
                 <i class="fas fa-capsules"></i>

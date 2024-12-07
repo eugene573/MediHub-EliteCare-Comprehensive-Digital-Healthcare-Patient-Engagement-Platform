@@ -13,8 +13,7 @@
  <!-- jQuery and Bootstrap JavaScript (necessary for modal functionality) -->
  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
- 
-    <title>Admin - View Doctors</title>
+
     <style>
         h1 {
             color: #2c3e50;
@@ -244,13 +243,24 @@ form button:hover {
     right: 20px;
     z-index: 1050; /* Ensure it's above other content */
     width: 300px; /* Adjust width as needed */
-    pointer-events: none;
+    pointer-events: none; /* Prevent interaction with underlying elements */
 }
 
-.alert {
-    margin-top: 10px;
-    pointer-events: auto;
+.custom-alert {
+    background-color: #28a745; /* Green background for success */
+    color: white; /* Text color */
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 10px; /* Space between messages */
+    pointer-events: auto; /* Enable interaction with the alert */
 }
+
+.custom-alert .btn-close {
+    color: white; /* Close button color */
+    opacity: 1; /* Ensure visibility */
+}
+
 </style>
 </head>
 {% extends 'Admin/base.html' %}
@@ -260,17 +270,19 @@ form button:hover {
 {% block content %}
     <br><br>
 
-     <!-- Flash Messages -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-  {% for category, message in messages %}
-    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-      {{ message }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-  {% endfor %}
-{% endif %}
-{% endwith %}
+   <!-- Flash Messages -->
+<div class="flash-message-container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} custom-alert alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+  {% endwith %}
+</div>
 
      <!-- Button to trigger the modal -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registerStaffModal">
@@ -563,13 +575,16 @@ window.onclick = function(event) {
     }
 }
 
- // Automatically hide alerts after 5 seconds
- setTimeout(() => {
+document.addEventListener('DOMContentLoaded', function () {
+    // Find all alerts and set them to disappear after 5 seconds
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
-      alert.classList.remove('show');  // Hides the alert
-      alert.classList.add('fade');  // Optional: adds fade effect when disappearing
+        setTimeout(() => {
+            alert.classList.add('fade'); // Add fade class for smooth fade-out
+            alert.classList.remove('show'); // Remove show class after delay
+            setTimeout(() => alert.remove(), 500); // Remove alert after fade-out
+        }, 5000); // 5-second duration
     });
-  }, 2000);
+});
 </script>
     {% endblock %}

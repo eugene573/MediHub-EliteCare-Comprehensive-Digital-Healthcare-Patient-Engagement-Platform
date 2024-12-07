@@ -150,13 +150,40 @@
             padding: 1rem;
         }
     }
+
+    #fee-toggle-btn {
+    background-color: #007bff; /* Primary blue color */
+    color: white; /* Text color */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px 15px; /* Padding for better appearance */
+    font-size: 14px; /* Font size */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effects */
+}
+
+#fee-toggle-btn:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+#fee-toggle-btn:active {
+    background-color: #003d82; /* Even darker blue when clicked */
+    transform: scale(0.95); /* Slightly shrink on click */
+}
+
+#fee-toggle-btn:focus {
+    outline: 2px solid #80bdff; /* Outline for accessibility focus */
+    outline-offset: 2px; /* Space between the button and outline */
+}
+
 </style>
 
 </head>
 
 <div class="container">
-    
     <div class="form-box"> 
+       
         <form action="{{ url_for('write_prescription') }}" method="post">
             <center>
                 <select name="patient_id" id="patient_id" class="select2" required>
@@ -167,29 +194,81 @@
                 </select>
             </center><br>
         
+            <div style="margin-bottom: 15px; text-align: center;">
+                <label for="custom-fee">Consultation Fee:</label>
+                <div>
+                    <input 
+                        type="number" 
+                        id="custom-fee" 
+                        name="custom_fee" 
+                        placeholder="Enter Fee" 
+                        style="width: 150px;" 
+                        min="0" 
+                        oninput="updateOverallTotalPrice()"
+                    >
+                    <button 
+                        type="button" 
+                        id="fee-toggle-btn" 
+                        onclick="toggleFeeMode()" 
+                        style="margin-left: 10px;"
+                    >
+                        Use Orginal Consultation Fee
+                    </button>
+                </div>
+                <small style="display: none; margin-top: 5px;">
+                    Current Fee: 
+                    <input 
+                        type="text" 
+                        id="fee" 
+                        name="fee" 
+                        value="{{ user.fee }}" 
+                        readonly 
+                        style="width: 100px;"
+                    >
+                </small>                
+            </div>
+            
+        
             <div id="prescription-table-container">
-                <!-- Prescription table structure -->
                 <table id="prescription-table" class="prescription-table">
-                    
                     <tbody>
-                        <!-- First medication entry -->
                         <tr class="medication-entry">
                             <td style="padding-right: 10px;">
-                                <select name="medication_id[]" class="medication_id select2" required style="width: 300px;">
+                                <select name="medication_id[]" class="medication_id select2" required style="width: 200px;" onchange="updateTotalPrice(this)">
                                     <option value="" disabled selected>Select Medication</option>
                                     {% for medication in medications %}
-                                        <option value="{{ medication.id }}">{{ medication.name }}</option>
+                                        <option value="{{ medication.id }}" data-price="{{ medication.price }}">{{ medication.name }}</option>
                                     {% endfor %}
                                 </select>
                             </td>
                             <td style="padding-right: 10px;">
-                                <input type="text" name="dosage[]" class="dosage" placeholder="Dosage" required style="width: 300px;">
+                                <input type="number" name="dosage[]" class="dosage" placeholder="Qty" required style="width:75px;" min="0" oninput="this.value = Math.max(0, this.value); updateTotalPrice(this)">
+                            </td>
+                            <td style="padding-right: 10px;">
+                                <select name="instructions[]" class="instructions" required style="width: 600px;">
+                                    <option value="" disabled selected>Dosage Instructions</option>
+                                    <option value="Take 1 tablet daily">Take 1 tablet daily</option>
+                                    <option value="Take 1 tablet every 8 hours">Take 1 tablet every 8 hours</option>
+                                    <option value="Take 1 tablet after meals">Take 1 tablet after meals</option>
+                                    <option value="Take 1 tablet before meals">Take 1 tablet before meals</option>
+                                    <option value="Take 1 tablet at bedtime">Take 1 tablet at bedtime</option>
+                                    <option value="Take 1 tablet every 12 hours">Take 1 tablet every 12 hours</option>
+                                    <option value="Use 1 spray in each nostril daily">Use 1 spray in each nostril daily</option>
+                                    <option value="Take 1 tablet 30 minutes before exercise">Take 1 tablet 30 minutes before exercise</option>
+                                    <option value="Dissolve 1 tablet under the tongue">Dissolve 1 tablet under the tongue</option>
+                                    <option value="Take 1 capsule every 6 hours">Take 1 capsule every 6 hours</option>
+                                    <option value="Take 2 tablets daily">Take 2 tablets daily</option>
+                                    <option value="Take as needed for pain">Take as needed for pain</option>
+                                    <option value="Take on an empty stomach">Take on an empty stomach</option>
+                                    <option value="Take with food">Take with food</option>
+                                    <option value="Take 5 ml every 8 hours">Take 5 ml every 8 hours</option>
+                                    <option value="Take 10 ml twice daily">Take 10 ml twice daily</option>
+                                </select>
                             </td>
                             
                             <td style="padding-right: 10px;">
-                                <textarea name="instructions[]" class="instructions" rows="2" placeholder="Instructions" required style="width: 300px;"></textarea>
+                                <input type="text" name="price[]" class="price" readonly style="width: 100px;" placeholder="Price">
                             </td>
-
                             <td style="padding-right: 10px;">
                                 <button type="button" class="remove-btn" onclick="removeMedication(this)">
                                     <i class="fas fa-trash"></i>
@@ -202,48 +281,149 @@
         
             <center>
                 <button type="button" id="add-medication-btn" onclick="addMedication()">
-                    <i class="fas fa-plus-circle" title="Add Item" style="font-size: 24px; cursor: pointer;"></i>
+                    <i class="fas fa-plus-circle" title="Add Medication" style="font-size: 24px; cursor: pointer;"></i>
                 </button>
             </center><br>
+        
+            <!-- Total Price Section -->
+<div style="text-align: center; margin-bottom: 20px;">
+    <label for="total-price">Total Price:</label>
+    <input type="text" id="total-price" name="total_price" readonly style="width: 150px;">
+</div>
         
             <center>
                 <input type="submit" value="Confirm" class="action-btn" onClick="return confirm('Are you sure to create this prescription?')">
             </center>
         </form>
+        
+
     </div> 
 </div>
 
 <script>
-    // Add a new medication row
-    function addMedication() {
-        var table = document.getElementById('prescription-table').getElementsByTagName('tbody')[0];
-        var newRow = table.insertRow(table.rows.length);
-        
-        var medicationCell = newRow.insertCell(0);
-        var dosageCell = newRow.insertCell(1);
-        var instructionsCell = newRow.insertCell(2);
-        var actionCell = newRow.insertCell(3);
-        
-        medicationCell.innerHTML = `
-            <select name="medication_id[]" class="medication_id select2" style="padding-right: 10px;" required>
-                <option value="" disabled selected>Select Medication</option>
-                {% for medication in medications %}
-                    <option value="{{ medication.id }}">{{ medication.name }}</option>
-                {% endfor %}
-            </select>
-        `;
-        dosageCell.innerHTML = `<input type="text" name="dosage[]" class="dosage" style="padding-right: 10px;" placeholder="Dosage" required>`;
-        instructionsCell.innerHTML = `<textarea name="instructions[]" class="instructions" rows="2" style="padding-right: 10px;" placeholder="Instructions" required></textarea>`;
-        actionCell.innerHTML = `<button type="button" class="remove-btn" onclick="removeMedication(this)"><i class="fas fa-trash"></i></button>`;
+
+function toggleFeeMode() {
+    const feeInput = document.getElementById('custom-fee');
+    const originalFee = parseFloat(document.getElementById('fee').value || '0');
+    const button = document.getElementById('fee-toggle-btn');
+
+    if (button.innerText === 'Use Orginal Consultation Fee') {
+        // Switch to original fee mode
+        feeInput.value = originalFee;
+        feeInput.disabled = true; // Disable the custom fee input
+        button.innerText = 'Enter Consultation Fee';
+    } else {
+        // Switch back to custom fee mode
+        feeInput.value = ''; // Clear the custom fee input
+        feeInput.disabled = false; // Enable the custom fee input
+        button.innerText = 'Use Orginal Consultation Fee';
     }
 
-    // Remove a medication row
-    function removeMedication(button) {
-        var row = button.closest('tr');
-        row.remove();
-    }
+    // Update the overall total price
+    updateOverallTotalPrice();
+}
+
+    function useOriginalFee() {
+    // Set the fee input to the user's original fee
+    var originalFee = parseFloat(document.getElementById('fee').value || '0');
+    document.getElementById('custom-fee').value = originalFee;
+
+    // Update the overall total price
+    updateOverallTotalPrice();
+}
+
+function updateOverallTotalPrice() {
+    var total = 0;
+    var priceInputs = document.querySelectorAll('.price');
+
+    // Sum up the prices of all rows
+    priceInputs.forEach(priceInput => {
+        total += parseFloat(priceInput.value || '0');
+    });
+
+    // Add the selected Doctor/Nurse Fee
+    var customFeeInput = document.getElementById('custom-fee');
+    var selectedFee = parseFloat(customFeeInput.value || '0');
+    total += selectedFee;
+
+    // Update the total price field
+    var totalPriceInput = document.getElementById('total-price');
+    totalPriceInput.value = total.toFixed(2);
+}
+
+function addMedication() {
+    var table = document.getElementById('prescription-table').getElementsByTagName('tbody')[0];
+    var newRow = table.insertRow(table.rows.length);
+    
+    var medicationCell = newRow.insertCell(0);
+    var dosageCell = newRow.insertCell(1);
+    var instructionsCell = newRow.insertCell(2);
+    var priceCell = newRow.insertCell(3);
+    var actionCell = newRow.insertCell(4);
+
+    medicationCell.innerHTML = `
+        <select name="medication_id[]" class="medication_id select2" required style="width: 200px;" onchange="updateTotalPrice(this)">
+            <option value="" disabled selected>Select Medication</option>
+            {% for medication in medications %}
+                <option value="{{ medication.id }}" data-price="{{ medication.price }}">{{ medication.name }}</option>
+            {% endfor %}
+        </select>
+    `;
+    dosageCell.innerHTML = `<input type="number" name="dosage[]" class="dosage" placeholder="Qty" required style="width: 75px;" min="0" oninput="updateTotalPrice(this)">`;
+    instructionsCell.innerHTML = `  <td style="padding-right: 10px;">
+                                <select name="instructions[]" class="instructions" required style="width: 600px;">
+                                    <option value="" disabled selected>Dosage Instructions</option>
+                                    <option value="Take 1 tablet daily">Take 1 tablet daily</option>
+                                    <option value="Take 1 tablet every 8 hours">Take 1 tablet every 8 hours</option>
+                                    <option value="Take 1 tablet after meals">Take 1 tablet after meals</option>
+                                    <option value="Take 1 tablet before meals">Take 1 tablet before meals</option>
+                                    <option value="Take 1 tablet at bedtime">Take 1 tablet at bedtime</option>
+                                    <option value="Take 1 tablet every 12 hours">Take 1 tablet every 12 hours</option>
+                                    <option value="Use 1 spray in each nostril daily">Use 1 spray in each nostril daily</option>
+                                    <option value="Take 1 tablet 30 minutes before exercise">Take 1 tablet 30 minutes before exercise</option>
+                                    <option value="Dissolve 1 tablet under the tongue">Dissolve 1 tablet under the tongue</option>
+                                    <option value="Take 1 capsule every 6 hours">Take 1 capsule every 6 hours</option>
+                                    <option value="Take 2 tablets daily">Take 2 tablets daily</option>
+                                    <option value="Take as needed for pain">Take as needed for pain</option>
+                                    <option value="Take on an empty stomach">Take on an empty stomach</option>
+                                    <option value="Take with food">Take with food</option>
+                                    <option value="Take 5 ml every 8 hours">Take 5 ml every 8 hours</option>
+                                    <option value="Take 10 ml twice daily">Take 10 ml twice daily</option>
+                                </select>
+                            </td>`;
+    priceCell.innerHTML = `<input type="text" name="price[]" class="price" readonly style="width: 100px;" placeholder="Price">`;
+    actionCell.innerHTML = `<button type="button" class="remove-btn" onclick="removeMedication(this)"><i class="fas fa-trash"></i></button>`;
+
+    // Reinitialize Select2 ONLY for the newly added medication dropdown
+    $(newRow).find('.select2').select2();
+}
+
+function updateTotalPrice(element) {
+    var row = element.closest('tr');
+    var selectElement = row.querySelector('.medication_id');
+    var dosageInput = row.querySelector('.dosage');
+    var priceInput = row.querySelector('.price');
+
+    var selectedOption = selectElement.options[selectElement.selectedIndex];
+    var unitPrice = parseFloat(selectedOption.getAttribute('data-price') || '0');
+    var quantity = parseInt(dosageInput.value || '0', 10);
+
+    // Calculate and update the price for this row
+    priceInput.value = (unitPrice * quantity).toFixed(2);
+
+    // Update the overall total price
+    updateOverallTotalPrice();
+}
+
+function removeMedication(button) {
+    var row = button.closest('tr');
+    row.remove();
+
+    // Recalculate total price after a row is removed
+    updateOverallTotalPrice();
+}
 </script>
-
+    
 <script type="text/javascript">
     $(document).ready(function() {
         // Initialize Select2 for both dropdowns
