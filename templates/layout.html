@@ -54,6 +54,7 @@ header h1 {
 
 .btn, .dropdown-toggle {
     background-color: #e7e5e5;
+    font-family: 'Verdana', sans-serif;
     color: #000000;
     border: none;
     border-radius: 4px;
@@ -74,18 +75,33 @@ header h1 {
     display: inline-block;
 }
 
+/* Dropdown menu styling */
 .dropdown-menu {
-    transition: all 0.3s ease;
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    z-index: 1;
+    font-family: 'Verdana', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #333; /* Dark gray text color */
+    background-color: #f8f9fa; /* Light gray background */
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-item {
+    padding: 8px 15px;
+    color: #007bff; /* Blue text for items */
+    text-decoration: none;
+    display: block;
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #007bff; /* Blue background */
+    color: #007bff; /* White text on hover */
 }
 
 .dropdown-menu a {
-    color: black;
+    color: rgb(0, 0, 0);
     padding: 12px 16px;
     text-decoration: none;
     display: block;
@@ -101,6 +117,7 @@ header h1 {
 
 .login-btn {
     background-color: #ffffff;
+    font-family: 'Verdana', sans-serif;
     color: #000000;
     border: none;
     border-radius: 4px;
@@ -120,6 +137,11 @@ header h1 {
     font-size: 16px;
     margin: 5px;
 }
+
+.login-btn:hover {
+         
+            transform: translateY(-2px);
+        }
 
 .logout-btn:hover {
             background-color: #d32f2f; /* Darker red on hover */
@@ -179,10 +201,46 @@ footer {
         background-color: #1d65c3; /* Darker red on hover */
         transform: translateY(-2px);
     }
+    /* Loader Container */
+.loader-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 254, 254, 0); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+/* Loader Animation */
+.loader {
+    border: 8px solid #f3f3f3; /* Light gray */
+    border-top: 8px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+}
+
+/* Keyframes for spin animation */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
     </style>
 </head>
 <body>
     <header>
+       
+        
         <div class="container">
             <a href="/"><img src="{{ url_for('static', filename='uploads/MEDIHUB2.png') }}" alt="MediHub" width="150" height="100"></a> 
 
@@ -225,7 +283,7 @@ footer {
                     <a class="dropdown-item" href="/view_nurses">Nurse</a>
                 </div>
             </div>
-            <a class="btn" href="/doctor/dashboard">Dashboard</a>
+            <a class="btn" href="/doctor/appointments">Dashboard</a>
             <div class="dropdown">
                 <button class="btn dropdown-toggle">About</button>
                 <div class="dropdown-menu">
@@ -256,7 +314,7 @@ footer {
                     <a class="dropdown-item" href="/view_nurses">Nurse</a>
                 </div>
             </div>
-            <a class="btn" href="/nurse/dashboard">Dashboard</a>
+            <a class="btn" href="/nurse/appointments">Dashboard</a>
         
             <div class="dropdown">
                 <button class="btn dropdown-toggle">About</button>
@@ -377,6 +435,21 @@ footer {
                 behavior: 'smooth'
             });
         });
+
+          // Show the loader
+    function showLoader() {
+        document.getElementById("loader").style.display = "flex";
+    }
+
+    // Hide the loader
+    function hideLoader() {
+        document.getElementById("loader").style.display = "none";
+    }
+
+    // Example: Automatically hide loader after 3 seconds (for demo purposes)
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(hideLoader, 3000); // Adjust timing as needed
+    });
     </script>
 </body>
 
