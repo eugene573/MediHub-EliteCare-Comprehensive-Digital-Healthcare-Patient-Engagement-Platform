@@ -245,7 +245,7 @@
                         {% for nurse in nurses %}
                             <li class="dropdown-item" data-value="{{ nurse.id }}" data-specialization="{{ nurse.specialization }}">
                                 <img src="{{ nurse.pimage }}" alt="{{ nurse.username }}'s Profile Image" class="nurse-image">
-                                <span class="nurse-name">{{ nurse.username }}</span>
+                                <span class="nurse-name" style="color:black;">{{ nurse.username }}</span>
                             </li>
                         {% endfor %}
                     </ul>
@@ -256,7 +256,7 @@
             <input class="home-visit-input" id="datepicker" name="date" required aria-label="Select Date" type="text" placeholder="mm/dd/yyyy" onkeydown="return false;" readonly> 
     
             <div class="timepicker-container">
-               <input class="home-visit-input" id="time" type="text" name="time" readonly required aria-label="Select Time" placeholder="Select an available time">
+               <input class="home-visit-input" id="time" type="text" name="time" readonly required aria-label="Select Time" placeholder="Select an available time slot">
                 <div id="timepicker-dropdown" class="timepicker-dropdown">
                     <!-- Time options will be inserted here dynamically -->
                 </div>

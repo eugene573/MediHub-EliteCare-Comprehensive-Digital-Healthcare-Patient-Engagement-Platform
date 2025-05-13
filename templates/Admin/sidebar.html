@@ -20,6 +20,7 @@
 
 .sidebar {
     width: 250px;
+    font-family: 'Verdana', sans-serif;
     background-color: #f6fcff;
     height: 100vh; /* Ensure sidebar takes full height */
     display: flex;
@@ -232,23 +233,28 @@ main {
             </a>
             <a href="{{ url_for('view_patients') }}" class="menu-item {% if request.path == url_for('view_patients') %}active{% endif %}">
                 <i class="fas fa-users"></i>
-                <span>Patient</span>
-                <div class="shortcut">P</div>
+                <span>Patient List</span>
+                <div class="shortcut">PL</div>
             </a>
             <a href="{{ url_for('admin_view_doctors') }}" class="menu-item {% if request.path == url_for('admin_view_doctors') %}active{% endif %}">
                 <i class="fas fa-user-md"></i>
-                <span>Doctor</span>
-                <div class="shortcut">D</div>
+                <span>Doctor List</span>
+                <div class="shortcut">DL</div>
             </a>
             <a href="{{ url_for('admin_view_nurses') }}" class="menu-item {% if request.path == url_for('admin_view_nurses') %}active{% endif %}">
                 <i class="fas fa-user-nurse"></i>
-                <span>Nurse</span>
-                <div class="shortcut">N</div>
+                <span>Nurse List</span>
+                <div class="shortcut">NL</div>
+            </a>
+            <a href="/admin_view_prescriptions" class="menu-item {% if request.path == '/view_prescriptions' %}active{% endif %}">
+                <i class="fas fa-list-alt"></i>  
+                <span>View Earning</span>
+                <div class="shortcut">VE</div>
             </a>
             <a href="/admin/appointments" class="menu-item {% if request.path == '/admin/appointments' %}active{% endif %}">
                 <i class="fas fa-briefcase-medical"></i>
-                <span>Appointment</span>
-                <div class="shortcut">A</div>
+                <span>View Appointment</span>
+                <div class="shortcut">VA</div>
             </a>
             <a href="/medication" class="menu-item {% if request.path == '/medication' %}active{% endif %}">
                 <i class="fas fa-capsules"></i>

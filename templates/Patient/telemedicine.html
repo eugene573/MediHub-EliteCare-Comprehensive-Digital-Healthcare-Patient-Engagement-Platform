@@ -249,7 +249,7 @@
                         {% for doctor in doctors %}
                         <li class="dropdown-item" data-value="{{ doctor.id }}" data-specialization="{{ doctor.specialization }}">
                             <img src="{{ doctor.pimage }}" alt="{{ doctor.username }}'s Profile Image" class="doctor-image">
-                            <span class="doctor-name">{{ doctor.username }}</span>
+                            <span class="doctor-name" style="color:black;">{{ doctor.username }}</span>
                         </li>
                         {% endfor %}
                     </ul>
@@ -261,7 +261,7 @@
             <input class="telemedicine-input" id="datepicker" name="date" required aria-label="Select Date" type="text" placeholder="mm/dd/yyyy" onkeydown="return false;" readonly>
     
             <div class="timepicker-container">
-                <input class="telemedicine-input" id="time" type="text" name="time" readonly required aria-label="Select Time" placeholder="Select an available time">
+                <input class="telemedicine-input" id="time" type="text" name="time" readonly required aria-label="Select Time" placeholder="Select an available time slot">
                 <div id="timepicker-dropdown" class="timepicker-dropdown"></div>
             </div>
     

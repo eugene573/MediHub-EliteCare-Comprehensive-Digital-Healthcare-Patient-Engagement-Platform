@@ -47,19 +47,22 @@
         }
 
         .date {
-            display: flex;
-            align-items: baseline;
-            margin-bottom: 20px;
-        }
-    
-        .date h2 {
-            margin: 0;
-            margin-right: 10px;
-        }
-    
-        .date span {
-            color: grey;
-        }
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 20px;
+}
+
+.date h2 {
+    margin: 0;
+    margin-right: 10px;
+    font-size: 30px; /* Increase font size for the heading */
+}
+
+.date span {
+    color: grey;
+    font-size: 30px; /* Increase font size for the span text */
+}
+
     
         .task-card {
             display: flex;
@@ -319,13 +322,19 @@ h2 {
   </div> 
 
     <div class="container">
-<form method="get" action="/doctor/appointments">
-    <input type="date" name="search_date" onkeydown="return false;" value="{{ search_date }}" />
-    <button type="submit" name="search_button"><i class="fa fa-search"></i></button>
-    {% if search_date %}
-    <a href="/doctor/appointments" class="btn-clear"><i class="fa fa-close"></i></a>
-    {% endif %}   
-</form>
+        <form method="get" action="/doctor/appointments">
+           
+            <input type="date" name="search_start_date" style="width: 200px; margin-right: 10px;" onkeydown="return false;" value="{{ search_start_date }}" />
+           -
+            &nbsp;
+            <input type="date" name="search_end_date" style="width: 200px; margin-right: 10px;" onkeydown="return false;" value="{{ search_end_date }}" />
+            <button type="submit" name="search_button"><i class="fa fa-search"></i></button>
+        
+            {% if search_start_date or search_end_date %}
+                <a href="/doctor/appointments" class="btn-clear"><i class="fa fa-close"></i></a>
+            {% endif %}
+        </form>
+        
 
 {% for time in time_slots %}
 <tr>
@@ -343,36 +352,6 @@ h2 {
     {% endfor %}
 </tr>
 {% endfor %}
-<!-- Timetable View -->
-<div id="timetableView" class="d-none">
-    <h2 class="text-center mb-4">Doctor's Timetable</h2>
-    <table class="timetable-table">
-        <thead>
-            <tr>
-                <th>Time</th>
-                <th>Monday</th>
-                <th>Tuesday</th>
-                <th>Wednesday</th>
-                <th>Thursday</th>
-                <th>Friday</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Example Time Slots -->
-            {% set time_slots = ['07:30 - 08:30', '08:30 - 09:30', '09:30 - 10:30', '10:30 - 11:30', '11:30 - 12:30', '12:30 - 13:30', '13:30 - 14:30', '14:30 - 15:30', '15:30 - 16:30'] %}
-            {% for time in time_slots %}
-            <tr>
-                <td>{{ time }}</td>
-                <td><!-- Monday Slot --></td>
-                <td><!-- Tuesday Slot --></td>
-                <td><!-- Wednesday Slot --></td>
-                <td><!-- Thursday Slot --></td>
-                <td><!-- Friday Slot --></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
 
         <div class="tabs">
             <button class="tab active" onclick="showTab('upcoming')">Upcoming</button>
@@ -411,8 +390,10 @@ h2 {
                             {% if appointment.type == 'telemedicine' %}
                             <!-- Telemedicine Appointment -->
                             <h3>
-                                {% set patient = patients | selectattr('id', 'equalto', appointment['patient_id']) | first %}
+                                {% set patient = patients | selectattr('id', 'equalto', appointment['patient_id']) | first %} 
+                                PID: {{ patient.id  }} &nbsp;
                                  {{ patient.username if patient else 'Patient not found' }}
+                                 
                             </h3>
                                                  
     <div class="join-button-container">
@@ -423,7 +404,9 @@ h2 {
                         {% elif appointment.type == 'home visit' %}
                             <!-- Home Visit Appointment -->
                             <h3>{% set patient = patients | selectattr('id', 'equalto', appointment['patient_id']) | first %}
+                                PID: {{ patient.id  }} &nbsp;
                                 {{ patient.username if patient else 'Patient not found' }}</h3>
+                               
                            {% if patient %}
                            <p>{{ patient.address }}<button class="copy-btn" onclick="copyAddress('{{ patient.address }}')">
                             <i class="fas fa-copy"></i> <!-- Font Awesome Clipboard Icon -->
@@ -470,7 +453,7 @@ h2 {
                             <!-- Telemedicine Appointment -->
                             <h3>
                                 {% set patient = patients | selectattr('id', 'equalto', appointment['patient_id']) | first %}
-                                 {{ patient.username if patient else 'Patient not found' }}
+                                PID: {{ patient.id  }} &nbsp; {{ patient.username if patient else 'Patient not found' }}
                             </h3>
 
                         {% elif appointment.type == 'home visit' %}

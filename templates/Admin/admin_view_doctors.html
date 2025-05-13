@@ -346,6 +346,10 @@ form button:hover {
                   </select>
                 </div>
                 <div class="mb-3">
+                    <label for="fee" class="form-label">Consultation Fee:</label>
+                    <input type="fee" name="fee" class="form-control" id="fee" required>
+                </div>
+                <div class="mb-3">
                   <label for="intro" class="form-label">Introduction:</label>
                   <textarea name="intro" class="form-control" id="intro" rows="5" placeholder="Provide a detailed introduction here." required></textarea>
                 </div>
@@ -443,7 +447,7 @@ form button:hover {
                       <img src="{{ doctor.pimage }}" alt="{{ doctor.username }}" class="profile-image mb-2">
                   </div>
                   <div class="form-group">
-                      <label for="doctorId{{ doctor.id }}"><strong>ID:</strong></label>
+                      <label for="doctorId{{ doctor.id }}"><strong>Doctor ID:</strong></label>
                       <input type="text" class="form-control" id="doctorId{{ doctor.id }}" value="{{ doctor.id }}" readonly>
                   </div>
   <br>
@@ -469,6 +473,12 @@ form button:hover {
   <div class="form-group">
     <label for="doctorSpecialization{{ doctor.id }}"><strong>Specialization:</strong></label>
     <input type="text" class="form-control" id="doctorSpecialization{{ doctor.id }}" value="{{ doctor.specialization }}" readonly>
+</div>
+<br>
+ <!-- Consultation Fee -->
+ <div class="form-group">
+    <label for="doctorFee{{ doctor.id }}"><strong>Consultation Fee:</strong></label>
+    <input type="text" class="form-control" id="doctorFee{{ doctor.id }}" value="RM {{ doctor.fee }}" readonly>
 </div>
 <br>
                   <!-- Introduction -->

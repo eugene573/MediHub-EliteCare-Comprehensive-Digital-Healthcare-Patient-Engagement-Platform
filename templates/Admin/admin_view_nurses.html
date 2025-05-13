@@ -285,6 +285,10 @@ border-color: #bd2130;
                   </select>
                 </div>
                 <div class="mb-3">
+                  <label for="fee" class="form-label">Consultation Fee:</label>
+                  <input type="text" name="fee" class="form-control" id="fee" required>
+                </div>
+                <div class="mb-3">
                   <label for="intro" class="form-label">Introduction:</label>
                   <textarea name="intro" class="form-control" id="intro" rows="5" placeholder="Provide a detailed introduction here." required></textarea>
                 </div>
@@ -376,7 +380,7 @@ border-color: #bd2130;
                       <img src="{{ nurse.pimage }}" alt="{{ nurse.username }}" class="profile-image mb-2">
                   </div>
                   <div class="form-group">
-                      <label for="nurseId{{ nurse.id }}"><strong>ID:</strong></label>
+                      <label for="nurseId{{ nurse.id }}"><strong>Nurse ID:</strong></label>
                       <input type="text" class="form-control" id="nurseId{{ nurse.id }}" value="{{ nurse.id }}" readonly>
                   </div>
   <br>
@@ -402,6 +406,12 @@ border-color: #bd2130;
    <div class="form-group">
     <label for="nurseSpecialization{{ nurse.id }}"><strong>Specialization:</strong></label>
     <input type="text" class="form-control" id="nurseSpecialization{{ nurse.id }}" value="{{ nurse.specialization }}" readonly>
+</div>
+<br>
+ <!-- Consultation Fee -->
+ <div class="form-group">
+  <label for="nurseFee{{ nurse.id }}"><strong>Consultation Fee:</strong></label>
+  <input type="text" class="form-control" id="nurseFee{{ nurse.id }}" value="RM {{ nurse.fee }}" readonly>
 </div>
 <br>
                   <!-- Introduction -->

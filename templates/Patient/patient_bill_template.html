@@ -1,0 +1,92 @@
+<style>
+    .container {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+        margin-bottom: 10px; /* Reduced margin */
+    }
+    .header h2 {
+        margin: 10px 0;
+        font-size: 24px;
+    }
+    .header p {
+        margin: 5px 0;
+        font-size: 14px;
+    }
+    table {
+        font-size: 14px;
+    }
+    table th, table td {
+        text-align: center;
+    }
+    .footer {
+        margin-top: 20px;
+        font-size: 14px;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+    .logo-secondary {
+        width: 300px; /* Adjust the width to fit the bill */
+        height: auto; /* Maintain aspect ratio */
+        margin-bottom: 5px; /* Reduced margin */
+    }
+    @media print {
+        button {
+            display: none;
+        }
+    }
+</style>
+<div class="container">
+    <div class="header">
+        <center>
+            <img src="/static/uploads/MediHub.png" alt="MediHub Logo" class="logo-secondary">
+            <p>Phone: (123) 456-7890 | Email: info@medihub.com</p>
+        </center>
+    </div>
+    <hr>
+    <div style="display: flex; justify-content: space-between;">
+        <p><strong>Patient Name:</strong> {{ prescription.patient_username }}</p>
+        <p style="text-align: right;"><strong>Date:</strong> {{ prescription.date }}</p>
+    </div>
+    <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd; margin-bottom: 20px;">
+        <thead>
+            <tr>
+                <th style="border: 1px solid #ddd; padding: 12px; background-color: #f2f2f2;">No.</th>
+                <th style="border: 1px solid #ddd; padding: 12px; background-color: #f2f2f2;">Medication</th>
+                <th style="border: 1px solid #ddd; padding: 12px; background-color: #f2f2f2;">Quantity</th>
+                <th style="border: 1px solid #ddd; padding: 12px; background-color: #f2f2f2;">SubTotal<br>(Included Consultation Fee)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for medication in prescription.medications %}
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 12px;">{{ loop.index }}.</td>
+                <td style="border: 1px solid #ddd; padding: 12px;">{{ medication.medication }}</td>
+                <td style="border: 1px solid #ddd; padding: 12px;">x{{ medication.dosage }}</td>
+                {% if loop.last %}
+                <td style="border: 1px solid #ddd; padding: 12px;"><b>RM {{ prescription.total_price }}0</b></td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+            
+        </tbody>
+    </table>
+    <div class="footer">
+        <center>
+            <p><strong>Legal Policies:</strong> This is proof that you have been paid for this prescription.</p>
+            <p>Thank you for choosing MediHub!</p>
+        </center>
+    </div>
+    <br>
+    <center>
+        <button onclick="window.print()" style="padding: 12px 24px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; transition: background-color 0.3s;">
+            Print
+        </button>
+    </center>
+</div>

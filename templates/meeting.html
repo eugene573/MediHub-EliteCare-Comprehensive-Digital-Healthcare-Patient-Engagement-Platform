@@ -107,11 +107,11 @@
       const role = "{{ role }}"; // Assume the role is passed to the template
 
       if (role === "patient") {
-        window.location.href = "/patient/appointments"; // Redirect to the home page for patient
+        window.location.href = "/patient_view_prescription"; 
       } else if (role === "doctor") {
-        window.location.href = "/write_prescription"; // Redirect to doctor's appointments page
+        window.location.href = "/write_prescription"; 
       } else {
-        window.location.href = "/"; // Default redirect (can be customized)
+        window.location.href = "/"; 
       }
     }
   }

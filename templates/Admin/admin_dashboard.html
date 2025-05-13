@@ -131,8 +131,9 @@ canvas {
     position: absolute; /* Ensure proper positioning */
 }
 </style>
+
 <body>
-     <!-- Flash Messages -->
+    <!-- Flash Messages -->
 <div class="flash-message-container">
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -145,26 +146,26 @@ canvas {
     {% endif %}
     {% endwith %}
   </div> 
-  
+
     <div class="container">
         <!-- Header Cards -->
         <div class="header-cards">
             <div class="header-card">
                 <div class="icon"><i class="fas fa-users"></i></div>
                 <h3>Patient</h3>
-                <p>Total Amount: 123</p>
-                <span>+15 last month</span>
+                <p>Total Amount: {{ total_patients }}</p>
+                <span>+1 last month</span>
             </div>
             <div class="header-card">
                 <div class="icon"><i class="fas fa-user-md"></i></div>
                 <h3>Doctor</h3>
-                <p>Total Amount: 29</p>
-                <span>+5 last month</span>
+                <p>Total Amount: {{ total_doctors }}</p>
+                <span>+3 last month</span>
             </div>
             <div class="header-card">
                 <div class="icon"><i class="fas fa-user-nurse"></i></div>
                 <h3>Nurse</h3>
-                <p>Total Amount: 24</p>
+                <p>Total Amount: {{ total_nurses }}</p>
                 <span>+2 last month</span>
             </div>
         </div>
@@ -173,7 +174,7 @@ canvas {
         <div class="charts-container">
             <div class="chart-wrapper">
                 <br>
-                <h2>Total Appointment</h2>
+                <h2>Monthly Total Earning</h2>
                 <canvas id="revenueChart"></canvas>
             </div>
             <br>
@@ -186,22 +187,15 @@ canvas {
         new Chart(ctxRevenue, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                labels: ['Oct', 'Nov', 'Dec', 'Jan'],
                 datasets: [
                     {
-                        label: 'Home Visit',
-                        data: [100, 200, 150, 200, 250, 300, 250, 200],
+                        label: 'Monthly Total Earning',
+                        data: [150,390,890,120],
                         borderColor: '#00cc66',
                         fill: false,
                         tension: 0.1,
                     },
-                    {
-                        label: 'Telemedicine',
-                        data: [120, 180, 100, 220, 150, 100, 200, 300],
-                        borderColor: '#ff9933',
-                        fill: false,
-                        tension: 0.1,
-                    }
                 ]
             },
             options: {
@@ -223,7 +217,7 @@ canvas {
                 scales: {
                     y: {
                         beginAtZero: true,
-                        max: 400
+                        max: 2000
                     }
                 }
             }

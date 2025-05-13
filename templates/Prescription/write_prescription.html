@@ -119,12 +119,13 @@
 
     .remove-btn:hover {
         background-color: #c0392b;
+        transform: translateY(-2px);
     }
 
     #add-medication-btn {
         top: 10px;
         right: 10px;
-        background-color: #2ecc71;
+        background-color: #1fd458;
         color: white;
         border: none;
         border-radius: 50%;
@@ -139,6 +140,7 @@
 
     #add-medication-btn:hover {
         background-color: #27ae60;
+        transform: translateY(-2px);
     }
 
     @media screen and (max-width: 600px) {
@@ -189,7 +191,7 @@
                 <select name="patient_id" id="patient_id" class="select2" required>
                     <option value="" disabled selected>Select Patient</option>
                     {% for patient in patients %}
-                        <option value="{{ patient.id }}">{{ patient.username }}</option>
+                        <option value="{{ patient.id }}">PID: {{ patient.id }}   {{ patient.username }} </option>
                     {% endfor %}
                 </select>
             </center><br>

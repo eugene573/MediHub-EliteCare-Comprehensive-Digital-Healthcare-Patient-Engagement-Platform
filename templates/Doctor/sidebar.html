@@ -20,6 +20,7 @@
 
 .sidebar {
     width: 250px;
+    font-family: 'Verdana', sans-serif;
     background-color: #f6fcff;
     height: 100vh; /* Ensure sidebar takes full height */
     display: flex;
@@ -234,8 +235,8 @@ main {
             </a>
             <a href="/write_prescription" class="menu-item {% if request.path == '/write_prescription' %}active{% endif %}">
                 <i class="fas fa-file-prescription"></i>  
-                <span>Write Prescription</span>
-                <div class="shortcut">WP</div>
+                <span>Prescribe</span>
+                <div class="shortcut">Pr</div>
             </a>
             <a href="/view_prescriptions" class="menu-item {% if request.path == '/view_prescriptions' %}active{% endif %}">
                 <i class="fas fa-list-alt"></i>  
@@ -245,7 +246,7 @@ main {
             <a href="{{ url_for('view_patients') }}" class="menu-item {% if request.path == url_for('view_patients') %}active{% endif %}">
                 <i class="fas fa-users"></i>
                 <span>Patient</span>
-                <div class="shortcut">P</div>
+                <div class="shortcut">Pa</div>
             </a>
             <a href="/medication" class="menu-item {% if request.path == '/medication' %}active{% endif %}">
                 <i class="fas fa-capsules"></i>

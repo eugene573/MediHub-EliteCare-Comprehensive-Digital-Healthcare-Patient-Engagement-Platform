@@ -79,6 +79,7 @@
         }
         input[type="submit"]:hover {
             background-color: #0056b3;
+            transform: translateY(-2px);
         }
         .cancel-btn {
             background-color: #dc3545; /* Red color for Cancel */
@@ -93,6 +94,7 @@
         }
         .cancel-btn:hover {
             background-color: #c82333;
+            transform: translateY(-2px);
         }
         .message {
             color: red;
@@ -113,10 +115,51 @@
                 padding: 15px;
             }
         }
+
+        .flash-message-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050; /* Ensure it's above other content */
+    width: 300px; /* Adjust width as needed */
+    pointer-events: none; /* Prevent interaction with underlying elements */
+}
+
+.custom-alert {
+    background-color: #cb2424; /* Green background for success */
+    color: white; /* Text color */
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 10px; /* Space between messages */
+    pointer-events: auto; /* Enable interaction with the alert */
+    position: relative; /* For positioning the close button */
+}
+
+.custom-alert .btn-close {
+    background-color: transparent; /* Ensure no background */
+    border: none; /* Remove default border */
+    color: white; /* Set text/icon color to white */
+    opacity: 1; /* Make the button fully visible */
+    font-size: 1.25rem; /* Adjust size for better visibility */
+    position: absolute; /* Ensure proper positioning */
+}
     </style>
 </head>
 <body>
-    
+       <!-- Flash Messages -->
+<div class="flash-message-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} custom-alert alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+    {% endwith %}
+  </div> 
     <div class="container">
         <img src="{{ url_for('static', filename='uploads/MediHubq.png') }}" alt="MediHub" width="180" height="150">
         <form action="{{ url_for('register') }}" method="POST" enctype="multipart/form-data">
@@ -153,18 +196,17 @@
     </div>
    
     <script>
-        function toggleCertificationField() {
-            var role = document.getElementById("role").value;
-            var certificationGroup = document.getElementById("certification-group");
-
-            if (role === "Doctor" || role === "Nurse") {
-                certificationGroup.style.display = "block";
-                document.getElementById("certification").required = true;
-            } else {
-                certificationGroup.style.display = "none";
-                document.getElementById("certification").required = false;
-            }
-        }
+         document.addEventListener('DOMContentLoaded', function () {
+        // Find all alerts and set them to disappear after 5 seconds
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.transition = "opacity 0.3s"; // Add smooth fade-out
+                alert.style.opacity = "0"; // Start fading out
+                setTimeout(() => alert.remove(), 300); // Remove alert after fade-out completes
+            }, 3000); // 5-second duration before starting fade-out
+        });
+    });
     </script>
 </body>
 </html>

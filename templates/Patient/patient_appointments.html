@@ -11,6 +11,7 @@
  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">  
  <link rel="icon" href="/static/uploads/MediHubq.png" type="image/x-icon" sizes="512x512"> 
     <style>
+        
         .tabs {
             display: flex;
             justify-content: flex-start;
@@ -121,6 +122,7 @@
 
     .delete-btn:hover {
         background-color: #e60000;
+        transform: translateY(-2px);
     }
 
 .m-btn {
@@ -139,6 +141,7 @@
   background-color: #2081ff; /* Changes color on hover */
   text-decoration: none; /* Ensures no underline on hover */
   color: white; /* Ensures the text is visible */
+  transform: translateY(-2px);
 }
 
 body {
@@ -282,13 +285,17 @@ button[name="search_button"]:hover {
 
     <div class="container">
 
-<form method="get" action="/patient/appointments">
-    <input type="date" name="search_date" onkeydown="return false;" value="{{ search_date }}" />
-    <button type="submit" name="search_button"><i class="fa fa-search"></i></button>
-    {% if search_date %}
-    <button type="button" class="btn-clear" onclick="window.location.href='/patient/appointments'"><i class="fa fa-close"></i></button>
-    {% endif %}   
-</form>
+        <form method="get" action="/patient/appointments">
+            <input type="date" name="search_start_date" style="width: 200px; margin-right: 10px;" onkeydown="return false;" value="{{ search_start_date }}" />
+            -
+            &nbsp;
+            <input type="date" name="search_end_date" style="width: 200px; margin-right: 10px;" onkeydown="return false;" value="{{ search_end_date }}" />
+            <button type="submit" name="search_button"><i class="fa fa-search"></i></button>
+        
+            {% if search_start_date or search_end_date %}
+                <a href="/patient/appointments" class="btn-clear"><i class="fa fa-close"></i></a>
+            {% endif %}
+        </form>
 
         <div class="tabs">
             <button class="tab active" onclick="showTab('upcoming')">Upcoming</button>
